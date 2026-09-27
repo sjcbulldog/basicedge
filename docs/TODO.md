@@ -1,0 +1,7 @@
+- Create cross core communications channel
+- Create M33_NS -> M55 printf solution
+- Add RTOS to M33_NS
+- Add WIFI to M33_NSs
+- Add M55 File System on SDIO card
+- Add M55 qbasic interpreter
+- Add M55 graphics code

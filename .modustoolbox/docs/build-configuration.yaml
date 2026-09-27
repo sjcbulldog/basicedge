@@ -1,0 +1,638 @@
+# ModusToolbox Build Configuration Analysis for AI Agents
+# This document provides structured information about the build configuration of the ModusToolbox workspace.
+# It is intended for use by AI agents to better understand the project's build setup.
+# 
+# Additional Notes:
+#  - The common_libraries and common_includes relative paths are relative to the project root and not workspace root.
+
+path_interpretation_rules:
+  common_paths_relative_to: Project Directory
+  project_directories:
+    - proj_cm33_s
+    - proj_cm33_ns
+    - proj_cm55
+  resolution_base: workspace_path + '/' + project_folder_name + '/' + relative_path
+  note: Use path normalization to collapse .. and . segments
+workspace_path: c:/mtbfw/graphics
+device_name: PSE846GPS2DBZC4A
+bsp_name: APP_KIT_PSE84_EVAL_EPC2
+board_name: TARGET_APP_KIT_PSE84_EVAL_EPC2
+bp_headers: []
+middleware_summary:
+  total_available: 159
+  total_used: 23
+  available_by_category:
+    Bluetooth®: 15
+    Core: 11
+    Ethernet: 3
+    Graphics: 12
+    Middleware: 68
+    Peripheral: 37
+    Utilities: 6
+    Wi-Fi: 7
+  used_by_category:
+    Bluetooth®: 1
+    Core: 6
+    Graphics: 9
+    Middleware: 4
+    Peripheral: 1
+    Utilities: 2
+  notes:
+    - Use `list_available_libraries` MCP tool for complete catalog of available libraries and their summaries
+config_files:
+  - design.cyqspi
+  - design.modus
+common_libraries:
+  - id: async-transfer
+    remote_uri: https://github.com/Infineon/async-transfer
+    version_tag: release-v1.1.1
+    local_path: ../../mtb_shared/async-transfer/release-v1.1.1
+  - id: core-make
+    remote_uri: https://github.com/cypresssemiconductorco/core-make
+    version_tag: release-v3.10.0
+    local_path: ../../mtb_shared/core-make/release-v3.10.0
+  - id: bt-fw-ifx-cyw55500a1
+    remote_uri: https://github.com/Infineon/bt-fw-ifx-cyw55500a1
+    version_tag: release-v2.2.0
+    local_path: ../../mtb_shared/bt-fw-ifx-cyw55500a1/release-v2.2.0
+  - id: device-db
+    remote_uri: https://github.com/Infineon/device-db
+    version_tag: release-v4.41.0
+    local_path: C:/Users/butch/.modustoolbox/global/device-db/release-v4.41.0
+  - id: mtb-ipc
+    remote_uri: https://github.com/Infineon/mtb-ipc
+    version_tag: release-v1.2.0
+    local_path: ../../mtb_shared/mtb-ipc/release-v1.2.0
+  - id: mtb-srf
+    remote_uri: https://github.com/Infineon/mtb-srf
+    version_tag: release-v1.2.1
+    local_path: ../../mtb_shared/mtb-srf/release-v1.2.1
+  - id: se-rt-services-utils
+    remote_uri: https://github.com/Infineon/se-rt-services-utils
+    version_tag: release-v1.4.0
+    local_path: ../../mtb_shared/se-rt-services-utils/release-v1.4.0
+  - id: cmsis
+    remote_uri: https://github.com/Infineon/cmsis
+    version_tag: release-v6.1.0
+    local_path: ../../mtb_shared/cmsis/release-v6.1.0
+  - id: core-lib
+    remote_uri: https://github.com/cypresssemiconductorco/core-lib
+    version_tag: release-v1.8.0
+    local_path: ../../mtb_shared/core-lib/release-v1.8.0
+  - id: mtb-dsl-pse8xxgp
+    remote_uri: https://github.com/Infineon/mtb-dsl-pse8xxgp
+    version_tag: release-v1.6.0
+    local_path: ../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0
+common_defines:
+  - '-DCOMPONENT_MW_MTB_IPC'
+  - '-DCOMPONENT_55500A1'
+  - '-DCOMPONENT_GFXSS'
+  - '-DCOMPONENT_MW_CORE_LIB'
+  - '-DCY_WIFI_COUNTRY=WHD_COUNTRY_UNITED_STATES'
+  - '-DCY_SUPPORTS_DEVICE_VALIDATION'
+  - '-DCOMPONENT_MTB_HAL'
+  - '-DDEBUG'
+  - '-DCOMPONENT_Debug'
+  - '-DCOMPONENT_MW_CORE_MAKE'
+  - '-DCOMPONENT_MTB_DEVICE_SUPPORT'
+  - '-DCOMPONENT_MW_ASYNC_TRANSFER'
+  - '-DPSE846GPS2DBZC4A'
+  - '-DCOMPONENT_HCI_UART'
+  - '-DCOMPONENT_MW_BT_FW_IFX_CYW55500A1'
+  - '-DCYBSP_WIFI_WL_HOSTWAKE_DRIVE_MODE=MTB_HAL_GPIO_DRIVE_OPENDRAINDRIVESLOW'
+  - '-DTARGET_APP_KIT_PSE84_EVAL_EPC2'
+  - '-DCOMPONENT_CYW55513_MOD_PSE84_SOM'
+  - '-DCOMPONENT_MW_CMSIS'
+  - '-DCOMPONENT_MW_SE_RT_SERVICES_UTILS'
+  - '-DCOMPONENT_GCC_ARM'
+  - '-DFLASH_BOOT'
+  - '-DCY_PDL_FLASH_BOOT'
+  - '-DCOMPONENT_APP_KIT_PSE84_EVAL_EPC2'
+  - '-DCOMPONENT_WIFI_INTERFACE_SDIO'
+  - '-DCYBSP_MCUBOOT_HEADER_SIZE=0x400'
+  - '-DCY_TARGET_BOARD=APP_KIT_PSE84_EVAL_EPC2'
+  - '-DCOMPONENT_MW_MTB_DSL_PSE8XXGP'
+  - '-DCOMPONENT_PSE84'
+  - '-DCOMPONENT_wlbga_iPA_sLNA_ANT0_LHL_XTAL_IN'
+  - '-DCYBSP_WIFI_WL_HOSTWAKE_INIT_STATE=WHD_TRUE'
+  - '-DTRXV5'
+  - '-DCOMPONENT_MW_MTB_SRF'
+  - '-DCOMPONENT_SM'
+  - '-DBLHS_SUPPORT'
+  - '-DCOMPONENT_55500'
+common_includes:
+  - //# Relative paths here are relative to each project directory. Not to workspace root.
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal'
+  - '-I../../mtb_shared/se-rt-services-utils/release-v1.4.0'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm/audioss_pdm'
+  - '-I../../mtb_shared/mtb-srf/release-v1.2.1'
+  - '-I../../mtb_shared/async-transfer/release-v1.1.1/include'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/ethernet/include'
+  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/include/ip'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/include'
+  - '-I../../mtb_shared/async-transfer/release-v1.1.1'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/r-profile'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi'
+  - '-I../../mtb_shared/mtb-srf/release-v1.2.1/include'
+  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/m-profile'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm/mxpdm'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/a-profile'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000'
+  - '-I../../mtb_shared/mtb-ipc/release-v1.2.0'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/hardware/8000Nano'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano'
+  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/ethernet'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/hardware'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/rtos'
+  - '-I../../mtb_shared/mtb-ipc/release-v1.2.0/include'
+  - '-I../../mtb_shared/core-lib/release-v1.8.0'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl'
+  - '-I../bsps'
+  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/bluetooth'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/inc'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/rtos'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel/rtos'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS'
+  - '-I../../mtb_shared/core-lib/release-v1.8.0/include'
+common_sources:
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/support/source/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/ethernet/src/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite/rtos/*.c
+  - C:/mtbfw/graphics/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/hardware/8000Nano/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal/source/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/source/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/source/TOOLCHAIN_GCC_ARM/*.S
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/source/*.c
+  - C:/mtbfw/mtb_shared/mtb-ipc/release-v1.2.0/source/*.c
+  - C:/mtbfw/mtb_shared/async-transfer/release-v1.1.1/source/*.c
+  - C:/mtbfw/mtb_shared/mtb-srf/release-v1.2.1/source/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/source/*.c
+  - C:/mtbfw/graphics/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/bluetooth/*.c
+  - C:/mtbfw/mtb_shared/bt-fw-ifx-cyw55500a1/release-v2.2.0/COMPONENT_wlbga_iPA_sLNA_ANT0_LHL_XTAL_IN/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/rtos/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel/rtos/*.c
+  - C:/mtbfw/graphics/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/*.c
+  - C:/mtbfw/mtb_shared/se-rt-services-utils/release-v1.4.0/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/rtos/*.c
+projects:
+  - project_name: proj_cm33_s
+    folder_name: c:/mtbfw/graphics/proj_cm33_s
+    core_id: CM33_0
+    core_type: CM33
+    build_system: GNU Make
+    libraries: []
+    compiler_defines:
+      - '//# AI hint: See also common_defines listed for workspace'
+      - '-DCOMPONENT_CM33'
+      - '-DCOMPONENT_CM33_0'
+      - '-DCOMPONENT_SECURE_DEVICE'
+      - '-DCOMPONENT_SECURE_DRIVERS'
+      - '-DCOMPONENT_SOFTFP'
+      - '-DCORE_NAME_CM33_0=1'
+      - '-DCY_APPNAME_proj_cm33_s'
+    sources:
+      - '//# AI hint: See also common_sources listed for workspace'
+      - C:/mtbfw/graphics/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/COMPONENT_CM33/COMPONENT_SECURE_DEVICE/*.c
+      - C:/mtbfw/graphics/proj_cm33_s/*.c
+      - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/nnkernel/COMPONENT_CM33/source/*.c
+    include_dirs:
+      - '//# AI hint: See also common_includes listed for workspace'
+      - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/nnkernel'
+      - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/nnkernel/COMPONENT_CM33'
+      - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/nnkernel/COMPONENT_CM33/include'
+      - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/COMPONENT_CM33'
+      - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/COMPONENT_CM33/COMPONENT_SECURE_DEVICE'
+    exclude_files: null
+  - project_name: proj_cm33_ns
+    folder_name: c:/mtbfw/graphics/proj_cm33_ns
+    core_id: CM33_0
+    core_type: CM33
+    build_system: GNU Make
+    libraries: []
+    compiler_defines:
+      - '//# AI hint: See also common_defines listed for workspace'
+      - '-DCOMPONENT_CM33'
+      - '-DCOMPONENT_CM33_0'
+      - '-DCOMPONENT_NON_SECURE_DEVICE'
+      - '-DCOMPONENT_SOFTFP'
+      - '-DCORE_NAME_CM33_0=1'
+      - '-DCY_APPNAME_proj_cm33_ns'
+      - '-DCY_RETARGET_IO_CONVERT_LF_TO_CRLF'
+    sources:
+      - '//# AI hint: See also common_sources listed for workspace'
+      - C:/mtbfw/graphics/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/COMPONENT_CM33/COMPONENT_NON_SECURE_DEVICE/*.c
+      - C:/mtbfw/graphics/proj_cm33_ns/*.c
+      - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/nnkernel/COMPONENT_CM33/source/*.c
+      - C:/mtbfw/mtb_shared/mtb-srf/release-v1.2.1/source/COMPONENT_NON_SECURE_DEVICE/*.c
+      - C:/mtbfw/mtb_shared/mtb-srf/release-v1.2.1/source/COMPONENT_NON_SECURE_DEVICE/COMPONENT_MW_MTB_IPC/*.c
+    include_dirs:
+      - '//# AI hint: See also common_includes listed for workspace'
+      - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/nnkernel'
+      - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/nnkernel/COMPONENT_CM33'
+      - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/nnkernel/COMPONENT_CM33/include'
+      - '-I../../mtb_shared/mtb-srf/release-v1.2.1/include/COMPONENT_NON_SECURE_DEVICE'
+      - '-I../../mtb_shared/mtb-srf/release-v1.2.1/include/COMPONENT_NON_SECURE_DEVICE/COMPONENT_MW_MTB_IPC'
+    exclude_files: null
+  - project_name: proj_cm55
+    folder_name: c:/mtbfw/graphics/proj_cm55
+    core_id: CM55_0
+    core_type: CM55
+    build_system: GNU Make
+    libraries:
+      - id: display-dsi-waveshare-4-3-lcd
+        remote_uri: https://github.com/Infineon/display-dsi-waveshare-4-3-lcd
+        version_tag: release-v1.0.0
+        local_path: ../../mtb_shared/display-dsi-waveshare-4-3-lcd/release-v1.0.0
+      - id: display-dsi-waveshare-7-0-lcd-c
+        remote_uri: https://github.com/Infineon/display-dsi-waveshare-7-0-lcd-c
+        version_tag: release-v1.0.0
+        local_path: ../../mtb_shared/display-dsi-waveshare-7-0-lcd-c/release-v1.0.0
+      - id: display-tft-ek79007ad3
+        remote_uri: https://github.com/Infineon/display-tft-ek79007ad3
+        version_tag: release-v1.0.0
+        local_path: ../../mtb_shared/display-tft-ek79007ad3/release-v1.0.0
+      - id: display-tft-st7701s
+        remote_uri: https://github.com/Infineon/display-tft-st7701s
+        version_tag: release-v1.0.0
+        local_path: ../../mtb_shared/display-tft-st7701s/release-v1.0.0
+      - id: freertos
+        remote_uri: mtb://freertos
+        version_tag: release-v10.6.202
+        local_path: ../../mtb_shared/freertos/release-v10.6.202
+      - id: lvgl
+        remote_uri: mtb://lvgl
+        version_tag: v9.5.0
+        local_path: ../../mtb_shared/lvgl/v9.5.0
+      - id: retarget-io
+        remote_uri: https://github.com/cypresssemiconductorco/retarget-io
+        version_tag: release-v1.10.0
+        local_path: ../../mtb_shared/retarget-io/release-v1.10.0
+      - id: touch-ctp-ft5406
+        remote_uri: https://github.com/Infineon/touch-ctp-ft5406
+        version_tag: release-v1.0.0
+        local_path: ../../mtb_shared/touch-ctp-ft5406/release-v1.0.0
+      - id: touch-ctp-ft5446
+        remote_uri: https://github.com/Infineon/touch-ctp-ft5446
+        version_tag: release-v1.0.0
+        local_path: ../../mtb_shared/touch-ctp-ft5446/release-v1.0.0
+      - id: touch-ctp-gt911
+        remote_uri: https://github.com/Infineon/touch-ctp-gt911
+        version_tag: release-v1.0.0
+        local_path: ../../mtb_shared/touch-ctp-gt911/release-v1.0.0
+      - id: touch-ctp-ili2511
+        remote_uri: https://github.com/Infineon/touch-ctp-ili2511
+        version_tag: release-v1.0.0
+        local_path: ../../mtb_shared/touch-ctp-ili2511/release-v1.0.0
+      - id: abstraction-rtos
+        remote_uri: https://github.com/cypresssemiconductorco/abstraction-rtos
+        version_tag: release-v1.13.0
+        local_path: ../../mtb_shared/abstraction-rtos/release-v1.13.0
+      - id: clib-support
+        remote_uri: https://github.com/cypresssemiconductorco/clib-support
+        version_tag: release-v1.9.0
+        local_path: ../../mtb_shared/clib-support/release-v1.9.0
+    compiler_defines:
+      - '//# AI hint: See also common_defines listed for workspace'
+      - '-DCOMPONENT_CM55'
+      - '-DCOMPONENT_CM55_0'
+      - '-DCOMPONENT_FREERTOS'
+      - '-DCOMPONENT_FREERTOS_NTZ'
+      - '-DCOMPONENT_HARDFP'
+      - '-DCOMPONENT_MW_ABSTRACTION_RTOS'
+      - '-DCOMPONENT_MW_CLIB_SUPPORT'
+      - '-DCOMPONENT_MW_DISPLAY_DSI_WAVESHARE_4_3_LCD'
+      - '-DCOMPONENT_MW_DISPLAY_DSI_WAVESHARE_7_0_LCD_C'
+      - '-DCOMPONENT_MW_DISPLAY_TFT_EK79007AD3'
+      - '-DCOMPONENT_MW_DISPLAY_TFT_ST7701S'
+      - '-DCOMPONENT_MW_FREERTOS'
+      - '-DCOMPONENT_MW_LVGL'
+      - '-DCOMPONENT_MW_RETARGET_IO'
+      - '-DCOMPONENT_MW_TOUCH_CTP_FT5406'
+      - '-DCOMPONENT_MW_TOUCH_CTP_FT5446'
+      - '-DCOMPONENT_MW_TOUCH_CTP_GT911'
+      - '-DCOMPONENT_MW_TOUCH_CTP_ILI2511'
+      - '-DCOMPONENT_NON_SECURE_DEVICE'
+      - '-DCOMPONENT_RTOS_AWARE'
+      - '-DCORE_NAME_CM55_0=1'
+      - '-DCY_APPNAME_proj_cm55'
+      - '-DCY_RETARGET_IO_CONVERT_LF_TO_CRLF'
+      - '-DLV_USE_DEMO_BENCHMARK=0'
+      - '-DMTB_CTP_FT5406'
+      - '-DMTB_DISPLAY_W4P3INCH_RPI'
+      - '-D_BAREMETAL=0'
+    sources:
+      - '//# AI hint: See also common_sources listed for workspace'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/lv_demo_music.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/lv_demo_music_list.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/lv_demo_music_main.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_corner_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_list_pause.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_list_pause_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_list_play.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_list_play_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_loop.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_loop_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_next.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_next_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_pause.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_pause_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_play.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_play_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_prev.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_prev_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_rnd.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_rnd_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_corner_left.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_corner_left_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_corner_right.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_corner_right_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_cover_1.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_cover_1_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_cover_2.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_cover_2_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_cover_3.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_cover_3_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_1.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_1_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_2.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_2_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_3.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_3_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_4.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_4_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_list_border.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_list_border_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_logo.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_slider_knob.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_slider_knob_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_wave_bottom.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_wave_bottom_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_wave_top.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_wave_top_large.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/img_clothes.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/img_demo_widgets_avatar.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/img_demo_widgets_needle.c'
+      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/img_lvgl_logo.c'
+      - C:/mtbfw/graphics/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/COMPONENT_CM55/COMPONENT_NON_SECURE_DEVICE/*.c
+      - C:/mtbfw/graphics/proj_cm55/source/*.c
+      - C:/mtbfw/mtb_shared/abstraction-rtos/release-v1.13.0/source/*.c
+      - C:/mtbfw/mtb_shared/abstraction-rtos/release-v1.13.0/source/COMPONENT_FREERTOS/*.c
+      - C:/mtbfw/mtb_shared/clib-support/release-v1.9.0/source/*.c
+      - C:/mtbfw/mtb_shared/clib-support/release-v1.9.0/source/COMPONENT_FREERTOS/*.c
+      - C:/mtbfw/mtb_shared/clib-support/release-v1.9.0/source/TOOLCHAIN_GCC_ARM/*.c
+      - C:/mtbfw/mtb_shared/display-dsi-waveshare-4-3-lcd/release-v1.0.0/*.c
+      - C:/mtbfw/mtb_shared/freertos/release-v10.6.202/Source/*.c
+      - C:/mtbfw/mtb_shared/freertos/release-v10.6.202/Source/portable/COMPONENT_CM55/TOOLCHAIN_GCC_ARM/*.c
+      - C:/mtbfw/mtb_shared/freertos/release-v10.6.202/Source/portable/MemMang/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/img_benchmark_lvgl_logo_argb.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/img_benchmark_lvgl_logo_rgb.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_12_aligned.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_14_aligned.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_16_aligned.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_18_aligned.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_20_aligned.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_24_aligned.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_26_aligned.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/core/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/debugging/sysmon/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/display/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/snapshot/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/sw/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/sw/blend/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/sw/blend/helium/*.S
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_draw_buf_vg_lite.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_draw_vg_lite_arc.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_draw_vg_lite_border.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_draw_vg_lite_box_shadow.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_draw_vg_lite_fill.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_draw_vg_lite_label.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_draw_vg_lite_layer.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_draw_vg_lite_line.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_draw_vg_lite_mask_rect.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_draw_vg_lite_triangle.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_draw_vg_lite_vector.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_vg_lite_bitmap_font_cache.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_vg_lite_decoder.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_vg_lite_grad.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_vg_lite_math.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_vg_lite_path.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_vg_lite_pending.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/draw/vg_lite/lv_vg_lite_stroke.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/font/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/font/binfont_loader/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/font/fmt_txt/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/font/imgfont/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/indev/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/layouts/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/layouts/flex/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/layouts/grid/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/libs/bin_decoder/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/libs/bmp/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/libs/lodepng/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/libs/qrcode/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/libs/rle/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/libs/tjpgd/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/misc/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/misc/cache/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/misc/cache/class/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/misc/cache/instance/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/osal/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/others/file_explorer/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/others/fragment/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/others/translation/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/stdlib/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/stdlib/builtin/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/stdlib/clib/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/themes/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/themes/default/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/themes/mono/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/themes/simple/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/tick/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/animimage/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/arc/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/bar/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/button/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/buttonmatrix/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/calendar/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/canvas/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/chart/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/checkbox/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/dropdown/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/image/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/imagebutton/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/ime/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/keyboard/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/label/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/led/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/line/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/list/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/menu/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/msgbox/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/objx_templ/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/roller/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/scale/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/slider/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/span/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/spinbox/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/spinner/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/switch/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/table/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/tabview/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/textarea/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/tileview/*.c
+      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/widgets/win/*.c
+      - C:/mtbfw/mtb_shared/mtb-srf/release-v1.2.1/source/COMPONENT_NON_SECURE_DEVICE/*.c
+      - C:/mtbfw/mtb_shared/mtb-srf/release-v1.2.1/source/COMPONENT_NON_SECURE_DEVICE/COMPONENT_MW_MTB_IPC/*.c
+      - C:/mtbfw/mtb_shared/retarget-io/release-v1.10.0/source/*.c
+      - C:/mtbfw/mtb_shared/touch-ctp-ft5406/release-v1.0.0/*.c
+    include_dirs:
+      - '//# AI hint: See also common_includes listed for workspace'
+      - '-I.'
+      - '-I../../mtb_shared/abstraction-rtos/release-v1.13.0'
+      - '-I../../mtb_shared/abstraction-rtos/release-v1.13.0/include'
+      - '-I../../mtb_shared/abstraction-rtos/release-v1.13.0/include/COMPONENT_FREERTOS'
+      - '-I../../mtb_shared/clib-support/release-v1.9.0'
+      - '-I../../mtb_shared/clib-support/release-v1.9.0/include'
+      - '-I../../mtb_shared/clib-support/release-v1.9.0/source'
+      - '-I../../mtb_shared/clib-support/release-v1.9.0/source/TOOLCHAIN_GCC_ARM'
+      - '-I../../mtb_shared/display-dsi-waveshare-4-3-lcd/release-v1.0.0'
+      - '-I../../mtb_shared/freertos/release-v10.6.202'
+      - '-I../../mtb_shared/freertos/release-v10.6.202/Source'
+      - '-I../../mtb_shared/freertos/release-v10.6.202/Source/include'
+      - '-I../../mtb_shared/freertos/release-v10.6.202/Source/portable'
+      - '-I../../mtb_shared/freertos/release-v10.6.202/Source/portable/COMPONENT_CM55'
+      - '-I../../mtb_shared/freertos/release-v10.6.202/Source/portable/COMPONENT_CM55/TOOLCHAIN_GCC_ARM'
+      - '-I../../mtb_shared/lvgl/v9.5.0'
+      - '-I../../mtb_shared/lvgl/v9.5.0/demos'
+      - '-I../../mtb_shared/lvgl/v9.5.0/demos/benchmark'
+      - '-I../../mtb_shared/lvgl/v9.5.0/demos/music'
+      - '-I../../mtb_shared/lvgl/v9.5.0/demos/music/assets'
+      - '-I../../mtb_shared/lvgl/v9.5.0/demos/widgets'
+      - '-I../../mtb_shared/lvgl/v9.5.0/libs'
+      - '-I../../mtb_shared/lvgl/v9.5.0/libs/nema_gfx'
+      - '-I../../mtb_shared/lvgl/v9.5.0/libs/nema_gfx/include'
+      - '-I../../mtb_shared/lvgl/v9.5.0/libs/nema_gfx/include/cortex_m33'
+      - '-I../../mtb_shared/lvgl/v9.5.0/libs/nema_gfx/include/cortex_m55_m7'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/core'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/debugging'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/debugging/sysmon'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/display'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/draw'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/draw/convert'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/draw/snapshot'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/draw/sw'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/draw/sw/arm2d'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/draw/sw/blend'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/draw/sw/blend/helium'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/draw/vg_lite'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/font'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/font/binfont_loader'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/font/fmt_txt'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/font/imgfont'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/indev'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/layouts'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/layouts/flex'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/layouts/grid'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/libs'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/libs/bin_decoder'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/libs/bmp'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/libs/lodepng'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/libs/qrcode'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/libs/rle'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/libs/tjpgd'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/misc'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/misc/cache'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/misc/cache/class'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/misc/cache/instance'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/osal'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/others'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/others/file_explorer'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/others/fragment'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/others/translation'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/stdlib'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/stdlib/builtin'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/themes'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/themes/default'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/themes/mono'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/themes/simple'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/tick'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/animimage'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/arc'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/bar'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/button'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/buttonmatrix'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/calendar'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/canvas'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/chart'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/checkbox'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/dropdown'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/image'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/imagebutton'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/ime'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/keyboard'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/label'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/led'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/line'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/list'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/menu'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/msgbox'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/objx_templ'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/roller'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/scale'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/slider'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/span'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/spinbox'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/spinner'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/switch'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/table'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/tabview'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/textarea'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/tileview'
+      - '-I../../mtb_shared/lvgl/v9.5.0/src/widgets/win'
+      - '-I../../mtb_shared/mtb-srf/release-v1.2.1/include/COMPONENT_NON_SECURE_DEVICE'
+      - '-I../../mtb_shared/mtb-srf/release-v1.2.1/include/COMPONENT_NON_SECURE_DEVICE/COMPONENT_MW_MTB_IPC'
+      - '-I../../mtb_shared/retarget-io/release-v1.10.0'
+      - '-I../../mtb_shared/retarget-io/release-v1.10.0/include'
+      - '-I../../mtb_shared/touch-ctp-ft5406/release-v1.0.0'
+      - '-Iinclude'
+    exclude_files: null
+summary: ''
+
