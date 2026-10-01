@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include "basic_console.h"
+#include "basic_graphics.h"
 #include "message_tasks.h"
 #include "my_basic.h"
 #include "retarget_io_init.h"
@@ -111,6 +112,8 @@ static int basic_runtime_step(struct mb_interpreter_t *interpreter,
     CY_UNUSED_PARAMETER(row);
     CY_UNUSED_PARAMETER(column);
 
+    basic_console_trace_step(file, position, row, column);
+
     while (retarget_io_try_read_character(&character))
     {
         if (BASIC_CTRL_C == (unsigned char)character)
@@ -157,6 +160,7 @@ static void basic_task(void *argument)
     CY_UNUSED_PARAMETER(argument);
 
     message_tasks_wait_for_sd_probe();
+    message_tasks_wait_for_wifi_ready();
     printf("Starting MY-BASIC %s on CM55\r\n", mb_ver_string());
 
     status = mb_init();
@@ -166,6 +170,7 @@ static void basic_task(void *argument)
     }
     if (MB_FUNC_OK == status)
     {
+        basic_graphics_register(interpreter);
         (void)mb_set_inputer(interpreter, basic_uart_input);
         (void)mb_set_error_handler(interpreter, basic_error_handler);
         (void)mb_debug_set_stepped_handler(interpreter,

@@ -13,7 +13,6 @@
 #include "cy_utils.h"
 #include "cybsp.h"
 #include "cy_log.h"
-#include "mtb_block_storage.h"
 
 #define WIFI_CREDENTIALS_MAGIC (0x57494649UL)
 #define WIFI_CREDENTIALS_VERSION (1U)
@@ -43,13 +42,14 @@ typedef struct
                                    WIFI_CREDENTIALS_WEAR_LEVELING, \
                                    WIFI_CREDENTIALS_REDUNDANT_COPY)
 
-_Static_assert(WIFI_CREDENTIALS_STORAGE_SIZE <= CYMEM_CM33_0_cy_em_eeprom_SIZE,
-               "WiFi credential store exceeds its reserved flash region");
+_Static_assert(WIFI_CREDENTIALS_STORAGE_SIZE <= CYMEM_CM33_0_user_nvm_SIZE,
+               "WiFi credential store exceeds its reserved RRAM region");
 
-static mtb_block_storage_t wifi_credentials_block_storage;
 static cy_stc_eeprom_context_t wifi_credentials_eeprom_context;
 static wifi_credential_store_t wifi_credentials;
 static bool wifi_credentials_store_ready;
+static uint8_t *const wifi_credentials_eeprom_storage =
+    (uint8_t *)CYMEM_CM33_0_user_nvm_START;
 
 static bool wifi_credentials_valid(const wifi_credential_store_t *store)
 {
@@ -91,29 +91,20 @@ static bool wifi_credentials_write(const wifi_credential_store_t *store)
 
 bool wifi_credentials_store_initialize(void)
 {
-    cy_stc_eeprom_config2_t config =
+    cy_stc_eeprom_config_t config =
     {
         .eepromSize = WIFI_CREDENTIALS_DATA_SIZE,
         .simpleMode = WIFI_CREDENTIALS_SIMPLE_MODE,
         .wearLevelingFactor = WIFI_CREDENTIALS_WEAR_LEVELING,
         .redundantCopy = WIFI_CREDENTIALS_REDUNDANT_COPY,
         .blockingWrite = WIFI_CREDENTIALS_BLOCKING_WRITE,
-        .userNvmStartAddr = CYMEM_CM33_0_cy_em_eeprom_C_START
+        .userFlashStartAddr = (uint32_t)wifi_credentials_eeprom_storage
     };
     cy_en_em_eeprom_status_t eeprom_status;
-    cy_rslt_t block_storage_status;
 
     wifi_credentials_store_ready = false;
-    block_storage_status = mtb_block_storage_nvm_create(&wifi_credentials_block_storage);
-    if (CY_RSLT_SUCCESS != block_storage_status)
-    {
-        cy_log_msg(CYLF_MIDDLEWARE, CY_LOG_WARNING,
-                   "WiFi credential storage backend unavailable\n");
-        return false;
-    }
-    eeprom_status = Cy_Em_EEPROM_Init_BD(&config,
-                                         &wifi_credentials_eeprom_context,
-                                         &wifi_credentials_block_storage);
+    eeprom_status = Cy_Em_EEPROM_Init(&config,
+                                      &wifi_credentials_eeprom_context);
     if (CY_EM_EEPROM_SUCCESS != eeprom_status)
     {
         cy_log_msg(CYLF_MIDDLEWARE, CY_LOG_WARNING,
@@ -151,7 +142,32 @@ bool wifi_credentials_store_initialize(void)
 
 bool wifi_credentials_store_has_entries(void)
 {
-    return wifi_credentials_store_ready && (wifi_credentials.count > 0U);
+    return wifi_credentials_store_count() > 0U;
+}
+
+size_t wifi_credentials_store_count(void)
+{
+    return wifi_credentials_store_ready ? wifi_credentials.count : 0U;
+}
+
+bool wifi_credentials_store_get_ssid(size_t index,
+                                     char *ssid,
+                                     size_t ssid_capacity)
+{
+    if (!wifi_credentials_store_ready || (ssid == NULL) ||
+        (ssid_capacity == 0U) || (index >= wifi_credentials.count))
+    {
+        return false;
+    }
+    if (strlen(wifi_credentials.entries[index].ssid) >= ssid_capacity)
+    {
+        return false;
+    }
+    (void)snprintf(ssid,
+                   ssid_capacity,
+                   "%s",
+                   wifi_credentials.entries[index].ssid);
+    return true;
 }
 
 bool wifi_credentials_store_get_password(const char *ssid,
@@ -241,5 +257,27 @@ bool wifi_credentials_store_save(const char *ssid, const char *password)
         return false;
     }
     wifi_credentials = updated;
+    return true;
+}
+
+bool wifi_credentials_store_clear(void)
+{
+    wifi_credential_store_t cleared =
+    {
+        .magic = WIFI_CREDENTIALS_MAGIC,
+        .version = WIFI_CREDENTIALS_VERSION,
+        .count = 0U
+    };
+
+    if (!wifi_credentials_store_ready ||
+        (CY_EM_EEPROM_SUCCESS !=
+         Cy_Em_EEPROM_Erase(&wifi_credentials_eeprom_context)) ||
+        !wifi_credentials_write(&cleared))
+    {
+        cy_log_msg(CYLF_MIDDLEWARE, CY_LOG_WARNING,
+                   "WiFi credentials could not be cleared from Em_EEPROM\n");
+        return false;
+    }
+    wifi_credentials = cleared;
     return true;
 }

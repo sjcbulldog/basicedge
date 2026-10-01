@@ -1,6 +1,8 @@
 #include "sd_card_init.h"
 
 #include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "FS.h"
 #include "cybsp.h"
@@ -18,9 +20,67 @@ static cy_stc_sd_host_context_t sd_card_context;
 static bool sd_card_hw_ready;
 static bool sd_card_filesystem_is_ready;
 
+static const char *sd_card_type_name(cy_en_sd_host_card_type_t card_type);
+static const char *sd_card_capacity_name(cy_en_sd_host_card_capacity_t capacity);
+static const char *sd_card_file_system_name(uint16_t file_system_type);
+
 bool sd_card_filesystem_ready(void)
 {
     return sd_card_filesystem_is_ready;
+}
+
+bool sd_card_get_status(message_sd_card_status_t *status)
+{
+    FS_DISK_INFO disk_info = {0};
+    uint32_t block_count = 0U;
+
+    if (status == NULL)
+    {
+        return false;
+    }
+    memset(status, 0, sizeof(*status));
+    status->inserted = Cy_SD_Host_IsCardConnected(CYBSP_SDHC_1_HW) ? 1U : 0U;
+    status->initialized = sd_card_hw_ready ? 1U : 0U;
+    if (!status->inserted || !status->initialized)
+    {
+        return true;
+    }
+
+    (void)snprintf(status->card_type,
+                   sizeof(status->card_type),
+                   "%s",
+                   sd_card_type_name(sd_card_context.cardType));
+    (void)snprintf(status->card_capacity,
+                   sizeof(status->card_capacity),
+                   "%s",
+                   sd_card_capacity_name(sd_card_context.cardCapacity));
+    if ((CY_SD_HOST_SD == sd_card_context.cardType) ||
+        (CY_SD_HOST_EMMC == sd_card_context.cardType))
+    {
+        if (CY_SD_HOST_SUCCESS != Cy_SD_Host_GetBlockCount(CYBSP_SDHC_1_HW,
+                                                            &block_count,
+                                                            &sd_card_context))
+        {
+            return false;
+        }
+    }
+    else
+    {
+        block_count = sd_card_context.maxSectorNum;
+    }
+    status->total_mib = block_count / 2048U;
+
+    if (!sd_card_filesystem_is_ready ||
+        (0 != FS_GetVolumeInfo("", &disk_info)))
+    {
+        return true;
+    }
+    (void)snprintf(status->filesystem,
+                   sizeof(status->filesystem),
+                   "%s",
+                   sd_card_file_system_name(disk_info.FSType));
+    status->free_kib = FS_GetVolumeFreeSpaceKB("");
+    return true;
 }
 
 bool Cy_SD_Host_IsCardConnected(SDHC_Type const *base)

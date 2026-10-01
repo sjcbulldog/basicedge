@@ -17,6 +17,7 @@ typedef enum
     MESSAGE_OPCODE_M33_FILE_RESPONSE = 0x0101U,
     MESSAGE_OPCODE_M55_WIFI_REQUEST = 0x0200U,
     MESSAGE_OPCODE_M33_WIFI_RESPONSE = 0x0201U,
+    MESSAGE_OPCODE_M33_WIFI_READY = 0x0202U,
     MESSAGE_OPCODE_M55_HTTP_REQUEST = 0x0300U,
     MESSAGE_OPCODE_M33_HTTP_RESPONSE = 0x0301U
 } message_opcode_t;
@@ -64,7 +65,10 @@ typedef enum
 {
     MESSAGE_WIFI_SCAN = 1U,
     MESSAGE_WIFI_CONNECT = 2U,
-    MESSAGE_WIFI_DISCONNECT = 3U
+    MESSAGE_WIFI_DISCONNECT = 3U,
+    MESSAGE_WIFI_STATUS = 4U,
+    MESSAGE_WIFI_STORED = 5U,
+    MESSAGE_WIFI_CLEAR = 6U
 } message_wifi_operation_t;
 
 typedef struct
@@ -103,8 +107,22 @@ typedef enum
     MESSAGE_FILE_DELETE = 9U,
     MESSAGE_FILE_MAKE_DIRECTORY = 10U,
     MESSAGE_FILE_GET_DIRECTORY = 11U,
-    MESSAGE_FILE_FORMAT = 12U
+    MESSAGE_FILE_FORMAT = 12U,
+    MESSAGE_FILE_SD_STATUS = 13U,
+    MESSAGE_FILE_SD_FREE = 14U
 } message_file_operation_t;
+
+typedef struct
+{
+    uint8_t inserted;
+    uint8_t initialized;
+    uint16_t reserved;
+    uint32_t total_mib;
+    uint32_t free_kib;
+    char card_type[20];
+    char card_capacity[16];
+    char filesystem[8];
+} message_sd_card_status_t;
 
 typedef struct
 {

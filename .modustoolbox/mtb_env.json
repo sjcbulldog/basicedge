@@ -11,9 +11,9 @@
   "board_target": "TARGET_APP_KIT_PSE84_EVAL_EPC2",
   "cy_tools_path": "C:/Users/butch/ModusToolbox/tools_3.9",
   "modus_shell_path": "C:/Users/butch/ModusToolbox/tools_3.9/modus-shell",
-  "tcp_port": 58185,
-  "ext_port": 58184,
-  "pid": 23392,
+  "tcp_port": 62844,
+  "ext_port": 62842,
+  "pid": 29804,
   "log_level": "info",
-  "log_file": "C:/cygwin64/tmp/mtbai-logs/mtbai.log"
+  "log_file": "C:/Users/butch/AppData/Local/Temp/mtbai-logs/mtbai.log"
 }

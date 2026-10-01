@@ -33,5 +33,7 @@ bool file_service_delete(const char *path);
 bool file_service_make_directory(const char *path);
 bool file_service_get_directory(char *path, size_t capacity);
 int file_service_format(bool confirmed);
+bool file_service_sd_card_status(message_sd_card_status_t *status);
+bool file_service_sd_card_free(uint32_t *free_kib);
 
 #endif

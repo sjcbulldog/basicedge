@@ -15,6 +15,7 @@
 #include "cy_wcm.h"
 #include "message_log.h"
 #include "message_transport.h"
+#include "wifi_service.h"
 
 #define HTTP_DOWNLOAD_STATUS_OK (0)
 #define HTTP_DOWNLOAD_STATUS_ERROR (-1)
@@ -395,6 +396,11 @@ static bool http_download_get(const char *url)
     char host_header[HTTP_DOWNLOAD_MAX_HOST_LENGTH + 8U];
 
     http_download_length = 0U;
+    if (!wifi_service_http_ready())
+    {
+        http_progress("WIFI LOAD: secure sockets are not initialized.\r\n");
+        return false;
+    }
     if (!cy_wcm_is_connected_to_ap())
     {
         http_progress("WIFI LOAD: WiFi is not connected.\r\n");
@@ -460,11 +466,14 @@ static bool http_download_get(const char *url)
 
     address.ip_address = ip_address;
     address.port = parsed_url.port;
-    if (CY_RSLT_SUCCESS != cy_socket_connect(socket_handle,
-                                             &address,
-                                             sizeof(address)))
+    result = cy_socket_connect(socket_handle, &address, sizeof(address));
+    if (CY_RSLT_SUCCESS != result)
     {
-        http_progress("WIFI LOAD: server connection failed.\r\n");
+        char text[96];
+        (void)snprintf(text, sizeof(text),
+                       "WIFI LOAD: server connection failed (0x%08lx).\r\n",
+                       (unsigned long)result);
+        http_progress(text);
         goto cleanup;
     }
     socket_connected = true;

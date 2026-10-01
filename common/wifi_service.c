@@ -11,6 +11,7 @@
 #if defined(CORE_NAME_CM33_0)
 #include "cy_log.h"
 #include "cy_sd_host.h"
+#include "cy_secure_sockets.h"
 #include "cy_wcm.h"
 #include "cybsp.h"
 #include "mtb_hal_sdio.h"
@@ -30,6 +31,7 @@ static mtb_hal_sdio_t wifi_sdio_instance;
 static cy_stc_sd_host_context_t wifi_sdhc_host_context;
 static cy_wcm_config_t wifi_wcm_config;
 static TaskHandle_t wifi_reconnect_task_handle;
+static bool wifi_socket_ready;
 static bool wifi_boot_scan_active;
 static bool wifi_boot_candidate_available;
 static char wifi_boot_candidate_ssid[WIFI_CREDENTIALS_SSID_CAPACITY];
@@ -56,6 +58,25 @@ static cy_rslt_t wifi_connect_to_ap(const char *ssid,
     params.itwt_profile = CY_WCM_ITWT_PROFILE_NONE;
 
     cy_rslt_t result = cy_wcm_connect_ap(&params, &ip_address);
+    if (CY_RSLT_SUCCESS == result)
+    {
+        if (ip_address.version == CY_WCM_IP_VER_V4)
+        {
+            const uint8_t *ip_bytes = (const uint8_t *)&ip_address.ip.v4;
+            cy_log_msg(CYLF_MIDDLEWARE, CY_LOG_WARNING,
+                       "WiFi connected, IP address: %u.%u.%u.%u\n",
+                       (unsigned int)ip_bytes[0],
+                       (unsigned int)ip_bytes[1],
+                       (unsigned int)ip_bytes[2],
+                       (unsigned int)ip_bytes[3]);
+        }
+        else
+        {
+            cy_log_msg(CYLF_MIDDLEWARE, CY_LOG_WARNING,
+                       "WiFi connected, IP address is not IPv4\n");
+        }
+    }
+
     if ((CY_RSLT_SUCCESS == result) && save_credentials)
     {
         bool saved = wifi_credentials_store_save(ssid, password);
@@ -141,6 +162,21 @@ static bool wifi_send_response(int32_t status,
     return true;
 }
 
+static void wifi_send_ready_notification(void)
+{
+    message_t *message;
+
+    if (message_transport_allocate(MESSAGE_OPCODE_M33_WIFI_READY,
+                                    0U,
+                                    &message))
+    {
+        if (!message_transport_send(message))
+        {
+            (void)message_transport_release_local(message);
+        }
+    }
+}
+
 static int wifi_log_output(CY_LOG_FACILITY_T facility,
                            CY_LOG_LEVEL_T level,
                            char *log_message)
@@ -174,14 +210,21 @@ static void wifi_scan_callback(cy_wcm_scan_result_t *result,
 
         if (wifi_boot_scan_active)
         {
-            char password[WIFI_CREDENTIALS_PASSWORD_CAPACITY];
-            if (wifi_credentials_store_get_password(ssid,
-                                                     password,
-                                                     sizeof(password)))
+            size_t credential_count = wifi_credentials_store_count();
+            for (size_t index = 0U; index < credential_count; ++index)
             {
-                memcpy(wifi_boot_candidate_ssid, ssid, ssid_length + 1U);
-                memcpy(wifi_boot_candidate_password, password, strlen(password) + 1U);
-                wifi_boot_candidate_available = true;
+                char stored_ssid[WIFI_CREDENTIALS_SSID_CAPACITY];
+                if (wifi_credentials_store_get_ssid(index,
+                                                    stored_ssid,
+                                                    sizeof(stored_ssid)) &&
+                    (strcmp(stored_ssid, ssid) == 0) &&
+                    wifi_credentials_store_get_password(stored_ssid,
+                                                        wifi_boot_candidate_password,
+                                                        sizeof(wifi_boot_candidate_password)))
+                {
+                    memcpy(wifi_boot_candidate_ssid, ssid, ssid_length + 1U);
+                    wifi_boot_candidate_available = true;
+                }
             }
         }
 
@@ -203,7 +246,12 @@ static void wifi_scan_callback(cy_wcm_scan_result_t *result,
 
 static void wifi_connect_saved_network(void)
 {
-    if (!wifi_credentials_store_has_entries())
+    size_t credential_count = wifi_credentials_store_count();
+
+    cy_log_msg(CYLF_MIDDLEWARE, CY_LOG_WARNING,
+               "WiFi credentials stored: %u\n",
+               (unsigned int)credential_count);
+    if (credential_count == 0U)
     {
         return;
     }
@@ -236,6 +284,9 @@ static void wifi_connect_saved_network(void)
     if (wifi_boot_candidate_available)
     {
         bool credentials_saved;
+        cy_log_msg(CYLF_MIDDLEWARE, CY_LOG_WARNING,
+                   "Connecting to SSID '%s' ...\n",
+                   wifi_boot_candidate_ssid);
         cy_rslt_t result = wifi_connect_to_ap(wifi_boot_candidate_ssid,
                                               wifi_boot_candidate_password,
                                               true,
@@ -244,12 +295,14 @@ static void wifi_connect_saved_network(void)
         if (CY_RSLT_SUCCESS == result)
         {
             cy_log_msg(CYLF_MIDDLEWARE, CY_LOG_WARNING,
-                       "Connected to the last saved network seen at startup\n");
+                       "Connected to SSID '%s'\n",
+                       wifi_boot_candidate_ssid);
         }
         else
         {
             cy_log_msg(CYLF_MIDDLEWARE, CY_LOG_WARNING,
-                       "Saved WiFi credentials did not connect\n");
+                       "Failed to connect to SSID '%s'\n",
+                       wifi_boot_candidate_ssid);
         }
     }
 }
@@ -312,6 +365,11 @@ void wifi_service_initialize(void)
     wifi_scan_events = xEventGroupCreate();
 }
 
+bool wifi_service_http_ready(void)
+{
+    return wifi_socket_ready;
+}
+
 void wifi_task(void *argument)
 {
     (void)argument;
@@ -334,8 +392,17 @@ void wifi_task(void *argument)
     wifi_wcm_config.wifi_interface_instance = &wifi_sdio_instance;
     CY_ASSERT(CY_RSLT_SUCCESS == cy_wcm_init(&wifi_wcm_config));
     CY_ASSERT(CY_RSLT_SUCCESS == cy_wcm_register_event_callback(wifi_event_callback));
+    cy_rslt_t socket_result = cy_socket_init();
+    wifi_socket_ready = (CY_RSLT_SUCCESS == socket_result);
+    if (!wifi_socket_ready)
+    {
+        cy_log_msg(CYLF_MIDDLEWARE, CY_LOG_ERR,
+                   "Secure sockets initialization failed (0x%08lx); HTTP downloads unavailable\n",
+                   (unsigned long)socket_result);
+    }
     wifi_connect_saved_network();
     wifi_ready = true;
+    wifi_send_ready_notification();
     for (;;)
     {
         vTaskDelay(portMAX_DELAY);
@@ -377,6 +444,53 @@ static bool wifi_handle_request(const message_wifi_request_t *request,
                                       : WIFI_SERVICE_STATUS_ERROR,
                                   wifi_scan_records, wifi_scan_count);
     }
+    if (request->operation == MESSAGE_WIFI_STORED)
+    {
+        message_wifi_scan_record_t stored_records[WIFI_CREDENTIALS_MAX_ENTRIES] = {0};
+        size_t stored_count = wifi_credentials_store_count();
+        if (stored_count > WIFI_CREDENTIALS_MAX_ENTRIES)
+        {
+            stored_count = WIFI_CREDENTIALS_MAX_ENTRIES;
+        }
+        for (size_t index = 0U; index < stored_count; ++index)
+        {
+            if (!wifi_credentials_store_get_ssid(index,
+                                                 stored_records[index].ssid,
+                                                 sizeof(stored_records[index].ssid)))
+            {
+                return wifi_send_response(WIFI_SERVICE_STATUS_ERROR, NULL, 0U);
+            }
+        }
+        return wifi_send_response(WIFI_SERVICE_STATUS_OK,
+                                  stored_records,
+                                  stored_count);
+    }
+    if (request->operation == MESSAGE_WIFI_CLEAR)
+    {
+        return wifi_send_response(wifi_credentials_store_clear()
+                                      ? WIFI_SERVICE_STATUS_OK
+                                      : WIFI_SERVICE_STATUS_ERROR,
+                                  NULL,
+                                  0U);
+    }
+    if (request->operation == MESSAGE_WIFI_STATUS)
+    {
+        cy_wcm_associated_ap_info_t ap_info = {0};
+        message_wifi_scan_record_t record = {0};
+
+        if (!cy_wcm_is_connected_to_ap())
+        {
+            return wifi_send_response(WIFI_SERVICE_STATUS_DISCONNECTED,
+                                      NULL,
+                                      0U);
+        }
+        if (CY_RSLT_SUCCESS != cy_wcm_get_associated_ap_info(&ap_info))
+        {
+            return wifi_send_response(WIFI_SERVICE_STATUS_ERROR, NULL, 0U);
+        }
+        memcpy(record.ssid, ap_info.SSID, sizeof(record.ssid) - 1U);
+        return wifi_send_response(WIFI_SERVICE_STATUS_OK, &record, 1U);
+    }
     if (request->operation == MESSAGE_WIFI_DISCONNECT)
     {
         return wifi_send_response((CY_RSLT_SUCCESS == cy_wcm_disconnect_ap())
@@ -412,6 +526,7 @@ static bool wifi_handle_request(const message_wifi_request_t *request,
 
 #define WIFI_RESPONSE_READY_BIT (1U << 1U)
 #define WIFI_HTTP_RESPONSE_READY_BIT (1U << 2U)
+#define WIFI_HTTP_RESPONSE_TIMEOUT_TICKS pdMS_TO_TICKS(60000U)
 static EventGroupHandle_t wifi_events;
 static int32_t wifi_status;
 static message_wifi_scan_record_t wifi_records[WIFI_SERVICE_MAX_SCAN_RECORDS];
@@ -489,6 +604,40 @@ bool wifi_service_scan(message_wifi_scan_record_t *records,
     return wifi_request(MESSAGE_WIFI_SCAN, NULL, NULL, records, capacity, count);
 }
 
+bool wifi_service_stored(message_wifi_scan_record_t *records,
+                         size_t capacity,
+                         size_t *count)
+{
+    return wifi_request(MESSAGE_WIFI_STORED, NULL, NULL, records, capacity, count);
+}
+
+bool wifi_service_clear_stored(void)
+{
+    return wifi_request(MESSAGE_WIFI_CLEAR, NULL, NULL, NULL, 0U, NULL);
+}
+
+bool wifi_service_status(char *ssid, size_t capacity)
+{
+    message_wifi_scan_record_t record;
+    size_t count = 0U;
+    size_t length;
+
+    if ((ssid == NULL) || (capacity == 0U) ||
+        !wifi_request(MESSAGE_WIFI_STATUS, NULL, NULL, &record, 1U, &count) ||
+        (count != 1U))
+    {
+        return false;
+    }
+    length = strnlen(record.ssid, sizeof(record.ssid));
+    if (length >= capacity)
+    {
+        return false;
+    }
+    memcpy(ssid, record.ssid, length);
+    ssid[length] = '\0';
+    return true;
+}
+
 bool wifi_service_connect(const char *ssid,
                           const char *password,
                           bool *credentials_saved)
@@ -549,11 +698,15 @@ static bool wifi_http_exchange(uint8_t operation,
         (void)message_transport_release_local(message);
         return false;
     }
-    (void)xEventGroupWaitBits(wifi_events,
-                              WIFI_HTTP_RESPONSE_READY_BIT,
-                              pdTRUE,
-                              pdFALSE,
-                              portMAX_DELAY);
+    EventBits_t response_bits = xEventGroupWaitBits(wifi_events,
+                                                    WIFI_HTTP_RESPONSE_READY_BIT,
+                                                    pdTRUE,
+                                                    pdFALSE,
+                                                    WIFI_HTTP_RESPONSE_TIMEOUT_TICKS);
+    if ((response_bits & WIFI_HTTP_RESPONSE_READY_BIT) == 0U)
+    {
+        return false;
+    }
 
     if (wifi_http_status != WIFI_SERVICE_STATUS_OK)
     {

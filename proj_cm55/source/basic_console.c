@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "my_basic.h"
+#include "basic_graphics.h"
 #include "file_service.h"
 #include "wifi_service.h"
 
@@ -37,6 +38,7 @@ static char basic_program[BASIC_PROGRAM_CAPACITY];
 static char translated_program[BASIC_RUNTIME_CAPACITY];
 static char directory_listing[FILE_SERVICE_DIRECTORY_CAPACITY];
 static size_t basic_program_length;
+static bool basic_trace_enabled;
 
 static const char *skip_spaces(const char *text)
 {
@@ -757,6 +759,44 @@ void basic_console_initialize(void)
 {
     basic_program[0] = '\0';
     basic_program_length = 0U;
+    basic_trace_enabled = false;
+}
+
+void basic_console_trace_step(const char *file,
+                              int position,
+                              unsigned short row,
+                              unsigned short column)
+{
+    const char *line_start;
+    const char *line_end;
+
+    (void)column;
+
+    if (!basic_trace_enabled)
+    {
+        return;
+    }
+
+    if ((NULL == file) || (position < 0))
+    {
+        printf("TRACE %u\r\n", (unsigned int)row);
+        return;
+    }
+
+    line_start = &file[position];
+    while ((line_start > file) && (line_start[-1] != '\n'))
+    {
+        --line_start;
+    }
+    line_end = line_start;
+    while ((*line_end != '\0') && (*line_end != '\r') && (*line_end != '\n'))
+    {
+        ++line_end;
+    }
+
+    printf("TRACE ");
+    (void)fwrite(line_start, 1U, (size_t)(line_end - line_start), stdout);
+    printf("\r\n");
 }
 
 bool basic_console_process(struct mb_interpreter_t **interpreter,
@@ -776,6 +816,32 @@ bool basic_console_process(struct mb_interpreter_t **interpreter,
     if (command_match(input, "LIST", &arguments))
     {
         list_program(arguments);
+        return true;
+    }
+    if (command_match(input, "TRACE", &arguments))
+    {
+        if (command_match(arguments, "ON", NULL))
+        {
+            basic_trace_enabled = true;
+            printf("Trace is ON.\r\n");
+        }
+        else if (command_match(arguments, "OFF", NULL))
+        {
+            basic_trace_enabled = false;
+            printf("Trace is OFF.\r\n");
+        }
+        else
+        {
+            printf("Usage: TRACE ON | TRACE OFF\r\n");
+        }
+        return true;
+    }
+    if (command_match(input, "GFX", &arguments))
+    {
+        if (!basic_graphics_command(arguments))
+        {
+            printf("Usage: GFX INIT | CLEAR | RESET | UPDATE | INFO | HELP\r\n");
+        }
         return true;
     }
     if (command_match(input, "DIR", &arguments))
@@ -815,43 +881,84 @@ bool basic_console_process(struct mb_interpreter_t **interpreter,
         }
         return true;
     }
-    if (command_match(input, "FORMAT", &arguments))
+    if (command_match(input, "SDCARD", &arguments))
     {
-        int format_result;
-        if ('\0' == *arguments)
+        const char *sdcard_arguments;
+        if (command_match(arguments, "STATUS", &sdcard_arguments) &&
+            (*sdcard_arguments == '\0'))
         {
-            format_result = file_service_format(false);
-            if (FILE_SERVICE_FORMAT_CONFIRM == format_result)
+            message_sd_card_status_t status;
+            if (!file_service_sd_card_status(&status))
             {
-                printf("A valid filesystem exists. Type FORMAT YES to erase it.\r\n");
+                printf("Unable to read SD card status.\r\n");
             }
-            else if (FILE_SERVICE_FORMAT_OK == format_result)
+            else if (!status.inserted)
             {
-                printf("SD card formatted.\r\n");
+                printf("No SD card inserted.\r\n");
             }
             else
             {
-                printf("Unable to format SD card.\r\n");
+                printf("SD card: %s, %s, %lu MiB, filesystem: %s\r\n",
+                       status.card_type,
+                       status.card_capacity,
+                       (unsigned long)status.total_mib,
+                       (status.filesystem[0] != '\0') ? status.filesystem : "not mounted");
             }
+            return true;
         }
-        else if (matches_case_insensitive_name(arguments, strlen(arguments), "YES"))
+        if (command_match(arguments, "FREE", &sdcard_arguments) &&
+            (*sdcard_arguments == '\0'))
         {
-            printf("Formatting, please wait .... ");
-            (void)fflush(stdout);
-            format_result = file_service_format(true);
-            if (FILE_SERVICE_FORMAT_OK == format_result)
+            uint32_t free_kib;
+            if (file_service_sd_card_free(&free_kib))
             {
-                printf("complete\r\n");
+                printf("SD card free space: %lu KiB (%lu MiB).\r\n",
+                       (unsigned long)free_kib,
+                       (unsigned long)(free_kib / 1024U));
             }
             else
             {
-                printf("\r\nUnable to format SD card.\r\n");
+                printf("Unable to read SD card free space.\r\n");
             }
+            return true;
         }
-        else
+        if (command_match(arguments, "FORMAT", &sdcard_arguments))
         {
-            printf("Usage: FORMAT [YES]\r\n");
+            int format_result;
+            if ('\0' == *sdcard_arguments)
+            {
+                format_result = file_service_format(false);
+                if (FILE_SERVICE_FORMAT_CONFIRM == format_result)
+                {
+                    printf("A valid filesystem exists. Type SDCARD FORMAT YES to erase it.\r\n");
+                }
+                else if (FILE_SERVICE_FORMAT_OK == format_result)
+                {
+                    printf("SD card formatted.\r\n");
+                }
+                else
+                {
+                    printf("Unable to format SD card.\r\n");
+                }
+            }
+            else if (matches_case_insensitive_name(sdcard_arguments,
+                                                   strlen(sdcard_arguments),
+                                                   "YES"))
+            {
+                printf("Formatting, please wait .... ");
+                (void)fflush(stdout);
+                format_result = file_service_format(true);
+                printf((FILE_SERVICE_FORMAT_OK == format_result)
+                           ? "complete\r\n"
+                           : "\r\nUnable to format SD card.\r\n");
+            }
+            else
+            {
+                printf("Usage: SDCARD FORMAT [YES]\r\n");
+            }
+            return true;
         }
+        printf("Usage: SDCARD STATUS | SDCARD FORMAT [YES] | SDCARD FREE\r\n");
         return true;
     }
     if (command_match(input, "CD", &arguments))
@@ -936,6 +1043,20 @@ bool basic_console_process(struct mb_interpreter_t **interpreter,
     if (command_match(input, "WIFI", &arguments))
     {
         const char *wifi_arguments;
+        if (command_match(arguments, "STATUS", &wifi_arguments) &&
+            (*wifi_arguments == '\0'))
+        {
+            char ssid[34];
+            if (wifi_service_status(ssid, sizeof(ssid)))
+            {
+                printf("WIFI connected to \"%s\".\r\n", ssid);
+            }
+            else
+            {
+                printf("WIFI is not connected.\r\n");
+            }
+            return true;
+        }
         if (command_match(arguments, "SCAN", &wifi_arguments) &&
             (*wifi_arguments == '\0'))
         {
@@ -957,6 +1078,38 @@ bool basic_console_process(struct mb_interpreter_t **interpreter,
                        (unsigned int)records[index].channel);
             }
             printf("%u network(s) found.\r\n", (unsigned int)record_count);
+            return true;
+        }
+        if (command_match(arguments, "STORED", &wifi_arguments) &&
+            (*wifi_arguments == '\0'))
+        {
+            message_wifi_scan_record_t records[WIFI_SERVICE_MAX_SCAN_RECORDS];
+            size_t record_count;
+            if (!wifi_service_stored(records,
+                                     WIFI_SERVICE_MAX_SCAN_RECORDS,
+                                     &record_count))
+            {
+                printf("Unable to read stored WIFI credentials.\r\n");
+                return true;
+            }
+            if (record_count == 0U)
+            {
+                printf("No stored WIFI credentials.\r\n");
+                return true;
+            }
+            printf("Stored WIFI credentials:\r\n");
+            for (size_t index = 0U; index < record_count; ++index)
+            {
+                printf("  %s\r\n", records[index].ssid);
+            }
+            return true;
+        }
+        if (command_match(arguments, "CLEAR", &wifi_arguments) &&
+            (*wifi_arguments == '\0'))
+        {
+            printf(wifi_service_clear_stored()
+                       ? "Stored WIFI credentials cleared.\r\n"
+                       : "Unable to clear stored WIFI credentials.\r\n");
             return true;
         }
         if (command_match(arguments, "DISCONNECT", &wifi_arguments) &&
@@ -1022,7 +1175,7 @@ bool basic_console_process(struct mb_interpreter_t **interpreter,
             printf("Loaded program: %s\r\n", url);
             return true;
         }
-        printf("Usage: WIFI SCAN | WIFI CONNECT \"SSID\" \"PASSWORD\" | WIFI DISCONNECT | WIFI LOAD \"URL\"\r\n");
+        printf("Usage: WIFI STATUS | WIFI SCAN | WIFI STORED | WIFI CLEAR | WIFI CONNECT \"SSID\" \"PASSWORD\" | WIFI DISCONNECT | WIFI LOAD \"URL\"\r\n");
         return true;
     }
     if (command_match(input, "NEW", &arguments))
@@ -1093,7 +1246,30 @@ bool basic_console_process(struct mb_interpreter_t **interpreter,
     }
     if (command_match(input, "HELP", &arguments))
     {
-        printf("Commands: CLS, DIR, PWD, CD [\"path\"], MKDIR \"path\", DEL \"filename\", FORMAT [YES], LIST [line|first-last], RUN, WIFI, LOAD \"filename\", SAVE \"filename\", NEW, CLEAR, RENUM [start[,step]], HELP\r\n");
+        printf("CLS - Clear the terminal screen.\r\n");
+        printf("DIR - List files in the current SD-card directory.\r\n");
+        printf("PWD - Print the current SD-card directory.\r\n");
+        printf("CD [\"path\"] - Change the current SD-card directory.\r\n");
+        printf("MKDIR \"path\" - Create an SD-card directory.\r\n");
+        printf("DEL \"filename\" - Delete an SD-card file.\r\n");
+        printf("SDCARD STATUS - Show SD-card presence and information.\r\n");
+        printf("SDCARD FORMAT [YES] - Format the SD card.\r\n");
+        printf("SDCARD FREE - Show available SD-card space.\r\n");
+        printf("LIST [line|first-last] - List stored BASIC lines.\r\n");
+        printf("RUN - Run the stored BASIC program.\r\n");
+        printf("WIFI SCAN - Scan for nearby WiFi networks.\r\n");
+        printf("WIFI STATUS - Show WiFi connection status.\r\n");
+        printf("WIFI STORED - List SSIDs with stored credentials.\r\n");
+        printf("WIFI CLEAR - Clear all stored WiFi credentials.\r\n");
+        printf("WIFI CONNECT \"SSID\" \"PASSWORD\" - Connect to WiFi.\r\n");
+        printf("WIFI DISCONNECT - Disconnect from WiFi.\r\n");
+        printf("WIFI LOAD \"URL\" - Download and load a BASIC program.\r\n");
+        printf("LOAD \"filename\" - Load a BASIC program from the SD card.\r\n");
+        printf("SAVE \"filename\" - Save the BASIC program to the SD card.\r\n");
+        printf("NEW - Clear the stored program and variables.\r\n");
+        printf("CLEAR - Clear variables without deleting the program.\r\n");
+        printf("RENUM [start[,step]] - Renumber the BASIC program.\r\n");
+        printf("HELP - Show this command list.\r\n");
         printf("Enter a numbered line to store it; enter its number alone to delete it.\r\n");
         return true;
     }

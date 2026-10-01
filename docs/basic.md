@@ -44,10 +44,15 @@ Phase 1 provides the resident commands expected from an early BASIC machine:
 | `DIR` | Lists the current SD-card directory. |
 | `PWD` | Prints the current SD-card directory. |
 | `WIFI SCAN` | Lists nearby networks while disconnected. |
+| `WIFI STATUS` | Reports whether WiFi is connected and, if connected, the SSID. |
+| `WIFI STORED` | Lists SSIDs with stored WiFi credentials. |
+| `WIFI CLEAR` | Clears all stored WiFi credentials. |
 | `WIFI CONNECT "SSID" "PASSWORD"` | Connects to a station and saves successful credentials in Em_EEPROM. |
 | `WIFI DISCONNECT` | Disconnects the station interface. |
 | `WIFI LOAD "URL"` | Downloads an HTTP/HTTPS BASIC program and loads it into the program store. |
-| `FORMAT [YES]` | Formats the SD card; a valid filesystem requires `FORMAT YES` confirmation. |
+| `SDCARD STATUS` | Reports whether an SD card is inserted and provides its type, capacity, size, and filesystem. |
+| `SDCARD FORMAT [YES]` | Formats the SD card; a valid filesystem requires `SDCARD FORMAT YES` confirmation. |
+| `SDCARD FREE` | Reports the free space available on the SD card. |
 | `CD ["path"]` | Changes the SD-card directory; no path returns to `/`. |
 | `MKDIR "path"` | Creates a directory relative to the current SD-card directory. |
 | `DEL "filename"` | Deletes a file from the current SD-card directory. |

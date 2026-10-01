@@ -65,6 +65,7 @@
 #include "lv_port_indev.h"
 #include "display_i2c_config.h"
 #include "basic_task.h"
+#include "basic_graphics.h"
 #include "message_tasks.h"
 #include "message_transport.h"
 #include "file_service.h"
@@ -628,6 +629,7 @@ static void cm55_gfx_task(void *arg)
             lv_obj_set_style_bg_color(screen, lv_color_hex(SCREEN_BG_COLOR),
                                       LV_PART_MAIN);
             lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, LV_PART_MAIN);
+            basic_graphics_mark_ready();
 
             message_t *message = NULL;
             if (!message_transport_allocate(MESSAGE_OPCODE_M55_INIT_COMPLETE, 0U, &message))
@@ -661,6 +663,7 @@ static void cm55_gfx_task(void *arg)
         /* LVGL's timer handler function, to be called periodically to handle
          * LVGL tasks.
          */
+        basic_graphics_process();
         time_till_next = lv_timer_handler();
         vTaskDelay(pdMS_TO_TICKS(time_till_next));
     }
@@ -739,6 +742,7 @@ int main(void)
     }
 
     file_service_initialize();
+    basic_graphics_initialize();
 
     /* Enable global interrupts */
     __enable_irq();

@@ -237,6 +237,34 @@ static bool file_service_handle_request(const message_file_request_t *request,
 {
     char resolved_path[FILE_SERVICE_PATH_MAX];
 
+    if ((request->operation == MESSAGE_FILE_SD_STATUS) ||
+        (request->operation == MESSAGE_FILE_SD_FREE))
+    {
+        message_sd_card_status_t status;
+        if ((request->path_length != 0U) ||
+            (request->data_length != 0U) ||
+            !sd_card_get_status(&status))
+        {
+            return file_service_send_response(FILE_SERVICE_STATUS_ERROR,
+                                               0U,
+                                               NULL,
+                                               0U);
+        }
+        if ((request->operation == MESSAGE_FILE_SD_FREE) &&
+            (!status.inserted || !status.initialized ||
+             (status.filesystem[0] == '\0')))
+        {
+            return file_service_send_response(FILE_SERVICE_STATUS_ERROR,
+                                               0U,
+                                               NULL,
+                                               0U);
+        }
+        return file_service_send_response(FILE_SERVICE_STATUS_OK,
+                                           0U,
+                                           &status,
+                                           sizeof(status));
+    }
+
     if ((request->path_length >= FILE_SERVICE_PATH_MAX) ||
         (request->data_length > FILE_SERVICE_CHUNK_MAX) ||
         !sd_card_filesystem_ready())
@@ -681,6 +709,36 @@ int file_service_format(bool confirmed)
                       ? FILE_SERVICE_FORMAT_CONFIRM
                       : FILE_SERVICE_FORMAT_ERROR);
 }
+
+        static bool file_service_sd_card_query(message_file_operation_t operation,
+                                               message_sd_card_status_t *status)
+        {
+            if ((status == NULL) ||
+                !file_service_request(operation, "", 0U, NULL, 0U) ||
+                (file_service_data_length != sizeof(*status)))
+            {
+                return false;
+            }
+            memcpy(status, file_service_data, sizeof(*status));
+            return true;
+        }
+
+        bool file_service_sd_card_status(message_sd_card_status_t *status)
+        {
+            return file_service_sd_card_query(MESSAGE_FILE_SD_STATUS, status);
+        }
+
+        bool file_service_sd_card_free(uint32_t *free_kib)
+        {
+            message_sd_card_status_t status;
+            if ((free_kib == NULL) ||
+                !file_service_sd_card_query(MESSAGE_FILE_SD_FREE, &status))
+            {
+                return false;
+            }
+            *free_kib = status.free_kib;
+            return true;
+        }
 #else
 bool file_service_save(const char *path, const char *data, size_t length)
 {
@@ -736,6 +794,18 @@ int file_service_format(bool confirmed)
 {
     (void)confirmed;
     return FILE_SERVICE_FORMAT_ERROR;
+}
+
+bool file_service_sd_card_status(message_sd_card_status_t *status)
+{
+    (void)status;
+    return false;
+}
+
+bool file_service_sd_card_free(uint32_t *free_kib)
+{
+    (void)free_kib;
+    return false;
 }
 #endif
 

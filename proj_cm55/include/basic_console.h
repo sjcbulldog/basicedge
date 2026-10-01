@@ -11,6 +11,10 @@
 struct mb_interpreter_t;
 
 void basic_console_initialize(void);
+void basic_console_trace_step(const char *file,
+                              int position,
+                              unsigned short row,
+                              unsigned short column);
 bool basic_console_process(struct mb_interpreter_t **interpreter,
                            const char *input,
                            int *status);
