@@ -67,6 +67,21 @@ When the user's request does not directly name a canonical MTB library identifie
 
 Once the library identifier is resolved, use the `mtb-list-available-libraries` skill (provided by Infineon ModusToolbox AI Assistant) to obtain the canonical GitHub URI, latest BSP-compatible version tag, and live dependency list. **Always prefer manifest data over defaults.** If the skill fails or the library is not in the result, see [Troubleshooting](#troubleshooting).
 
+## Multi-Core Gate — Check Before Installing
+
+Applies to **every** library, not just logging or stdio libraries — many libraries print internally.
+
+The gate applies only when the application root `Makefile` defines `MTB_PROJECTS` **and**
+`bsps/TARGET_*/bsp.mk` lists more than one core in `DEVICE_*_CORES`. Single-core applications skip
+it entirely. When it applies, before installing into a sub-project:
+
+1. Read the `## Debug Output Ownership` block in `copilot-instructions.md`.
+2. If the block is absent or does not cover the target project, hand off to a debug output ownership
+   skill if one is installed in `.github/skills/` (e.g. `mtb-multi-core-retarget-io`). If none is installed,
+   ask the user which core owns the debug UART and record the answer before continuing.
+3. Never install `retarget-io` into a project the block identifies as a non-owner — a second owner
+   on the same UART corrupts output for both cores.
+
 ## Step-by-Step Workflows
 
 ### Workflow 1 — Standalone Library Installation

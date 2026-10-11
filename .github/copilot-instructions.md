@@ -9,7 +9,7 @@ This is a **ModusToolbox embedded C/C++ project** for Infineon microcontrollers.
 
 See [.modustoolbox/docs/README.md](..//.modustoolbox/docs/README.md) for an overview of the workspace, projects, and configuration.
 
-See `c:/mtbfw/graphics/.github/skills/mtb*` for skills specific to working with ModusToolbox projects for this device.
+See `c:/mtbfw/basicedge/.github/skills/mtb*` for skills specific to working with ModusToolbox projects for this device.
 
 ### Project Information
 
@@ -181,28 +181,29 @@ The following PDL functions configure hardware that MUST be set through Device C
 ## 6. Workspace Structure
 
 ```
-├── graphics/                                          
-│   ├── .modustoolbox/docs/                              # auto-generated docs for AI
-│   ├── .vscode/                                         # Workspace settings, multi-core debug and tasks configuration
-│   ├── bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/             # Board Support Packages
-│   ├── proj_cm33_ns/                                    # Project for core CM33
-│   │   ├── .vscode/                                     # Project-specific settings, single-core debug and tasks configuration
-│   │   ├── deps/                                        # Direct dependencies folder (*.mtb files)
-│   │   ├── libs/                                        # Auto-generated indirect dependencies folder (*.mtb files)
-│   │   └── Makefile                                     # Project make file
-│   ├── proj_cm33_s/                                     # Project for core CM33
-│   │   ├── .vscode/                                     # Project-specific settings, single-core debug and tasks configuration
-│   │   ├── deps/                                        # Direct dependencies folder (*.mtb files)
-│   │   ├── libs/                                        # Auto-generated indirect dependencies folder (*.mtb files)
-│   │   └── Makefile                                     # Project make file
-│   ├── proj_cm55/                                       # Project for core CM55
-│   │   ├── .vscode/                                     # Project-specific settings, single-core debug and tasks configuration
-│   │   ├── deps/                                        # Direct dependencies folder (*.mtb files)
-│   │   ├── libs/                                        # Auto-generated indirect dependencies folder (*.mtb files)
-│   │   └── Makefile                                     # Project make file
-│   ├── Makefile                                         # Main make file
-│   └── PSOC_Edge_Graphics_LVGL_Demo.code-workspace      # VSCode workspace file, workspace settings
-└── mtb_shared/                                          # Shared libraries (outside workspace)
+├── basicedge/                                  
+│   ├── .github/                                  # copilot-instructions.md and GitHub configuration
+│   ├── .modustoolbox/docs/                       # auto-generated docs for AI
+│   ├── .vscode/                                  # Workspace settings, multi-core debug and tasks configuration
+│   ├── bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/      # Board Support Packages
+│   ├── proj_cm33_ns/                             # Project for core CM33
+│   │   ├── .vscode/                              # Project-specific settings, single-core debug and tasks configuration
+│   │   ├── deps/                                 # Direct dependencies folder (*.mtb files)
+│   │   ├── libs/                                 # Auto-generated indirect dependencies folder (*.mtb files)
+│   │   └── Makefile                              # Project make file
+│   ├── proj_cm33_s/                              # Project for core CM33
+│   │   ├── .vscode/                              # Project-specific settings, single-core debug and tasks configuration
+│   │   ├── deps/                                 # Direct dependencies folder (*.mtb files)
+│   │   ├── libs/                                 # Auto-generated indirect dependencies folder (*.mtb files)
+│   │   └── Makefile                              # Project make file
+│   ├── proj_cm55/                                # Project for core CM55
+│   │   ├── .vscode/                              # Project-specific settings, single-core debug and tasks configuration
+│   │   ├── deps/                                 # Direct dependencies folder (*.mtb files)
+│   │   ├── libs/                                 # Auto-generated indirect dependencies folder (*.mtb files)
+│   │   └── Makefile                              # Project make file
+│   ├── basicedge.code-workspace                  # VSCode workspace file, workspace settings
+│   └── Makefile                                  # Main make file
+└── mtb_shared/                                   # Shared libraries (outside workspace)
 ```
 
 ## 7. Additional Documentation

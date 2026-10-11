@@ -1,3 +1,8 @@
+/******************************************************************************
+ * File: message_tasks.c
+ * Description: Receives inter-core requests, responses, and debug messages.
+ ******************************************************************************/
+
 #include "message_tasks.h"
 
 #include <stdio.h>
@@ -11,9 +16,12 @@
 
 #if defined(CORE_NAME_CM33_0)
 #include "http_download_service.h"
+/* CM33 handles HTTPS synchronously here; TLS exceeds a 4 KiB stack. */
+#define MESSAGE_RX_TASK_STACK_SIZE (configMINIMAL_STACK_SIZE * 16U)
+#else
+#define MESSAGE_RX_TASK_STACK_SIZE (configMINIMAL_STACK_SIZE * 4U)
 #endif
 
-#define MESSAGE_RX_TASK_STACK_SIZE (configMINIMAL_STACK_SIZE * 4U)
 #define MESSAGE_RX_TASK_PRIORITY   (configMAX_PRIORITIES - 1U)
 #define MESSAGE_RX_POLL_INTERVAL_TICKS pdMS_TO_TICKS(10U)
 #define MESSAGE_SD_PROBE_COMPLETE_BIT (1U << 0U)

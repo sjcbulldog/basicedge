@@ -686,6 +686,9 @@ MBAPI int mb_set_error_handler(struct mb_interpreter_t* s, mb_error_handler_t h)
 
 MBAPI int mb_set_printer(struct mb_interpreter_t* s, mb_print_func_t p);
 MBAPI int mb_set_inputer(struct mb_interpreter_t* s, mb_input_func_t p);
+/* Classic expression functions may coexist with GOTO/GOSUB and use global variables. */
+MBAPI int mb_set_classic_basic(struct mb_interpreter_t* s, bool_t enabled);
+MBAPI int mb_assign_input(struct mb_interpreter_t* s, const char* name, mb_value_t value);
 
 MBAPI int mb_set_import_handler(struct mb_interpreter_t* s, mb_import_handler_t h);
 MBAPI int mb_set_string_measurer(mb_string_measure_func_t m);

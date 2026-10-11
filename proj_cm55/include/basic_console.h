@@ -7,10 +7,13 @@
 #define BASIC_CONSOLE_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 struct mb_interpreter_t;
 
 void basic_console_initialize(void);
+bool basic_console_prepare_immediate(const char *input, const char **program);
+uint32_t basic_console_source_line(unsigned short row);
 void basic_console_trace_step(const char *file,
                               int position,
                               unsigned short row,

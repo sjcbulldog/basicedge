@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include "basic_console.h"
+#include "basic_compat.h"
 #include "basic_graphics.h"
 #include "message_tasks.h"
 #include "my_basic.h"
@@ -21,6 +22,47 @@
 #define BASIC_CTRL_C          (0x03)
 
 static bool basic_interrupt_requested;
+static char basic_pending_key;
+
+static double basic_seconds(void)
+{
+    return (double)xTaskGetTickCount() / configTICK_RATE_HZ;
+}
+
+static bool basic_read_key(char *character)
+{
+    if (basic_pending_key != '\0')
+    {
+        *character = basic_pending_key;
+        basic_pending_key = '\0';
+        return true;
+    }
+    return retarget_io_try_read_character(character);
+}
+
+/**
+ * @brief Yield during BASIC SLEEP; a key ends the wait and Ctrl-C aborts.
+ */
+static bool basic_sleep(double seconds)
+{
+    double end = basic_seconds() + seconds;
+    while (basic_seconds() < end)
+    {
+        char character;
+        if (retarget_io_try_read_character(&character))
+        {
+            if (BASIC_CTRL_C == (unsigned char)character)
+            {
+                basic_interrupt_requested = true;
+                return false;
+            }
+            basic_pending_key = character;
+            return true;
+        }
+        vTaskDelay(pdMS_TO_TICKS(10U));
+    }
+    return true;
+}
 
 static int basic_uart_read_line(struct mb_interpreter_t *interpreter,
                                 char *buffer,
@@ -93,7 +135,8 @@ static int basic_uart_input(struct mb_interpreter_t *interpreter,
 {
     CY_UNUSED_PARAMETER(prompt);
 
-    return basic_uart_read_line(interpreter, buffer, buffer_size, true);
+    int length = basic_uart_read_line(interpreter, buffer, buffer_size, true);
+    return basic_interrupt_requested ? -1 : length;
 }
 
 static int basic_runtime_step(struct mb_interpreter_t *interpreter,
@@ -139,14 +182,14 @@ static void basic_error_handler(struct mb_interpreter_t *interpreter,
     CY_UNUSED_PARAMETER(position);
     CY_UNUSED_PARAMETER(abort_code);
 
-    if (basic_interrupt_requested)
+    if (basic_interrupt_requested || (SE_NO_ERR == error))
     {
         return;
     }
 
-    printf("MY-BASIC error %d at %u:%u: %s\r\n",
+    printf("MY-BASIC error %d at %lu:%u: %s\r\n",
            (int)error,
-           (unsigned int)row,
+           (unsigned long)basic_console_source_line(row),
            (unsigned int)column,
            (NULL != description) ? description : "unknown error");
 }
@@ -171,11 +214,23 @@ static void basic_task(void *argument)
     if (MB_FUNC_OK == status)
     {
         basic_graphics_register(interpreter);
-        (void)mb_set_inputer(interpreter, basic_uart_input);
-        (void)mb_set_error_handler(interpreter, basic_error_handler);
-        (void)mb_debug_set_stepped_handler(interpreter,
+        const basic_compat_platform_t platform = {
+            basic_uart_input, basic_seconds, basic_sleep, basic_read_key
+        };
+        status = basic_compat_register(interpreter, &platform);
+        if (MB_FUNC_OK != status)
+        {
+            printf("Unable to initialize classic BASIC runtime: %d\r\n", status);
+            (void)mb_close(&interpreter);
+        }
+        else
+        {
+            (void)mb_set_inputer(interpreter, basic_uart_input);
+            (void)mb_set_error_handler(interpreter, basic_error_handler);
+            (void)mb_debug_set_stepped_handler(interpreter,
                            basic_runtime_step,
                            NULL);
+        }
     }
 
     basic_console_initialize();
@@ -183,6 +238,7 @@ static void basic_task(void *argument)
     {
         printf("BASIC> ");
         basic_interrupt_requested = false;
+        basic_pending_key = '\0';
         int input_length = basic_uart_read_line(interpreter,
                             input,
                             (int)sizeof(input),
@@ -194,6 +250,7 @@ static void basic_task(void *argument)
 
         if (basic_console_process(&interpreter, input, &status))
         {
+            if (MB_FUNC_END == status) status = MB_FUNC_OK;
             if (basic_interrupt_requested)
             {
                 printf("Break\r\n");
@@ -209,14 +266,20 @@ static void basic_task(void *argument)
         }
 
         status = mb_reset(&interpreter, false, false);
+        const char *program = NULL;
+        if ((MB_FUNC_OK == status) && !basic_console_prepare_immediate(input, &program))
+        {
+            status = MB_FUNC_ERR;
+        }
         if (MB_FUNC_OK == status)
         {
-            status = mb_load_string(interpreter, input, true);
+            status = mb_load_string(interpreter, program, true);
         }
         if (MB_FUNC_OK == status)
         {
             status = mb_run(interpreter, true);
         }
+        if (MB_FUNC_END == status) status = MB_FUNC_OK;
         if (basic_interrupt_requested)
         {
             printf("Break\r\n");

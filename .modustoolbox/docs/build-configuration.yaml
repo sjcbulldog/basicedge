@@ -13,14 +13,14 @@ path_interpretation_rules:
     - proj_cm55
   resolution_base: workspace_path + '/' + project_folder_name + '/' + relative_path
   note: Use path normalization to collapse .. and . segments
-workspace_path: c:/mtbfw/graphics
+workspace_path: c:/mtbfw/basicedge
 device_name: PSE846GPS2DBZC4A
 bsp_name: APP_KIT_PSE84_EVAL_EPC2
 board_name: TARGET_APP_KIT_PSE84_EVAL_EPC2
 bp_headers: []
 middleware_summary:
   total_available: 159
-  total_used: 23
+  total_used: 39
   available_by_category:
     Bluetooth®: 15
     Core: 11
@@ -32,33 +32,50 @@ middleware_summary:
     Wi-Fi: 7
   used_by_category:
     Bluetooth®: 1
-    Core: 6
+    Core: 8
     Graphics: 9
-    Middleware: 4
+    Middleware: 12
     Peripheral: 1
-    Utilities: 2
+    Utilities: 3
+    Wi-Fi: 5
   notes:
     - Use `list_available_libraries` MCP tool for complete catalog of available libraries and their summaries
 config_files:
   - design.cyqspi
   - design.modus
 common_libraries:
-  - id: async-transfer
-    remote_uri: https://github.com/Infineon/async-transfer
-    version_tag: release-v1.1.1
-    local_path: ../../mtb_shared/async-transfer/release-v1.1.1
-  - id: core-make
-    remote_uri: https://github.com/cypresssemiconductorco/core-make
-    version_tag: release-v3.10.0
-    local_path: ../../mtb_shared/core-make/release-v3.10.0
   - id: bt-fw-ifx-cyw55500a1
     remote_uri: https://github.com/Infineon/bt-fw-ifx-cyw55500a1
     version_tag: release-v2.2.0
     local_path: ../../mtb_shared/bt-fw-ifx-cyw55500a1/release-v2.2.0
+  - id: core-lib
+    remote_uri: https://github.com/cypresssemiconductorco/core-lib
+    version_tag: release-v1.8.0
+    local_path: ../../mtb_shared/core-lib/release-v1.8.0
+  - id: core-make
+    remote_uri: https://github.com/cypresssemiconductorco/core-make
+    version_tag: release-v3.10.0
+    local_path: ../../mtb_shared/core-make/release-v3.10.0
+  - id: mtb-dsl-pse8xxgp
+    remote_uri: https://github.com/Infineon/mtb-dsl-pse8xxgp
+    version_tag: release-v1.6.0
+    local_path: ../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0
+  - id: async-transfer
+    remote_uri: https://github.com/Infineon/async-transfer
+    version_tag: release-v1.1.1
+    local_path: ../../mtb_shared/async-transfer/release-v1.1.1
+  - id: cmsis
+    remote_uri: https://github.com/Infineon/cmsis
+    version_tag: release-v6.1.0
+    local_path: ../../mtb_shared/cmsis/release-v6.1.0
   - id: device-db
     remote_uri: https://github.com/Infineon/device-db
     version_tag: release-v4.41.0
     local_path: C:/Users/butch/.modustoolbox/global/device-db/release-v4.41.0
+  - id: se-rt-services-utils
+    remote_uri: https://github.com/Infineon/se-rt-services-utils
+    version_tag: release-v1.4.0
+    local_path: ../../mtb_shared/se-rt-services-utils/release-v1.4.0
   - id: mtb-ipc
     remote_uri: https://github.com/Infineon/mtb-ipc
     version_tag: release-v1.2.0
@@ -67,144 +84,128 @@ common_libraries:
     remote_uri: https://github.com/Infineon/mtb-srf
     version_tag: release-v1.2.1
     local_path: ../../mtb_shared/mtb-srf/release-v1.2.1
-  - id: se-rt-services-utils
-    remote_uri: https://github.com/Infineon/se-rt-services-utils
-    version_tag: release-v1.4.0
-    local_path: ../../mtb_shared/se-rt-services-utils/release-v1.4.0
-  - id: cmsis
-    remote_uri: https://github.com/Infineon/cmsis
-    version_tag: release-v6.1.0
-    local_path: ../../mtb_shared/cmsis/release-v6.1.0
-  - id: core-lib
-    remote_uri: https://github.com/cypresssemiconductorco/core-lib
-    version_tag: release-v1.8.0
-    local_path: ../../mtb_shared/core-lib/release-v1.8.0
-  - id: mtb-dsl-pse8xxgp
-    remote_uri: https://github.com/Infineon/mtb-dsl-pse8xxgp
-    version_tag: release-v1.6.0
-    local_path: ../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0
 common_defines:
-  - '-DCOMPONENT_MW_MTB_IPC'
-  - '-DCOMPONENT_55500A1'
-  - '-DCOMPONENT_GFXSS'
-  - '-DCOMPONENT_MW_CORE_LIB'
-  - '-DCY_WIFI_COUNTRY=WHD_COUNTRY_UNITED_STATES'
-  - '-DCY_SUPPORTS_DEVICE_VALIDATION'
-  - '-DCOMPONENT_MTB_HAL'
-  - '-DDEBUG'
-  - '-DCOMPONENT_Debug'
-  - '-DCOMPONENT_MW_CORE_MAKE'
-  - '-DCOMPONENT_MTB_DEVICE_SUPPORT'
-  - '-DCOMPONENT_MW_ASYNC_TRANSFER'
-  - '-DPSE846GPS2DBZC4A'
-  - '-DCOMPONENT_HCI_UART'
-  - '-DCOMPONENT_MW_BT_FW_IFX_CYW55500A1'
-  - '-DCYBSP_WIFI_WL_HOSTWAKE_DRIVE_MODE=MTB_HAL_GPIO_DRIVE_OPENDRAINDRIVESLOW'
-  - '-DTARGET_APP_KIT_PSE84_EVAL_EPC2'
-  - '-DCOMPONENT_CYW55513_MOD_PSE84_SOM'
-  - '-DCOMPONENT_MW_CMSIS'
   - '-DCOMPONENT_MW_SE_RT_SERVICES_UTILS'
-  - '-DCOMPONENT_GCC_ARM'
-  - '-DFLASH_BOOT'
+  - '-DCOMPONENT_SM'
+  - '-DCOMPONENT_GFXSS'
+  - '-DCOMPONENT_MW_MTB_DSL_PSE8XXGP'
+  - '-DCYBSP_WIFI_WL_HOSTWAKE_INIT_STATE=WHD_TRUE'
+  - '-DPSE846GPS2DBZC4A'
+  - '-DCOMPONENT_wlbga_iPA_sLNA_ANT0_LHL_XTAL_IN'
+  - '-DCY_SUPPORTS_DEVICE_VALIDATION'
+  - '-DTRXV5'
+  - '-DCOMPONENT_MTB_HAL'
+  - '-DCOMPONENT_MW_ASYNC_TRANSFER'
+  - '-DCOMPONENT_CYW55513_MOD_PSE84_SOM'
+  - '-DCOMPONENT_MW_CORE_LIB'
+  - '-DTARGET_APP_KIT_PSE84_EVAL_EPC2'
+  - '-DCOMPONENT_Debug'
+  - '-DCOMPONENT_MW_BT_FW_IFX_CYW55500A1'
+  - '-DCOMPONENT_MW_CORE_MAKE'
   - '-DCY_PDL_FLASH_BOOT'
   - '-DCOMPONENT_APP_KIT_PSE84_EVAL_EPC2'
-  - '-DCOMPONENT_WIFI_INTERFACE_SDIO'
-  - '-DCYBSP_MCUBOOT_HEADER_SIZE=0x400'
-  - '-DCY_TARGET_BOARD=APP_KIT_PSE84_EVAL_EPC2'
-  - '-DCOMPONENT_MW_MTB_DSL_PSE8XXGP'
+  - '-DCOMPONENT_55500A1'
+  - '-DCOMPONENT_GCC_ARM'
   - '-DCOMPONENT_PSE84'
-  - '-DCOMPONENT_wlbga_iPA_sLNA_ANT0_LHL_XTAL_IN'
-  - '-DCYBSP_WIFI_WL_HOSTWAKE_INIT_STATE=WHD_TRUE'
-  - '-DTRXV5'
-  - '-DCOMPONENT_MW_MTB_SRF'
-  - '-DCOMPONENT_SM'
-  - '-DBLHS_SUPPORT'
+  - '-DCOMPONENT_MTB_DEVICE_SUPPORT'
+  - '-DCOMPONENT_HCI_UART'
+  - '-DCOMPONENT_MW_MTB_IPC'
+  - '-DCYBSP_MCUBOOT_HEADER_SIZE=0x400'
+  - '-DCYBSP_WIFI_WL_HOSTWAKE_DRIVE_MODE=MTB_HAL_GPIO_DRIVE_OPENDRAINDRIVESLOW'
+  - '-DCOMPONENT_MW_CMSIS'
+  - '-DCY_TARGET_BOARD=APP_KIT_PSE84_EVAL_EPC2'
   - '-DCOMPONENT_55500'
+  - '-DCOMPONENT_MW_MTB_SRF'
+  - '-DCOMPONENT_WIFI_INTERFACE_SDIO'
+  - '-DDEBUG'
+  - '-DBLHS_SUPPORT'
+  - '-DCY_WIFI_COUNTRY=WHD_COUNTRY_UNITED_STATES'
+  - '-DFLASH_BOOT'
 common_includes:
   - //# Relative paths here are relative to each project directory. Not to workspace root.
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal/include'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal'
-  - '-I../../mtb_shared/se-rt-services-utils/release-v1.4.0'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm/audioss_pdm'
-  - '-I../../mtb_shared/mtb-srf/release-v1.2.1'
-  - '-I../../mtb_shared/async-transfer/release-v1.1.1/include'
-  - '-I../../mtb_shared/cmsis/release-v6.1.0'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/ethernet/include'
-  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/include/ip'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/include'
   - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/include'
-  - '-I../../mtb_shared/async-transfer/release-v1.1.1'
-  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/r-profile'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi'
-  - '-I../../mtb_shared/mtb-srf/release-v1.2.1/include'
-  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers'
   - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/m-profile'
-  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm/mxpdm'
-  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/a-profile'
   - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/inc'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi'
   - '-I../../mtb_shared/mtb-ipc/release-v1.2.0'
+  - '-I../../mtb_shared/mtb-srf/release-v1.2.1'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/ethernet/include'
+  - '-I../../mtb_shared/se-rt-services-utils/release-v1.4.0'
+  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/rtos'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS'
+  - '-I../../mtb_shared/core-lib/release-v1.8.0'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser'
+  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/bluetooth'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite'
+  - '-I../../mtb_shared/mtb-srf/release-v1.2.1/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/r-profile'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm/mxpdm'
+  - '-I../../mtb_shared/mtb-ipc/release-v1.2.0/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/rtos'
+  - '-I../../mtb_shared/core-lib/release-v1.8.0/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel'
   - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/hardware/8000Nano'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal/include'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/a-profile'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/include/ip'
   - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano'
-  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm/audioss_pdm'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal'
   - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/ethernet'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel'
+  - '-I../bsps'
+  - '-I../../mtb_shared/async-transfer/release-v1.1.1/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel/rtos'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers'
+  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource'
+  - '-I../../mtb_shared/async-transfer/release-v1.1.1'
+  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2'
   - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/include'
   - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/hardware'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel'
-  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/rtos'
-  - '-I../../mtb_shared/mtb-ipc/release-v1.2.0/include'
-  - '-I../../mtb_shared/core-lib/release-v1.8.0'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl'
-  - '-I../bsps'
-  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/bluetooth'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/inc'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/include'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/rtos'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/include'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel/rtos'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS'
-  - '-I../../mtb_shared/core-lib/release-v1.8.0/include'
 common_sources:
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/support/source/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/ethernet/src/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite/rtos/*.c
-  - C:/mtbfw/graphics/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/hardware/8000Nano/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal/source/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/source/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/source/TOOLCHAIN_GCC_ARM/*.S
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/source/*.c
   - C:/mtbfw/mtb_shared/mtb-ipc/release-v1.2.0/source/*.c
+  - C:/mtbfw/basicedge/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/hardware/8000Nano/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/source/TOOLCHAIN_GCC_ARM/*.S
   - C:/mtbfw/mtb_shared/async-transfer/release-v1.1.1/source/*.c
-  - C:/mtbfw/mtb_shared/mtb-srf/release-v1.2.1/source/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/source/*.c
-  - C:/mtbfw/graphics/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/bluetooth/*.c
-  - C:/mtbfw/mtb_shared/bt-fw-ifx-cyw55500a1/release-v2.2.0/COMPONENT_wlbga_iPA_sLNA_ANT0_LHL_XTAL_IN/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/rtos/*.c
   - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel/rtos/*.c
-  - C:/mtbfw/graphics/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/*.c
-  - C:/mtbfw/mtb_shared/se-rt-services-utils/release-v1.4.0/*.c
   - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/rtos/*.c
+  - C:/mtbfw/basicedge/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/ethernet/src/*.c
+  - C:/mtbfw/mtb_shared/bt-fw-ifx-cyw55500a1/release-v2.2.0/COMPONENT_wlbga_iPA_sLNA_ANT0_LHL_XTAL_IN/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/source/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/source/*.c
+  - C:/mtbfw/mtb_shared/se-rt-services-utils/release-v1.4.0/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal/source/*.c
+  - C:/mtbfw/mtb_shared/mtb-srf/release-v1.2.1/source/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite/rtos/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/source/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/rtos/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/support/source/*.c
+  - C:/mtbfw/basicedge/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/bluetooth/*.c
 projects:
   - project_name: proj_cm33_s
-    folder_name: c:/mtbfw/graphics/proj_cm33_s
+    folder_name: c:/mtbfw/basicedge/proj_cm33_s
     core_id: CM33_0
     core_type: CM33
     build_system: GNU Make
@@ -220,8 +221,8 @@ projects:
       - '-DCY_APPNAME_proj_cm33_s'
     sources:
       - '//# AI hint: See also common_sources listed for workspace'
-      - C:/mtbfw/graphics/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/COMPONENT_CM33/COMPONENT_SECURE_DEVICE/*.c
-      - C:/mtbfw/graphics/proj_cm33_s/*.c
+      - C:/mtbfw/basicedge/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/COMPONENT_CM33/COMPONENT_SECURE_DEVICE/*.c
+      - C:/mtbfw/basicedge/proj_cm33_s/*.c
       - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/nnkernel/COMPONENT_CM33/source/*.c
     include_dirs:
       - '//# AI hint: See also common_includes listed for workspace'
@@ -232,37 +233,413 @@ projects:
       - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/COMPONENT_CM33/COMPONENT_SECURE_DEVICE'
     exclude_files: null
   - project_name: proj_cm33_ns
-    folder_name: c:/mtbfw/graphics/proj_cm33_ns
+    folder_name: c:/mtbfw/basicedge/proj_cm33_ns
     core_id: CM33_0
     core_type: CM33
     build_system: GNU Make
-    libraries: []
+    libraries:
+      - id: emeeprom
+        remote_uri: https://github.com/cypresssemiconductorco/emeeprom/
+        version_tag: release-v2.80.0
+        local_path: ../../mtb_shared/emeeprom/release-v2.80.0
+      - id: emfile
+        remote_uri: https://github.com/cypresssemiconductorco/emfile/
+        version_tag: release-v3.0.1
+        local_path: ../../mtb_shared/emfile/release-v3.0.1
+      - id: freertos
+        remote_uri: https://github.com/Infineon/freertos/
+        version_tag: release-v10.6.202
+        local_path: ../../mtb_shared/freertos/release-v10.6.202
+      - id: wifi-core-freertos-lwip-mbedtls
+        remote_uri: https://github.com/Infineon/wifi-core-freertos-lwip-mbedtls/
+        version_tag: release-v3.1.2
+        local_path: ../../mtb_shared/wifi-core-freertos-lwip-mbedtls/release-v3.1.2
+      - id: abstraction-rtos
+        remote_uri: https://github.com/cypresssemiconductorco/abstraction-rtos
+        version_tag: release-v1.13.0
+        local_path: ../../mtb_shared/abstraction-rtos/release-v1.13.0
+      - id: block-storage
+        remote_uri: https://github.com/Infineon/block-storage
+        version_tag: release-v1.4.0
+        local_path: ../../mtb_shared/block-storage/release-v1.4.0
+      - id: clib-support
+        remote_uri: https://github.com/cypresssemiconductorco/clib-support
+        version_tag: release-v1.9.0
+        local_path: ../../mtb_shared/clib-support/release-v1.9.0
+      - id: connectivity-utilities
+        remote_uri: https://github.com/cypresssemiconductorco/connectivity-utilities
+        version_tag: release-v4.5.3
+        local_path: ../../mtb_shared/connectivity-utilities/release-v4.5.3
+      - id: cy-mbedtls-acceleration
+        remote_uri: https://github.com/cypresssemiconductorco/cy-mbedtls-acceleration
+        version_tag: release-v3.1.0
+        local_path: ../../mtb_shared/cy-mbedtls-acceleration/release-v3.1.0
+      - id: ifx-mbedtls
+        remote_uri: https://github.com/Infineon/ifx-mbedtls
+        version_tag: release-v3.6.606
+        local_path: ../../mtb_shared/ifx-mbedtls/release-v3.6.606
+      - id: lwip-freertos-integration
+        remote_uri: https://github.com/Infineon/lwip-freertos-integration
+        version_tag: release-v1.3.0
+        local_path: ../../mtb_shared/lwip-freertos-integration/release-v1.3.0
+      - id: lwip-network-interface-integration
+        remote_uri: https://github.com/Infineon/lwip-network-interface-integration
+        version_tag: release-v1.7.2
+        local_path: ../../mtb_shared/lwip-network-interface-integration/release-v1.7.2
+      - id: lwip
+        remote_uri: https://github.com/lwip-tcpip/lwip
+        version_tag: STABLE-2_1_2_RELEASE
+        local_path: ../../mtb_shared/lwip/STABLE-2_1_2_RELEASE
+      - id: secure-sockets
+        remote_uri: https://github.com/cypresssemiconductorco/secure-sockets
+        version_tag: release-v3.12.2
+        local_path: ../../mtb_shared/secure-sockets/release-v3.12.2
+      - id: whd-bsp-integration
+        remote_uri: https://github.com/cypresssemiconductorco/whd-bsp-integration
+        version_tag: release-v2.6.0
+        local_path: ../../mtb_shared/whd-bsp-integration/release-v2.6.0
+      - id: wifi-connection-manager
+        remote_uri: https://github.com/cypresssemiconductorco/wifi-connection-manager
+        version_tag: release-v4.1.0
+        local_path: ../../mtb_shared/wifi-connection-manager/release-v4.1.0
+      - id: wifi-host-driver
+        remote_uri: https://github.com/cypresssemiconductorco/wifi-host-driver
+        version_tag: release-v5.3.1
+        local_path: ../../mtb_shared/wifi-host-driver/release-v5.3.1
+      - id: wifi-resources
+        remote_uri: https://github.com/Infineon/wifi-resources
+        version_tag: release-v3.0.5
+        local_path: ../../mtb_shared/wifi-resources/release-v3.0.5
+      - id: wpa3-external-supplicant
+        remote_uri: https://github.com/Infineon/wpa3-external-supplicant
+        version_tag: release-v1.3.1
+        local_path: ../../mtb_shared/wpa3-external-supplicant/release-v1.3.1
     compiler_defines:
       - '//# AI hint: See also common_defines listed for workspace'
+      - '-DCLM_IMAGE_SIZE=1435'
       - '-DCOMPONENT_CM33'
       - '-DCOMPONENT_CM33_0'
+      - '-DCOMPONENT_EMFILE_FAT32'
+      - '-DCOMPONENT_EMFILE_SD_CARD'
+      - '-DCOMPONENT_FREERTOS'
+      - '-DCOMPONENT_FREERTOS_NTZ'
+      - '-DCOMPONENT_LWIP'
+      - '-DCOMPONENT_MBEDTLS'
+      - '-DCOMPONENT_MW_ABSTRACTION_RTOS'
+      - '-DCOMPONENT_MW_BLOCK_STORAGE'
+      - '-DCOMPONENT_MW_CLIB_SUPPORT'
+      - '-DCOMPONENT_MW_CONNECTIVITY_UTILITIES'
+      - '-DCOMPONENT_MW_CY_MBEDTLS_ACCELERATION'
+      - '-DCOMPONENT_MW_EMEEPROM'
+      - '-DCOMPONENT_MW_EMFILE'
+      - '-DCOMPONENT_MW_FREERTOS'
+      - '-DCOMPONENT_MW_IFX_MBEDTLS'
+      - '-DCOMPONENT_MW_LWIP'
+      - '-DCOMPONENT_MW_LWIP_FREERTOS_INTEGRATION'
+      - '-DCOMPONENT_MW_LWIP_NETWORK_INTERFACE_INTEGRATION'
+      - '-DCOMPONENT_MW_SECURE_SOCKETS'
+      - '-DCOMPONENT_MW_WHD_BSP_INTEGRATION'
+      - '-DCOMPONENT_MW_WIFI_CONNECTION_MANAGER'
+      - '-DCOMPONENT_MW_WIFI_CORE_FREERTOS_LWIP_MBEDTLS'
+      - '-DCOMPONENT_MW_WIFI_HOST_DRIVER'
+      - '-DCOMPONENT_MW_WIFI_RESOURCES'
+      - '-DCOMPONENT_MW_WPA3_EXTERNAL_SUPPLICANT'
       - '-DCOMPONENT_NON_SECURE_DEVICE'
+      - '-DCOMPONENT_RTOS_AWARE'
+      - '-DCOMPONENT_SECURE_SOCKETS'
       - '-DCOMPONENT_SOFTFP'
+      - '-DCOMPONENT_WIFI6'
       - '-DCORE_NAME_CM33_0=1'
+      - '-DCYBSP_WIFI_CAPABLE'
       - '-DCY_APPNAME_proj_cm33_ns'
       - '-DCY_RETARGET_IO_CONVERT_LF_TO_CRLF'
+      - '-DCY_RTOS_AWARE'
+      - '-DENABLE_CONNECTIVITY_MIDDLEWARE_LOGS'
+      - '-DENABLE_SECURE_SOCKETS_LOGS'
+      - '-DENABLE_WCM_LOGS'
+      - '-DFW_IMAGE_SIZE=318720'
+      - '-DNVRAM_IMAGE_SIZE=6323'
     sources:
       - '//# AI hint: See also common_sources listed for workspace'
-      - C:/mtbfw/graphics/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/COMPONENT_CM33/COMPONENT_NON_SECURE_DEVICE/*.c
-      - C:/mtbfw/graphics/proj_cm33_ns/*.c
+      - C:/mtbfw/basicedge/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/COMPONENT_CM33/COMPONENT_NON_SECURE_DEVICE/*.c
+      - C:/mtbfw/basicedge/common/*.c
+      - C:/mtbfw/basicedge/proj_cm33_ns/*.c
+      - C:/mtbfw/basicedge/proj_cm33_ns/imports/emfile/config/COMPONENT_EMFILE_SD_CARD/*.c
+      - C:/mtbfw/basicedge/proj_cm33_ns/source/*.c
+      - C:/mtbfw/mtb_shared/abstraction-rtos/release-v1.13.0/source/*.c
+      - C:/mtbfw/mtb_shared/abstraction-rtos/release-v1.13.0/source/COMPONENT_FREERTOS/*.c
+      - C:/mtbfw/mtb_shared/block-storage/release-v1.4.0/source/*.c
+      - C:/mtbfw/mtb_shared/clib-support/release-v1.9.0/source/*.c
+      - C:/mtbfw/mtb_shared/clib-support/release-v1.9.0/source/COMPONENT_FREERTOS/*.c
+      - C:/mtbfw/mtb_shared/clib-support/release-v1.9.0/source/TOOLCHAIN_GCC_ARM/*.c
+      - C:/mtbfw/mtb_shared/connectivity-utilities/release-v4.5.3/JSON_parser/*.c
+      - C:/mtbfw/mtb_shared/connectivity-utilities/release-v4.5.3/cy_log/*.c
+      - C:/mtbfw/mtb_shared/connectivity-utilities/release-v4.5.3/cy_string/*.c
+      - C:/mtbfw/mtb_shared/connectivity-utilities/release-v4.5.3/linked_list/*.c
+      - C:/mtbfw/mtb_shared/connectivity-utilities/release-v4.5.3/network/*.c
+      - C:/mtbfw/mtb_shared/connectivity-utilities/release-v4.5.3/network/COMPONENT_LWIP/*.c
+      - C:/mtbfw/mtb_shared/cy-mbedtls-acceleration/release-v3.1.0/mbedtls_MXCRYPTO/*.c
+      - C:/mtbfw/mtb_shared/cy-mbedtls-acceleration/release-v3.1.0/mbedtls_MXCRYPTOLITE/*.c
+      - C:/mtbfw/mtb_shared/cy-mbedtls-acceleration/release-v3.1.0/mbedtls_PSA/mbedtls_psa_MXCrypto/*.c
+      - C:/mtbfw/mtb_shared/cy-mbedtls-acceleration/release-v3.1.0/mbedtls_PSA/mbedtls_psa_MXCryptolite/*.c
+      - C:/mtbfw/mtb_shared/cy-mbedtls-acceleration/release-v3.1.0/mbedtls_PSA/mbedtls_psa_MXCryptosuite/*.c
+      - C:/mtbfw/mtb_shared/emeeprom/release-v2.80.0/source/*.c
+      - C:/mtbfw/mtb_shared/emfile/release-v3.0.1/Driver/MMC_CM/*.c
+      - C:/mtbfw/mtb_shared/emfile/release-v3.0.1/Driver/NOR/*.c
+      - C:/mtbfw/mtb_shared/emfile/release-v3.0.1/FS/*.c
+      - C:/mtbfw/mtb_shared/emfile/release-v3.0.1/OS/*.c
+      - C:/mtbfw/mtb_shared/freertos/release-v10.6.202/Source/*.c
+      - C:/mtbfw/mtb_shared/freertos/release-v10.6.202/Source/portable/COMPONENT_CM33/TOOLCHAIN_GCC_ARM/COMPONENT_FREERTOS_NTZ/*.c
+      - C:/mtbfw/mtb_shared/freertos/release-v10.6.202/Source/portable/MemMang/*.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/aes.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/aesce.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/aesni.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/aria.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/asn1parse.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/asn1write.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/base64.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/bignum.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/bignum_core.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/bignum_mod.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/bignum_mod_raw.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/block_cipher.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/camellia.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ccm.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/chacha20.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/chachapoly.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/cipher.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/cipher_wrap.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/cmac.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/constant_time.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ctr_drbg.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/debug.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/des.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/dhm.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ecdh.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ecdsa.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ecjpake.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ecp.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ecp_curves.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ecp_curves_new.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/entropy.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/entropy_poll.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/error.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/gcm.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/hkdf.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/hmac_drbg.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/lmots.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/lms.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/md.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/md5.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/memory_buffer_alloc.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/mps_reader.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/mps_trace.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/nist_kw.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/oid.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/padlock.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/pem.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/pk.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/pk_ecc.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/pk_wrap.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/pkcs12.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/pkcs5.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/pkcs7.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/pkparse.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/pkwrite.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/platform.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/platform_util.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/poly1305.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_aead.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_cipher.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_client.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_driver_wrappers_no_static.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_ecp.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_ffdh.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_hash.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_mac.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_pake.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_random.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_rsa.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_se.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_slot_management.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_crypto_storage.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_its_file.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/psa_util.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ripemd160.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/rsa.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/rsa_alt_helpers.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/sha1.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/sha256.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/sha3.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/sha512.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_cache.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_ciphersuites.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_client.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_cookie.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_debug_helpers_generated.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_msg.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_ticket.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_tls.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_tls12_client.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_tls12_server.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_tls13_client.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_tls13_generic.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_tls13_keys.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/ssl_tls13_server.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/threading.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/timing.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/version.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/version_features.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/x509.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/x509_create.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/x509_crl.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/x509_crt.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/x509_csr.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/x509write.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/x509write_crt.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/library/x509write_csr.c
+      - C:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/target/infineon/mbedtls/*.c
+      - C:/mtbfw/mtb_shared/lwip-freertos-integration/release-v1.3.0/arch/*.c
+      - C:/mtbfw/mtb_shared/lwip-network-interface-integration/release-v1.7.2/source/*.c
+      - C:/mtbfw/mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/api/*.c
+      - C:/mtbfw/mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/core/*.c
+      - C:/mtbfw/mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/core/ipv4/*.c
+      - C:/mtbfw/mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/core/ipv6/*.c
+      - C:/mtbfw/mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/netif/bridgeif.c
+      - C:/mtbfw/mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/netif/bridgeif_fdb.c
+      - C:/mtbfw/mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/netif/ethernet.c
+      - C:/mtbfw/mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/netif/lowpan6.c
+      - C:/mtbfw/mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/netif/lowpan6_ble.c
+      - C:/mtbfw/mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/netif/lowpan6_common.c
+      - C:/mtbfw/mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/netif/zepif.c
       - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/nnkernel/COMPONENT_CM33/source/*.c
       - C:/mtbfw/mtb_shared/mtb-srf/release-v1.2.1/source/COMPONENT_NON_SECURE_DEVICE/*.c
       - C:/mtbfw/mtb_shared/mtb-srf/release-v1.2.1/source/COMPONENT_NON_SECURE_DEVICE/COMPONENT_MW_MTB_IPC/*.c
+      - C:/mtbfw/mtb_shared/secure-sockets/release-v3.12.2/source/*.c
+      - C:/mtbfw/mtb_shared/secure-sockets/release-v3.12.2/source/COMPONENT_LWIP/*.c
+      - C:/mtbfw/mtb_shared/secure-sockets/release-v3.12.2/source/COMPONENT_MBEDTLS/*.c
+      - C:/mtbfw/mtb_shared/secure-sockets/release-v3.12.2/source/pkcs11/*.c
+      - C:/mtbfw/mtb_shared/whd-bsp-integration/release-v2.6.0/*.c
+      - C:/mtbfw/mtb_shared/whd-bsp-integration/release-v2.6.0/COMPONENT_LWIP/*.c
+      - C:/mtbfw/mtb_shared/wifi-connection-manager/release-v4.1.0/source/*.c
+      - C:/mtbfw/mtb_shared/wifi-connection-manager/release-v4.1.0/source/COMPONENT_MBEDTLS/*.c
+      - C:/mtbfw/mtb_shared/wifi-host-driver/release-v5.3.1/WHD/COMPONENT_WIFI6/resources/resource_imp/*.c
+      - C:/mtbfw/mtb_shared/wifi-host-driver/release-v5.3.1/WHD/COMPONENT_WIFI6/src/*.c
+      - C:/mtbfw/mtb_shared/wifi-host-driver/release-v5.3.1/WHD/COMPONENT_WIFI6/src/bus_protocols/*.c
+      - C:/mtbfw/mtb_shared/wpa3-external-supplicant/release-v1.3.1/source/*.c
+      - C:/mtbfw/mtb_shared/wpa3-external-supplicant/release-v1.3.1/source/COMPONENT_MBEDTLS/*.c
     include_dirs:
       - '//# AI hint: See also common_includes listed for workspace'
+      - '-I.'
+      - '-I../../mtb_shared/abstraction-rtos/release-v1.13.0'
+      - '-I../../mtb_shared/abstraction-rtos/release-v1.13.0/include'
+      - '-I../../mtb_shared/abstraction-rtos/release-v1.13.0/include/COMPONENT_FREERTOS'
+      - '-I../../mtb_shared/block-storage/release-v1.4.0'
+      - '-I../../mtb_shared/block-storage/release-v1.4.0/include'
+      - '-I../../mtb_shared/clib-support/release-v1.9.0'
+      - '-I../../mtb_shared/clib-support/release-v1.9.0/include'
+      - '-I../../mtb_shared/clib-support/release-v1.9.0/source'
+      - '-I../../mtb_shared/clib-support/release-v1.9.0/source/TOOLCHAIN_GCC_ARM'
+      - '-I../../mtb_shared/connectivity-utilities/release-v4.5.3'
+      - '-I../../mtb_shared/connectivity-utilities/release-v4.5.3/JSON_parser'
+      - '-I../../mtb_shared/connectivity-utilities/release-v4.5.3/cy_log'
+      - '-I../../mtb_shared/connectivity-utilities/release-v4.5.3/cy_string'
+      - '-I../../mtb_shared/connectivity-utilities/release-v4.5.3/linked_list'
+      - '-I../../mtb_shared/connectivity-utilities/release-v4.5.3/network'
+      - '-I../../mtb_shared/cy-mbedtls-acceleration/release-v3.1.0'
+      - '-I../../mtb_shared/cy-mbedtls-acceleration/release-v3.1.0/include'
+      - '-I../../mtb_shared/cy-mbedtls-acceleration/release-v3.1.0/mbedtls_MXCRYPTO'
+      - '-I../../mtb_shared/cy-mbedtls-acceleration/release-v3.1.0/mbedtls_MXCRYPTOLITE'
+      - '-I../../mtb_shared/cy-mbedtls-acceleration/release-v3.1.0/mbedtls_PSA'
+      - '-I../../mtb_shared/cy-mbedtls-acceleration/release-v3.1.0/mbedtls_PSA/mbedtls_psa_MXCrypto'
+      - '-I../../mtb_shared/cy-mbedtls-acceleration/release-v3.1.0/mbedtls_PSA/mbedtls_psa_MXCryptolite'
+      - '-I../../mtb_shared/cy-mbedtls-acceleration/release-v3.1.0/mbedtls_PSA/mbedtls_psa_MXCryptosuite'
+      - '-I../../mtb_shared/emeeprom/release-v2.80.0'
+      - '-I../../mtb_shared/emeeprom/release-v2.80.0/include'
+      - '-I../../mtb_shared/emfile/release-v3.0.1'
+      - '-I../../mtb_shared/emfile/release-v3.0.1/Driver'
+      - '-I../../mtb_shared/emfile/release-v3.0.1/Driver/MMC_CM'
+      - '-I../../mtb_shared/emfile/release-v3.0.1/Driver/NOR'
+      - '-I../../mtb_shared/emfile/release-v3.0.1/FS'
+      - '-I../../mtb_shared/emfile/release-v3.0.1/FS/COMPONENT_EMFILE_FAT32'
+      - '-I../../mtb_shared/freertos/release-v10.6.202'
+      - '-I../../mtb_shared/freertos/release-v10.6.202/Source'
+      - '-I../../mtb_shared/freertos/release-v10.6.202/Source/include'
+      - '-I../../mtb_shared/freertos/release-v10.6.202/Source/portable'
+      - '-I../../mtb_shared/freertos/release-v10.6.202/Source/portable/COMPONENT_CM33'
+      - '-I../../mtb_shared/freertos/release-v10.6.202/Source/portable/COMPONENT_CM33/TOOLCHAIN_GCC_ARM'
+      - '-I../../mtb_shared/freertos/release-v10.6.202/Source/portable/COMPONENT_CM33/TOOLCHAIN_GCC_ARM/COMPONENT_FREERTOS_NTZ'
+      - '-I../../mtb_shared/ifx-mbedtls/release-v3.6.606'
+      - '-I../../mtb_shared/ifx-mbedtls/release-v3.6.606/include'
+      - '-I../../mtb_shared/ifx-mbedtls/release-v3.6.606/include/mbedtls'
+      - '-I../../mtb_shared/ifx-mbedtls/release-v3.6.606/include/psa'
+      - '-I../../mtb_shared/ifx-mbedtls/release-v3.6.606/library'
+      - '-I../../mtb_shared/ifx-mbedtls/release-v3.6.606/target'
+      - '-I../../mtb_shared/ifx-mbedtls/release-v3.6.606/target/infineon'
+      - '-I../../mtb_shared/ifx-mbedtls/release-v3.6.606/target/infineon/interface'
+      - '-I../../mtb_shared/ifx-mbedtls/release-v3.6.606/target/infineon/mbedtls'
+      - '-I../../mtb_shared/ifx-mbedtls/release-v3.6.606/target/infineon/mbedtls/psc3'
+      - '-I../../mtb_shared/ifx-mbedtls/release-v3.6.606/target/infineon/mbedtls/pse84'
+      - '-I../../mtb_shared/lwip-freertos-integration/release-v1.3.0'
+      - '-I../../mtb_shared/lwip-freertos-integration/release-v1.3.0/arch'
+      - '-I../../mtb_shared/lwip-network-interface-integration/release-v1.7.2'
+      - '-I../../mtb_shared/lwip-network-interface-integration/release-v1.7.2/include'
+      - '-I../../mtb_shared/lwip-network-interface-integration/release-v1.7.2/source'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include/compat'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include/compat/posix'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include/compat/posix/arpa'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include/compat/posix/net'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include/compat/posix/sys'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include/compat/stdc'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include/lwip'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include/lwip/apps'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include/lwip/priv'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include/lwip/prot'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include/netif'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include/netif/ppp'
+      - '-I../../mtb_shared/lwip/STABLE-2_1_2_RELEASE/src/include/netif/ppp/polarssl'
       - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/nnkernel'
       - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/nnkernel/COMPONENT_CM33'
       - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/nnkernel/COMPONENT_CM33/include'
       - '-I../../mtb_shared/mtb-srf/release-v1.2.1/include/COMPONENT_NON_SECURE_DEVICE'
       - '-I../../mtb_shared/mtb-srf/release-v1.2.1/include/COMPONENT_NON_SECURE_DEVICE/COMPONENT_MW_MTB_IPC'
+      - '-I../../mtb_shared/secure-sockets/release-v3.12.2'
+      - '-I../../mtb_shared/secure-sockets/release-v3.12.2/include'
+      - '-I../../mtb_shared/secure-sockets/release-v3.12.2/source'
+      - '-I../../mtb_shared/secure-sockets/release-v3.12.2/source/COMPONENT_MBEDTLS'
+      - '-I../../mtb_shared/secure-sockets/release-v3.12.2/source/COMPONENT_MBEDTLS/include'
+      - '-I../../mtb_shared/whd-bsp-integration/release-v2.6.0'
+      - '-I../../mtb_shared/wifi-connection-manager/release-v4.1.0'
+      - '-I../../mtb_shared/wifi-connection-manager/release-v4.1.0/include'
+      - '-I../../mtb_shared/wifi-connection-manager/release-v4.1.0/source'
+      - '-I../../mtb_shared/wifi-connection-manager/release-v4.1.0/source/COMPONENT_55500'
+      - '-I../../mtb_shared/wifi-connection-manager/release-v4.1.0/source/COMPONENT_MBEDTLS'
+      - '-I../../mtb_shared/wifi-core-freertos-lwip-mbedtls/release-v3.1.2'
+      - '-I../../mtb_shared/wifi-core-freertos-lwip-mbedtls/release-v3.1.2/configs'
+      - '-I../../mtb_shared/wifi-host-driver/release-v5.3.1'
+      - '-I../../mtb_shared/wifi-host-driver/release-v5.3.1/WHD'
+      - '-I../../mtb_shared/wifi-host-driver/release-v5.3.1/WHD/COMPONENT_WIFI6'
+      - '-I../../mtb_shared/wifi-host-driver/release-v5.3.1/WHD/COMPONENT_WIFI6/inc'
+      - '-I../../mtb_shared/wifi-host-driver/release-v5.3.1/WHD/COMPONENT_WIFI6/resources'
+      - '-I../../mtb_shared/wifi-host-driver/release-v5.3.1/WHD/COMPONENT_WIFI6/resources/firmware'
+      - '-I../../mtb_shared/wifi-host-driver/release-v5.3.1/WHD/COMPONENT_WIFI6/resources/resource_imp'
+      - '-I../../mtb_shared/wifi-host-driver/release-v5.3.1/WHD/COMPONENT_WIFI6/src'
+      - '-I../../mtb_shared/wifi-host-driver/release-v5.3.1/WHD/COMPONENT_WIFI6/src/bus_protocols'
+      - '-I../../mtb_shared/wifi-host-driver/release-v5.3.1/WHD/COMPONENT_WIFI6/src/include'
+      - '-I../../mtb_shared/wifi-host-driver/release-v5.3.1/WHD/COMPONENT_WIFI6/src/include_helium'
+      - '-I../../mtb_shared/wpa3-external-supplicant/release-v1.3.1'
+      - '-I../../mtb_shared/wpa3-external-supplicant/release-v1.3.1/include'
+      - '-I../../mtb_shared/wpa3-external-supplicant/release-v1.3.1/source'
+      - '-I../../mtb_shared/wpa3-external-supplicant/release-v1.3.1/source/COMPONENT_MBEDTLS'
+      - '-I../common'
+      - '-Iinclude'
     exclude_files: null
   - project_name: proj_cm55
-    folder_name: c:/mtbfw/graphics/proj_cm55
+    folder_name: c:/mtbfw/basicedge/proj_cm55
     core_id: CM55_0
     core_type: CM55
     build_system: GNU Make
@@ -344,65 +721,15 @@ projects:
       - '-DCORE_NAME_CM55_0=1'
       - '-DCY_APPNAME_proj_cm55'
       - '-DCY_RETARGET_IO_CONVERT_LF_TO_CRLF'
-      - '-DLV_USE_DEMO_BENCHMARK=0'
       - '-DMTB_CTP_FT5406'
       - '-DMTB_DISPLAY_W4P3INCH_RPI'
       - '-D_BAREMETAL=0'
     sources:
       - '//# AI hint: See also common_sources listed for workspace'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/lv_demo_music.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/lv_demo_music_list.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/lv_demo_music_main.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_corner_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_list_pause.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_list_pause_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_list_play.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_list_play_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_loop.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_loop_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_next.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_next_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_pause.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_pause_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_play.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_play_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_prev.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_prev_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_rnd.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_btn_rnd_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_corner_left.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_corner_left_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_corner_right.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_corner_right_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_cover_1.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_cover_1_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_cover_2.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_cover_2_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_cover_3.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_cover_3_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_1.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_1_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_2.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_2_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_3.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_3_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_4.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_icon_4_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_list_border.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_list_border_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_logo.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_slider_knob.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_slider_knob_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_wave_bottom.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_wave_bottom_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_wave_top.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/img_lv_demo_music_wave_top_large.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/img_clothes.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/img_demo_widgets_avatar.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/img_demo_widgets_needle.c'
-      - '!C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/img_lvgl_logo.c'
-      - C:/mtbfw/graphics/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/COMPONENT_CM55/COMPONENT_NON_SECURE_DEVICE/*.c
-      - C:/mtbfw/graphics/proj_cm55/source/*.c
+      - C:/mtbfw/basicedge/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/COMPONENT_CM55/COMPONENT_NON_SECURE_DEVICE/*.c
+      - C:/mtbfw/basicedge/common/*.c
+      - C:/mtbfw/basicedge/proj_cm55/source/*.c
+      - C:/mtbfw/basicedge/proj_cm55/third_party/my_basic/*.c
       - C:/mtbfw/mtb_shared/abstraction-rtos/release-v1.13.0/source/*.c
       - C:/mtbfw/mtb_shared/abstraction-rtos/release-v1.13.0/source/COMPONENT_FREERTOS/*.c
       - C:/mtbfw/mtb_shared/clib-support/release-v1.9.0/source/*.c
@@ -412,21 +739,6 @@ projects:
       - C:/mtbfw/mtb_shared/freertos/release-v10.6.202/Source/*.c
       - C:/mtbfw/mtb_shared/freertos/release-v10.6.202/Source/portable/COMPONENT_CM55/TOOLCHAIN_GCC_ARM/*.c
       - C:/mtbfw/mtb_shared/freertos/release-v10.6.202/Source/portable/MemMang/*.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/*.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/*.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/img_benchmark_lvgl_logo_argb.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/img_benchmark_lvgl_logo_rgb.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_12_aligned.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_14_aligned.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_16_aligned.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_18_aligned.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_20_aligned.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_24_aligned.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/benchmark/assets/lv_font_benchmark_montserrat_26_aligned.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/*.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/music/assets/*.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/*.c
-      - C:/mtbfw/mtb_shared/lvgl/v9.5.0/demos/widgets/assets/*.c
       - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/*.c
       - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/core/*.c
       - C:/mtbfw/mtb_shared/lvgl/v9.5.0/src/debugging/sysmon/*.c
@@ -539,11 +851,6 @@ projects:
       - '-I../../mtb_shared/freertos/release-v10.6.202/Source/portable/COMPONENT_CM55'
       - '-I../../mtb_shared/freertos/release-v10.6.202/Source/portable/COMPONENT_CM55/TOOLCHAIN_GCC_ARM'
       - '-I../../mtb_shared/lvgl/v9.5.0'
-      - '-I../../mtb_shared/lvgl/v9.5.0/demos'
-      - '-I../../mtb_shared/lvgl/v9.5.0/demos/benchmark'
-      - '-I../../mtb_shared/lvgl/v9.5.0/demos/music'
-      - '-I../../mtb_shared/lvgl/v9.5.0/demos/music/assets'
-      - '-I../../mtb_shared/lvgl/v9.5.0/demos/widgets'
       - '-I../../mtb_shared/lvgl/v9.5.0/libs'
       - '-I../../mtb_shared/lvgl/v9.5.0/libs/nema_gfx'
       - '-I../../mtb_shared/lvgl/v9.5.0/libs/nema_gfx/include'
@@ -632,7 +939,10 @@ projects:
       - '-I../../mtb_shared/retarget-io/release-v1.10.0'
       - '-I../../mtb_shared/retarget-io/release-v1.10.0/include'
       - '-I../../mtb_shared/touch-ctp-ft5406/release-v1.0.0'
+      - '-I../common'
       - '-Iinclude'
+      - '-Ithird_party'
+      - '-Ithird_party/my_basic'
     exclude_files: null
 summary: ''
 

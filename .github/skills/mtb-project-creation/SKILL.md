@@ -23,7 +23,7 @@ Create a new ModusToolbox project using the `project-creator-cli` tool via the b
 - The Infineon ModusToolbox AI Assistant VS Code extension is active and has generated AI instructions
 - `$CY_TOOLS_PATHS` is set (standard ModusToolbox environment variable)
 - The wrapper script is available at `.github/skills/mtb-tools/scripts/project_creator_wrapper.py`
-- `~/.modustoolbox/mtbmcp/mtbskill.py` exists (deposited by the Infineon ModusToolbox AI Assistant extension)
+- `~/.modustoolbox/mtbai/mtbskill.py` exists (deposited by the Infineon ModusToolbox AI Assistant extension)
 
 ## Required Information
 

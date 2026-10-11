@@ -295,4 +295,4 @@ void print_consumer_task(void *arg)
 | Both cores call `cy_retarget_io_init()` | Second init corrupts first core's UART context |
 | `Cy_SysLib_Delay(N)` as synchronization | Race condition — timing varies with code size, compiler, optimization |
 | Sharing a single `cy_stc_scb_uart_context_t` across cores | Context is not thread-safe; concurrent access corrupts internal state |
-| Using `printf()` on non-owner core after owner inits retarget-io | `stdout` is connected to the owner's retarget-io instance — non-owner writes go nowhere |
+| Using `printf()` on a non-owner core with no stdio backend | **Crashes — it is not silent.** Each core links its own C library; with retarget-io absent, `printf()` reaches the toolchain's default write hook, which asserts / `CY_HALT()`. Triggered by any library that prints internally, not just your own code. Give the core a backend — see the `mtb-multi-core-retarget-io` skill. |

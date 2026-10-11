@@ -7,7 +7,7 @@ metadata:
   version: "1.1.0"
 ---
 
-# retarget-io
+# mtb-retarget-io
 
 Integrate the Infineon `retarget-io` library to redirect `printf()`, `scanf()`, and all standard I/O to a UART serial interface. Supports three HAL configurations (MTB-HAL, CY-HAL, PDL-only) and two environments (bare-metal and RTOS).
 
@@ -19,7 +19,7 @@ This is a **library-tier skill**. It orchestrates:
 ## When to Use This Skill
 
 - User says: "enable printf", "add serial debug output", "set up stdio over UART", "add retarget-io", "get printf working over UART", "redirect stdout to UART"
-- A library-installer sub-agent has installed `retarget-io` and dispatched this skill for code integration
+- The `mtb-library-installer` skill has installed `retarget-io` and handed off to this skill for code integration
 - User requests `scanf()` or STDIN input from a UART terminal
 
 ### When Not to Use This Skill
@@ -27,18 +27,17 @@ This is a **library-tier skill**. It orchestrates:
 - `retarget-io` is already integrated and working in the project
 - RTT mode (`COMPONENT_RETARGET_IO_RTT`) is already enabled — UART is not needed for stdio
 - The project's only available UART is already in use for another purpose and cannot be shared
-- The user wants to configure retarget-io in **more than one sub-project** simultaneously — sharing a physical UART across cores without IPC causes output corruption; configure one sub-project at a time
+- The user wants to configure retarget-io in **more than one project** simultaneously — sharing a physical UART across projects without IPC causes output corruption; configure one project at a time
 
 ## Prerequisites
 
 - A ModusToolbox project with a valid `Makefile` at the project root
 - `make` available in the project
-- This skill is pre-installed at `.github/skills/retarget-io/` by the Infineon ModusToolbox AI Assistant VS Code extension
-- Determination of the project's active configurations.  If any of this information is not present in the copilot-instructions.md file, ask the user for this information and offer to update:
-    - HAL configuration: MTB_HAL, CY_HAL, or PDL-only
-    - Bare-metal or RTOS
-* Within a multi-project MTB workspace (i.e., multi-core or multi-security-profile workspace), the project and specific core+security profile that the library is to be added to must be provided.  If not provided by the user in the prompt, query the user.
-* Like all peripherals in a multi-project MTB workspace, the UART (SCB) peripheral is bound to a specific project (core+security profile) by configuring that peripheral in the design.modus file of a particular project.  The UART selected must be initialized for retarget-io by only the project indicated by the user.  They must be used only within the core that it belongs to.  To use them across cores requires IPC mechanisms.
+- HAL configuration (MTB_HAL / CY_HAL / PDL-only) and runtime environment (bare-metal / RTOS). Both are detected in [Step 2](#step-2--detect-environment) — prefer values already recorded in the applicable agent instructions. Ask the user only if detection is ambiguous, and offer to record the answer in the project's agent instructions so it is not asked again.
+* Determine the layout before proceeding: search the application root `Makefile` for `MTB_PROJECTS`. Absent — single-project application, no choice needed. Present — its value lists the projects; the split may be by core, by security profile (`VCORE_ATTRS` = `SECURE` / `NON_SECURE`), or both. Propose the non-secure application project and confirm with the user before editing.
+* The UART (SCB) peripheral is bound to whichever project configures it in that project's `design.modus`. retarget-io must be added and initialized in exactly **one** project — the project that owns the SCB. Sharing one physical UART across projects requires an IPC mechanism.
+
+> **Multicore applications:** Do **not** have both cores initialize or write directly to one shared UART, even with semaphore protection, when the UART is accessible from only its owning core. That arrangement does not work when the other core cannot access the peripheral. Assign the UART and `cy_retarget_io_init()` to the core that can access and own the UART; send print messages from the other core through an IPC message queue, and have the owner core write them to the UART. Either core may be the UART owner. Do not ask the user to choose a direct shared-access mode. Use the `mtb-ipc-patterns` skill to implement the queue.
 
 ## Key Files
 
@@ -78,7 +77,7 @@ If detection is ambiguous, ask the user which HAL configuration their project us
 
 Execute these steps in order. See [workflow.md](./references/workflow.md) for initialization code for each path.
 
-> **Multi-core projects:** Confirm the single target sub-project before starting. The `retarget-io` library and debug UART must be configured in exactly **one** sub-project — configuring retarget-io in multiple sub-projects sharing the same physical UART causes output corruption. Default to the NS application core (CM33_NS, CM55, etc.) unless the user specifies otherwise. For patterns on how the non-owner core can still produce debug output, see [multi-core-debug-output.md](../mtb-device-configurator/references/multi-core-debug-output.md).
+> **Multi-core projects:** Confirm the single target sub-project before starting. The `retarget-io` library and debug UART must be configured in exactly **one** sub-project — configuring retarget-io in multiple sub-projects sharing the same physical UART causes output corruption. Default to the NS application core (CM33_NS, CM55, etc.) unless the user specifies otherwise. If more than one core needs to print, use the `mtb-multi-core-retarget-io` skill — it keeps this skill on the owner core and routes `printf()` from the others over IPC.
 
 ### Step 0 — Upfront User Queries
 
@@ -98,7 +97,7 @@ Ask the user these two questions **before making any changes**. Apply the answer
 
 ### Step 1 — Verify Library Installation
 
-Check whether `deps/retarget-io.mtb` exists in the target sub-project. If it does not exist, invoke the `mtb-library-installer` skill with library identifier `retarget-io`. Return here after installation completes.
+Check whether `deps/retarget-io.mtb` exists in the target project. If it does not exist, invoke the `mtb-library-installer` skill with library identifier `retarget-io`. Return here after installation completes.
 
 ### Step 2 — Detect Environment
 
@@ -124,11 +123,11 @@ Look for existing UART/SCB info in the project's `design.modus` only — this is
 
 **Do not search** `cybsp.h`, `.modustoolbox/docs/`, other sub-projects, or any path outside the current project directory for pin assignments.
 
-**Delegation (required):** Invoke the **`mtb-device-configurator` skill as a sub-agent** — do not generate Device Configurator instructions inline. Pass it the peripheral type, required alias, personality name (`uart-3.0`), and settings from [UART Configuration (Device Configurator)](#uart-configuration-device-configurator). When the sub-agent returns, read its `DEVICE_CONFIGURATOR_RESULT` block to obtain the confirmed `hw_macro` and `config_struct` values, then return here to continue.
+**Delegation:** If the `mtb-device-configurator` skill is available, invoke that skill and provide the peripheral type, required alias, personality name (`uart-3.0`), and settings from [UART Configuration (Device Configurator)](#uart-configuration-device-configurator). Follow the skill's workflow and use its confirmed `hw_macro` and `config_struct` values when it completes. Do not generate Device Configurator instructions inline. If that skill is not available, present the same settings table to the user and ask them to apply it in Device Configurator, then confirm the resulting alias before continuing.
 
 ### Step 4 — Update Makefile
 
-Add all `DEFINES`/`LDFLAGS` determined in Step 0 plus any environment-required entries, per [Makefile Integration](#makefile-integration). Edit only the Makefile of the **single target sub-project** identified at the start.
+Add all `DEFINES`/`LDFLAGS` determined in Step 0 plus any environment-required entries, per [Makefile Integration](#makefile-integration).
 
 ### Step 5 — Generate Initialization Code
 
@@ -144,7 +143,7 @@ printf("retarget-io initialized\r\n");
 
 ### Step 7 — Build and Verify
 
-Build the **target sub-project only** — do not trigger a full workspace build:
+Build the application from the application root:
 
 ```
 python .github/skills/mtb-tools/scripts/run_make.py --args build
@@ -163,18 +162,18 @@ After a successful build:
 
 > **Applies to:** MTB-HAL and PDL-Only paths only. CY-HAL manages UART resource acquisition internally — skip this section entirely for CY-HAL.
 
-**Delegation (required):** Invoke the **`mtb-device-configurator` skill as a sub-agent** — pass it the peripheral type, required alias, personality name, and settings table below. Do not generate Device Configurator instructions inline; the `mtb-device-configurator` skill owns that workflow.
+**Delegation:** If the `mtb-device-configurator` skill is available, invoke that skill and provide the peripheral type, required alias, personality name, and settings table below. Follow the skill's workflow and use its confirmed `hw_macro` and `config_struct` values when it completes. Do not generate Device Configurator instructions inline. If that skill is not available, present the same settings table to the user and ask them to apply it in Device Configurator.
 
-**Pin resolution (one source only):** Before invoking the sub-agent, search `bsps/*/config/design.modus` for `uart` or `SCB`, filtering for pin/rx/tx/port references.
+**Pin resolution (one source only):** Before invoking that skill, search `bsps/*/config/design.modus` for `uart` or `SCB`, filtering for pin/rx/tx/port references.
 
 Use any pin values found to populate the RX/TX rows. If the grep yields nothing useful, leave RX/TX as `<ask user>` and tell the user to identify the correct pins (KitProg3 UART, expansion header, etc.) when Device Configurator opens. **Do not search** anywhere else — not `cybsp.h`, not `.modustoolbox/docs/`, not other projects.
 
-**Multi-project workspaces:** Open the `design.modus` of the **single target sub-project** only. Do not configure the debug UART in multiple sub-project design files.
+**Multi-project workspaces:** Open the `design.modus` of the target project only. Do not configure the debug UART in more than one project's design file.
 
-Pass the following structured invocation block to the `mtb-device-configurator` sub-agent:
+Pass the following structured invocation block to the `mtb-device-configurator` skill:
 
 ```
-<!-- mtb-device-configurator sub-agent invocation -->
+<!-- mtb-device-configurator invocation -->
 peripheral_type: SCB UART
 personality: uart-3.0
 alias: DEBUG_UART
@@ -212,13 +211,18 @@ settings:
 - RX pin Name: `DEBUG_UART_RX`
 - TX pin Name: `DEBUG_UART_TX`
 
-After the `mtb-device-configurator` sub-agent returns a `DEVICE_CONFIGURATOR_RESULT` with `status: success` or `status: already_configured`, confirm `DEBUG_UART_HW` is present by searching for it in `bsps/*/config/GeneratedSource/cycfg_peripherals.h`.
+Once that skill reports the UART as configured (newly configured or already configured), confirm `DEBUG_UART_HW` is present by searching for it in `bsps/*/config/GeneratedSource/cycfg_peripherals.h`.
 
 If found, proceed to Step 4. If not found, do not proceed — inform the user and offer to re-open Device Configurator.
 
 ## Makefile Integration
 
-Apply these entries to the Makefile of the **single target sub-project** as determined by the Step 0 user queries and environment detection. Do not edit Makefiles of other sub-projects.
+Add the entries below to the `Makefile` of the project that owns the UART, per the Step 0 answers and detected environment:
+
+- **Single-project application** — the application-root `Makefile`.
+- **Multi-project application** — `<target-project>/Makefile`.
+
+Never add them to a shared `common.mk` — retarget-io is a dependency of one project only, and `-u _printf_float` there bloats every project's image.
 
 ### Required (RTOS + GCC_ARM only)
 
@@ -258,7 +262,7 @@ These options are decided in **Step 0** and applied automatically during integra
 
 ## Post-Install Verification
 
-Build the **target sub-project only** — do not trigger a full workspace build:
+Build the application from the application root:
 
 ```
 python .github/skills/mtb-tools/scripts/run_make.py --args build
@@ -269,31 +273,12 @@ Then verify:
 1. No errors or warnings related to retarget-io.
 2. `DEBUG_UART_HW` present in `GeneratedSource/cycfg_peripherals.h` (MTB-HAL and PDL paths only).
 3. `#include "cy_retarget_io.h"` present in all files that use `printf()`.
-4. `cy_retarget_io_init()` called before any `printf()` (bare-metal: after `init_cycfg_all()`; RTOS: no `printf()` before the kernel starts).
+4. `cy_retarget_io_init()` called before any `printf()` (bare-metal: after `cybsp_init()`; RTOS: no `printf()` before the kernel starts).
 5. Makefile `DEFINES` match the Step 0 user answers and the detected environment.
 
-If the build fails, diagnose using the [Troubleshooting](#troubleshooting) table below.
+If the build fails, diagnose using [troubleshooting.md](./references/troubleshooting.md).
 
 > **Runtime verification:** Run `make program` to flash the device. Connect a serial terminal to the board's debug port at **115200 baud** (e.g., `minicom -D /dev/ttyACM0 -b 115200`). The verification `printf` should appear within one second of reset. If it does not, check pin assignments, baud rate, and buffer flushing.
-
-## Troubleshooting
-
-| Condition                                                                       | Action                                                                                                                                                                                            |
-| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `deps/retarget-io.mtb` not found, `../mtb_shared/retarget-io/` absent           | Invoke `mtb-library-installer` skill with identifier `retarget-io` before proceeding                                                                                                                  |
-| `DEBUG_UART_HW` absent from `GeneratedSource/` (MTB-HAL / PDL paths)            | Do not proceed; instruct user to complete Device Configurator configuration                                                                                                                       |
-| `CYBSP_DEBUG_UART_TX` / `CYBSP_DEBUG_UART_RX` not defined in `cybsp.h` (CY-HAL) | Check EVK schematic or ask user for KitProg3 debug UART pin assignments                                                                                                                           |
-| `cy_retarget_io_init()` returns non-`CY_RSLT_SUCCESS`                           | Check: `Cy_SCB_UART_Enable()` called before init; clock divider configured; correct HW pointer                                                                                                    |
-| **⛔ HardFault in `Cy_SCB_WriteTxFifo` from a FreeRTOS task (RTOS projects)**   | **The UART HAL object and context passed to `cy_retarget_io_init()` are stack-local in `main()`. After `vTaskStartScheduler()`, `main()`'s stack is reclaimed — making these dangling pointers. FIX: Declare as `static` or file-scope global. See [RTOS Initialization](./references/workflow.md#rtos-initialization-freertos-example).** |
-| Device Configurator DRC error on clock divider                                  | Accept the DRC autocorrection — Device Configurator will set the correct divider value for 115200 baud                                                                                            |
-| No terminal output after successful init                                        | Check: correct COM port/baud rate in terminal; `CY_RETARGET_IO_CONVERT_LF_TO_CRLF` missing; buffer not flushed (add `setvbuf`); RTOS: `printf()` must not be called before the RTOS kernel starts |
-| `printf()` causes fault or deadlock in RTOS                                     | Check: `CY_RTOS_AWARE` added for GCC_ARM; `printf()` not called from ISR; kernel running before init call                                                                                         |
-| Build error: `cy_retarget_io.h` not found                                       | Confirm `make getlibs` completed; verify `../mtb_shared/retarget-io/` exists                                                                                                                      |
-| Float format not printing (`%f` outputs empty)                                  | Add `-u _printf_float` linker flag (newlib-nano); or verify `CY_RETARGET_IO_NO_FLOAT` is not set                                                                                                  |
-| HAL mode detection ambiguous                                                    | Ask user which HAL configuration their project uses before proceeding                                                                                                                             |
-| Garbled / corrupted UART output in multi-core project                           | retarget-io is configured in more than one sub-project sharing the same physical UART — remove it from all but the intended sub-project                                                           |
-| Garbled output after FreeRTOS task starts (`BþBBBB...` pattern)                 | **⚠️ CRITICAL:** FreeRTOS tickless idle (`configUSE_TICKLESS_IDLE != 0`) enters Deep Sleep, which corrupts UART mid-transmission. **Register SysPm callback** — see [FreeRTOS Tickless + UART](#freertos-tickless--uart-critical) section below. |
-| Build fails in a different sub-project after adding retarget-io                 | retarget-io.mtb should only be in the target sub-project's `deps/` — do not copy it to other sub-projects                                                                                         |
 
 ---
 
@@ -341,12 +326,12 @@ Cy_SysPm_RegisterCallback(&uart_pm_callback);
 
 **Development Workflow:** If FreeRTOS + tickless idle detected, always add this callback when integrating retarget-io.
 
-See also: [mtb-device-configurator/uart-runtime-patterns.md](../mtb-device-configurator/references/uart-runtime-patterns.md) — UART deep sleep protection
+If the `mtb-device-configurator` skill is available, its `references/uart-runtime-patterns.md` covers the same UART deep-sleep protection in more detail.
 
 ## References
 
 - [Integration Workflow — All HAL Paths](./references/workflow.md)
+- [Troubleshooting](./references/troubleshooting.md)
 - [retarget-io GitHub Repository](https://github.com/Infineon/retarget-io)
 - [retarget-io API Reference](https://infineon.github.io/retarget-io/html/index.html)
 - [Library Installer Skill](../mtb-library-installer/SKILL.md)
-- [Device Configurator Skill](../mtb-device-configurator/SKILL.md)

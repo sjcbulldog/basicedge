@@ -67,6 +67,17 @@ See `uart-runtime-patterns.md`, `spi-transfer-patterns.md`, `i2c-bus-patterns.md
 
 If the project links FreeRTOS libraries (even without starting the scheduler), BASEPRI may silently mask ALL peripheral interrupts at priority ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY`. See `freertos-interrupt-priority.md`.
 
+### 7. Multi-Core Debug Output — One Owner, No Unbacked `printf()`
+
+Applies to any application with more than one core image (`MTB_PROJECTS` present and the device has multiple cores).
+
+- **Exactly one** project may call `cy_retarget_io_init()`. A second owner on the same UART corrupts both.
+- **Every other ACTIVE core** — any core running application code, not a bare launcher — MUST have a stdio backend before code is added to it. Without one, `printf()` reaches the toolchain's default write hook and **asserts / halts**; it does not fail silently.
+- Apply this unconditionally. Do NOT try to determine which libraries print internally — the set is open-ended and a backend is free on a core that never prints.
+- Never modify library sources in `mtb_shared/` to suppress or redirect prints. The backend lives in application source only.
+
+Before adding any library, middleware or printf-capable code to a core, read the `## Debug Output Ownership` block in `copilot-instructions.md`. If it is absent, hand off to a debug output ownership skill if one is installed in `.github/skills/` (e.g. `mtb-multi-core-retarget-io`); otherwise ask the user which core owns the debug UART and record the answer there.
+
 ---
 
 ## Implementation Workflow

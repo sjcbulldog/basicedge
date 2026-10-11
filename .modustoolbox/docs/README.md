@@ -1,6 +1,6 @@
 # ModusToolbox Workspace Reference
 
-**Device:** PSE846GPS2DBZC4A | **BSP:** APP_KIT_PSE84_EVAL_EPC2 | **Workspace:** c:/mtbfw/graphics
+**Device:** PSE846GPS2DBZC4A | **BSP:** APP_KIT_PSE84_EVAL_EPC2 | **Workspace:** c:/mtbfw/basicedge
 
 ## Architecture
 
@@ -41,15 +41,15 @@ Shared libraries live in `../mtb_shared/` (outside the workspace directory, crea
 **All paths in build configuration are relative to the project directory, not workspace root.**
 
 ```
-base_for_resolution = c:/mtbfw/graphics/<project_folder>/
+base_for_resolution = c:/mtbfw/basicedge/<project_folder>/
 absolute_path = normalize(base_for_resolution + relative_path)
 
 Example:
-  workspace:     c:/mtbfw/graphics
+  workspace:     c:/mtbfw/basicedge
   project:       proj_cm33_s
   relative path: ../../mtb_shared/cmsis/release-v6.1.0/Core/Include
-  base:          c:/mtbfw/graphics/proj_cm33_s/
-  resolves to:   c:/mtbfw/graphics/../mtb_shared/cmsis/release-v6.1.0/Core/Include
+  base:          c:/mtbfw/basicedge/proj_cm33_s/
+  resolves to:   c:/mtbfw/basicedge/../mtb_shared/cmsis/release-v6.1.0/Core/Include
 ```
 
 Note: `../mtb_shared/` is **one level above** the workspace directory (shared across workspaces).
@@ -101,7 +101,7 @@ Libraries available for this MCU/board. The projects column lists the projects u
 |QCBOR|Middleware||**v1.2**||https://github.com/laurencelundblade/QCBOR|
 |SHIELD_XENSIV_A|Peripheral||**release-v0.5.0**<br>(+1 more)|sensor-humidity-sht3x<br>sensor-motion-bmi270<br>sensor-orientation-bmm350<br>sensor-xensiv-dps3xx<br>sensor-xensiv-pasco2<br>display-tft-st7735s|https://github.com/Infineon/SHIELD_XENSIV_A|
 |TF-PSA-Crypto|Middleware||**v1.1.0**||https://github.com/Mbed-TLS/TF-PSA-Crypto|
-|abstraction-rtos|Utilities|proj_cm55|**release-v1.13.0**<br>(+24 more)||https://github.com/cypresssemiconductorco/abstraction-rtos<br>../mtb_shared/abstraction-rtos/release-v1.13.0<br>- [README.md](c:/mtbfw/mtb_shared/abstraction-rtos/release-v1.13.0/README.md)|
+|abstraction-rtos|Utilities|proj_cm33_ns<br>proj_cm55|**release-v1.13.0**<br>(+24 more)||https://github.com/cypresssemiconductorco/abstraction-rtos<br>../mtb_shared/abstraction-rtos/release-v1.13.0<br>- [README.md](c:/mtbfw/mtb_shared/abstraction-rtos/release-v1.13.0/README.md)|
 |afx|Middleware||**release-v1.0.0**<br>(+1 more)||https://github.com/Infineon/afx|
 |airoc-hci-transport|Bluetooth®||**release-v1.3.1**<br>(+6 more)||https://github.com/Infineon/airoc-hci-transport|
 |async-transfer|Middleware|proj_cm33_s<br>proj_cm33_ns<br>proj_cm55|**release-v1.1.1**<br>(+3 more)||https://github.com/Infineon/async-transfer<br>../mtb_shared/async-transfer/release-v1.1.1<br>- [README.md](c:/mtbfw/mtb_shared/async-transfer/release-v1.1.1/README.md)|
@@ -116,7 +116,7 @@ Libraries available for this MCU/board. The projects column lists the projects u
 |aws-iot-device-sdk-port|Middleware||**release-v2.7.0**<br>(+16 more)||https://github.com/cypresssemiconductorco/aws-iot-device-sdk-port|
 |azure-c-sdk-port|Middleware||**release-v1.6.0**<br>(+8 more)||https://github.com/cypresssemiconductorco/azure-c-sdk-port|
 |ble-mesh|Bluetooth®||**release-v4.0.0**<br>(+3 more)||https://github.com/Infineon/ble-mesh|
-|block-storage|Middleware||**release-v1.4.0**<br>(+8 more)||https://github.com/Infineon/block-storage|
+|block-storage|Middleware|proj_cm33_ns|**release-v1.4.0**<br>(+8 more)||https://github.com/Infineon/block-storage<br>../mtb_shared/block-storage/release-v1.4.0<br>- [README.md](c:/mtbfw/mtb_shared/block-storage/release-v1.4.0/README.md)|
 |bmi160|Peripheral||**bmi160_v3.9.1**<br>(+1 more)||https://github.com/BoschSensortec/BMI160_driver|
 |bmi270|Peripheral||**v2.86.1**||https://github.com/BoschSensortec/BMI270_SensorAPI|
 |bmm150|Peripheral||**bmm150_v2.0.0**||https://github.com/BoschSensortec/BMM150-Sensor-API|
@@ -136,16 +136,16 @@ Libraries available for this MCU/board. The projects column lists the projects u
 |camera-dvp-ov7675|Peripheral||**release-v0.5.1**<br>(+2 more)||https://github.com/Infineon/camera-dvp-ov7675|
 |capsense|Middleware||**release-v11.0.0**<br>(+20 more)||https://github.com/cypresssemiconductorco/capsense|
 |capsense-touchpad-host|Middleware||**release-v1.0.0**<br>(+1 more)||https://github.com/Infineon/capsense-touchpad-host|
-|clib-support|Utilities|proj_cm55|**release-v1.9.0**<br>(+12 more)||https://github.com/cypresssemiconductorco/clib-support<br>../mtb_shared/clib-support/release-v1.9.0<br>- [README.md](c:/mtbfw/mtb_shared/clib-support/release-v1.9.0/README.md)|
+|clib-support|Utilities|proj_cm33_ns<br>proj_cm55|**release-v1.9.0**<br>(+12 more)||https://github.com/cypresssemiconductorco/clib-support<br>../mtb_shared/clib-support/release-v1.9.0<br>- [README.md](c:/mtbfw/mtb_shared/clib-support/release-v1.9.0/README.md)|
 |cmsis|Core|proj_cm33_s<br>proj_cm33_ns<br>proj_cm55|**release-v6.1.0**<br>(+5 more)||https://github.com/Infineon/cmsis<br>../mtb_shared/cmsis/release-v6.1.0<br>- [README.md](c:/mtbfw/mtb_shared/cmsis/release-v6.1.0/README.md)|
 |command-console|Middleware||**release-v6.5.0**<br>(+26 more)||https://github.com/cypresssemiconductorco/command-console|
 |common-include|Bluetooth®||**release-v1.0.0**<br>(+1 more)||https://github.com/Infineon/common-include|
-|connectivity-utilities|Utilities||**release-v4.5.3**<br>(+22 more)||https://github.com/cypresssemiconductorco/connectivity-utilities|
+|connectivity-utilities|Utilities|proj_cm33_ns|**release-v4.5.3**<br>(+22 more)||https://github.com/cypresssemiconductorco/connectivity-utilities<br>../mtb_shared/connectivity-utilities/release-v4.5.3<br>- [README.md](c:/mtbfw/mtb_shared/connectivity-utilities/release-v4.5.3/README.md)|
 |core-lib|Core|proj_cm33_s<br>proj_cm33_ns<br>proj_cm55|**release-v1.8.0**<br>(+20 more)||https://github.com/cypresssemiconductorco/core-lib<br>../mtb_shared/core-lib/release-v1.8.0<br>- [README.md](c:/mtbfw/mtb_shared/core-lib/release-v1.8.0/README.md)|
 |core-make|Core|proj_cm33_s<br>proj_cm33_ns<br>proj_cm55|**release-v3.10.0**<br>(+30 more)||https://github.com/cypresssemiconductorco/core-make<br>../mtb_shared/core-make/release-v3.10.0<br>- [README.md](c:/mtbfw/mtb_shared/core-make/release-v3.10.0/README.md)|
 |csdadc|Middleware||**release-v2.10.0**<br>(+2 more)||https://github.com/cypresssemiconductorco/csdadc|
 |csdidac|Middleware||**release-v2.10.0**<br>(+2 more)||https://github.com/cypresssemiconductorco/csdidac|
-|cy-mbedtls-acceleration|Core||**release-v3.1.0**<br>(+17 more)||https://github.com/cypresssemiconductorco/cy-mbedtls-acceleration|
+|cy-mbedtls-acceleration|Core|proj_cm33_ns|**release-v3.1.0**<br>(+17 more)||https://github.com/cypresssemiconductorco/cy-mbedtls-acceleration<br>../mtb_shared/cy-mbedtls-acceleration/release-v3.1.0<br>- [README.md](c:/mtbfw/mtb_shared/cy-mbedtls-acceleration/release-v3.1.0/README.md)|
 |device-db|Core|proj_cm33_s<br>proj_cm33_ns<br>proj_cm55|**release-v4.41.0**<br>(+36 more)||https://github.com/Infineon/device-db<br>C:/Users/butch/.modustoolbox/global/device-db/release-v4.41.0<br>- [README.md](C:/Users/butch/.modustoolbox/global/device-db/release-v4.41.0/README.md)|
 |dfu|Middleware||**release-v6.2.100**<br>(+11 more)||https://github.com/cypresssemiconductorco/dfu|
 |display-amoled-co5300|Graphics||**release-v1.0.0**<br>(+2 more)||https://github.com/Infineon/display-amoled-co5300|
@@ -157,20 +157,20 @@ Libraries available for this MCU/board. The projects column lists the projects u
 |display-tft-st7701s|Graphics|proj_cm55|**release-v1.0.0**<br>(+1 more)||https://github.com/Infineon/display-tft-st7701s<br>../mtb_shared/display-tft-st7701s/release-v1.0.0<br>- [README.md](c:/mtbfw/mtb_shared/display-tft-st7701s/release-v1.0.0/README.md)|
 |display-tft-st7735s|Peripheral||**release-v0.5.0**<br>(+1 more)||https://github.com/Infineon/display-tft-st7735s|
 |display-tft-st7789v|Peripheral||**release-v1.0.1**<br>(+2 more)||https://github.com/cypresssemiconductorco/display-tft-st7789v|
-|emeeprom|Middleware||**release-v2.80.0**<br>(+10 more)||https://github.com/cypresssemiconductorco/emeeprom|
-|emfile|Middleware||**release-v3.0.1**<br>(+6 more)||https://github.com/cypresssemiconductorco/emfile|
-|emusb-device|Middleware||**release-v2.2.0**<br>(+8 more)||https://github.com/Infineon/emusb-device|
+|emeeprom|Middleware|proj_cm33_ns|**release-v2.80.0**<br>(+10 more)||https://github.com/cypresssemiconductorco/emeeprom<br>../mtb_shared/emeeprom/release-v2.80.0<br>- [README.md](c:/mtbfw/mtb_shared/emeeprom/release-v2.80.0/README.md)|
+|emfile|Middleware|proj_cm33_ns|**release-v3.0.1**<br>(+6 more)||https://github.com/cypresssemiconductorco/emfile<br>../mtb_shared/emfile/release-v3.0.1<br>- [README.md](c:/mtbfw/mtb_shared/emfile/release-v3.0.1/README.md)|
+|emusb-device|Middleware||**release-v2.2.1**<br>(+9 more)||https://github.com/Infineon/emusb-device|
 |emusb-host|Middleware||**release-v2.3.0**<br>(+9 more)||https://github.com/Infineon/emusb-host|
 |enterprise-security|Middleware||**release-v3.4.2**<br>(+11 more)||https://github.com/cypresssemiconductorco/enterprise-security|
 |ethernet-connection-manager|Ethernet||**release-v2.2.0**<br>(+7 more)||https://github.com/Infineon/ethernet-connection-manager|
 |ethernet-core-freertos-lwip-mbedtls|Ethernet||**release-v3.0.1**<br>(+10 more)||https://github.com/Infineon/ethernet-core-freertos-lwip-mbedtls|
 |ethernet-phy-driver|Ethernet||**release-v1.3.0**<br>(+4 more)||https://github.com/Infineon/ethernet-phy-driver|
-|freertos|Core|proj_cm55|**release-v10.6.203**<br>release-v10.6.202<br>(+17 more)||https://github.com/cypresssemiconductorco/freertos<br>../mtb_shared/freertos/release-v10.6.202<br>- [README.md](c:/mtbfw/mtb_shared/freertos/release-v10.6.202/README.md)|
+|freertos|Core|proj_cm33_ns<br>proj_cm55|**release-v10.6.203**<br>release-v10.6.202<br>(+17 more)||https://github.com/cypresssemiconductorco/freertos<br>../mtb_shared/freertos/release-v10.6.202<br>- [README.md](c:/mtbfw/mtb_shared/freertos/release-v10.6.202/README.md)|
 |freertos-posix|Core||**release-v1.0.2**<br>(+3 more)||https://github.com/Infineon/freertos-posix|
 |fw-cyw20829b1|Bluetooth®||**release-v1.0.0**<br>(+1 more)||https://github.com/Infineon/fw-cyw20829b1|
 |http-client|Middleware||**release-v1.8.1**<br>(+13 more)||https://github.com/cypresssemiconductorco/http-client|
 |http-server|Middleware||**release-v3.3.0**<br>(+18 more)||https://github.com/cypresssemiconductorco/http-server|
-|ifx-mbedtls|Middleware||**release-v3.6.606**<br>(+5 more)|cy-mbedtls-acceleration|https://github.com/Infineon/ifx-mbedtls|
+|ifx-mbedtls|Middleware|proj_cm33_ns|**release-v3.6.606**<br>(+5 more)|cy-mbedtls-acceleration|https://github.com/Infineon/ifx-mbedtls<br>../mtb_shared/ifx-mbedtls/release-v3.6.606<br>- [README.md](c:/mtbfw/mtb_shared/ifx-mbedtls/release-v3.6.606/README.md)|
 |ifx-mcuboot-pse84|Middleware||**release-v1.4.0**<br>(+5 more)||https://github.com/Infineon/ifx-mcuboot-pse84|
 |ifx-tf-m-ns|Middleware||**release-v2.3.400**<br>(+6 more)|mtb-srf|https://github.com/Infineon/ifx-tf-m-ns|
 |ifx-tf-m-pse84epc2|Middleware||**release-v2.1.600**<br>(+4 more)|ifx-mbedtls<br>mtb-srf<br>mtb-ipc<br>t_cose<br>QCBOR<br>tf-m-extras|https://github.com/Infineon/ifx-tf-m-pse84epc2|
@@ -180,9 +180,9 @@ Libraries available for this MCU/board. The projects column lists the projects u
 |littlefs|Middleware||**v2.4.0**||https://github.com/littlefs-project/littlefs|
 |lpa|Middleware||**release-v5.8.1**<br>(+20 more)||https://github.com/cypresssemiconductorco/lpa|
 |lvgl|Graphics|proj_cm55|**v9.5.0**<br>(+2 more)||https://github.com/lvgl/lvgl<br>../mtb_shared/lvgl/v9.5.0<br>- [README.md](c:/mtbfw/mtb_shared/lvgl/v9.5.0/README.md)|
-|lwip|Core||**STABLE-2_1_2_RELEASE**||https://github.com/lwip-tcpip/lwip|
-|lwip-freertos-integration|Middleware||**release-v1.3.0**<br>(+4 more)||https://github.com/Infineon/lwip-freertos-integration|
-|lwip-network-interface-integration|Middleware||**release-v1.7.2**<br>(+14 more)||https://github.com/Infineon/lwip-network-interface-integration|
+|lwip|Core|proj_cm33_ns|**STABLE-2_1_2_RELEASE**||https://github.com/lwip-tcpip/lwip<br>../mtb_shared/lwip/STABLE-2_1_2_RELEASE|
+|lwip-freertos-integration|Middleware|proj_cm33_ns|**release-v1.3.0**<br>(+4 more)||https://github.com/Infineon/lwip-freertos-integration<br>../mtb_shared/lwip-freertos-integration/release-v1.3.0<br>- [README.md](c:/mtbfw/mtb_shared/lwip-freertos-integration/release-v1.3.0/README.md)|
+|lwip-network-interface-integration|Middleware|proj_cm33_ns|**release-v1.7.2**<br>(+14 more)||https://github.com/Infineon/lwip-network-interface-integration<br>../mtb_shared/lwip-network-interface-integration/release-v1.7.2<br>- [README.md](c:/mtbfw/mtb_shared/lwip-network-interface-integration/release-v1.7.2/README.md)|
 |matter-mbedtls|Middleware||**release-v1.4.2**<br>(+1 more)||https://github.com/Infineon/matter-mbedtls|
 |matter-wifi-cat5|Middleware||**release-v1.4.2**<br>(+1 more)|mtb-matter<br>matter<br>matter-mbedtls<br>kv-store-cat5<br>ota-bootloader-abstraction<br>ota-update<br>wifi-core-threadx-cat5|https://github.com/Infineon/matter-wifi-cat5|
 |mbedtls|Core||**mbedtls-3.0.0**||https://github.com/ARMmbed/mbedtls|
@@ -190,7 +190,7 @@ Libraries available for this MCU/board. The projects column lists the projects u
 |ml-tflite-micro|Middleware||**release-v3.4.0**<br>(+8 more)||https://github.com/Infineon/ml-tflite-micro|
 |motor-ctrl-lib|Middleware||**release-v3.3.0**<br>(+9 more)||https://github.com/Infineon/motor-ctrl-lib|
 |mqtt|Middleware||**release-v4.7.0**<br>(+25 more)||https://github.com/cypresssemiconductorco/mqtt|
-|mtb-dsl-pse8xxgp|Core|proj_cm33_s<br>proj_cm33_ns<br>proj_cm55|**release-v1.6.0**<br>(+8 more)|cmsis<br>device-db<br>core-make<br>async-transfer<br>mtb-srf|https://github.com/Infineon/mtb-dsl-pse8xxgp<br>../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0<br>- [README.md](c:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/README.md)|
+|mtb-dsl-pse8xxgp|Core|proj_cm33_s<br>proj_cm33_ns<br>proj_cm55|**release-v1.7.0**<br>release-v1.6.0<br>(+8 more)|cmsis<br>device-db<br>core-make<br>async-transfer<br>mtb-srf|https://github.com/Infineon/mtb-dsl-pse8xxgp<br>../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0<br>- [README.md](c:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/README.md)|
 |mtb-ipc|Middleware|proj_cm33_s<br>proj_cm33_ns<br>proj_cm55|**release-v1.2.0**<br>(+3 more)||https://github.com/Infineon/mtb-ipc<br>../mtb_shared/mtb-ipc/release-v1.2.0<br>- [README.md](c:/mtbfw/mtb_shared/mtb-ipc/release-v1.2.0/README.md)|
 |mtb-littlefs|Middleware||**release-v3.0.0**<br>(+7 more)|littlefs<br>serial-memory|https://github.com/cypresssemiconductorco/mtb-littlefs|
 |mtb-mw-pctrl|Middleware||**release-v1.0.0**||https://github.com/Infineon/mtb-mw-pctrl|
@@ -209,11 +209,11 @@ Libraries available for this MCU/board. The projects column lists the projects u
 |pan-profile|Bluetooth®||**release-v1.0.0**<br>(+1 more)||https://github.com/Infineon/pan-profile|
 |retarget-io|Peripheral|proj_cm55|**release-v1.10.0**<br>(+13 more)||https://github.com/cypresssemiconductorco/retarget-io<br>../mtb_shared/retarget-io/release-v1.10.0<br>- [README.md](c:/mtbfw/mtb_shared/retarget-io/release-v1.10.0/README.md)|
 |rgb-led|Peripheral||**release-v1.2.1**<br>(+5 more)||https://github.com/cypresssemiconductorco/rgb-led|
-|rtlabs-c-open|Peripheral||**release-v0.8.0**<br>(+1 more)||https://github.com/rtlabs-com/mtb-mw-copen|
-|rtlabs-soem-lib|Peripheral||**release-v0.6.0**<br>(+1 more)||https://github.com/rtlabs-com/mtb-mw-soem|
-|rtlabs-uphy-lib|Peripheral||**release-v0.8.1**<br>(+6 more)||https://github.com/rtlabs-com/mtb-mw-uphy|
+|rtlabs-c-open|Peripheral||**release-v0.8.1**<br>(+2 more)||https://github.com/rtlabs-com/mtb-mw-copen|
+|rtlabs-soem-lib|Peripheral||**release-v0.6.2**<br>(+3 more)||https://github.com/rtlabs-com/mtb-mw-soem|
+|rtlabs-uphy-lib|Peripheral||**release-v0.8.2**<br>(+7 more)||https://github.com/rtlabs-com/mtb-mw-uphy|
 |se-rt-services-utils|Middleware|proj_cm33_s<br>proj_cm33_ns<br>proj_cm55|**release-v1.4.0**<br>(+2 more)||https://github.com/Infineon/se-rt-services-utils<br>../mtb_shared/se-rt-services-utils/release-v1.4.0<br>- [README.md](c:/mtbfw/mtb_shared/se-rt-services-utils/release-v1.4.0/README.md)|
-|secure-sockets|Middleware||**release-v3.12.2**<br>(+28 more)||https://github.com/cypresssemiconductorco/secure-sockets|
+|secure-sockets|Middleware|proj_cm33_ns|**release-v3.12.2**<br>(+28 more)||https://github.com/cypresssemiconductorco/secure-sockets<br>../mtb_shared/secure-sockets/release-v3.12.2<br>- [README.md](c:/mtbfw/mtb_shared/secure-sockets/release-v3.12.2/README.md)|
 |sensor-humidity-sht3x|Peripheral||**release-v0.5.0**<br>(+1 more)|sht3x|https://github.com/Infineon/sensor-humidity-sht3x|
 |sensor-humidity-sht4x|Peripheral||**release-v1.1.0**<br>(+2 more)|sht4x|https://github.com/Infineon/sensor-humidity-sht4x|
 |sensor-light|Peripheral||**release-v1.1.0**<br>(+3 more)||https://github.com/cypresssemiconductorco/sensor-light|
@@ -245,13 +245,13 @@ Libraries available for this MCU/board. The projects column lists the projects u
 |virtual-connectivity-manager|Middleware||**release-v1.2.0**<br>(+7 more)||https://github.com/Infineon/virtual-connectivity-manager|
 |voice-assistant|Middleware||**release-v2.1.0**<br>(+4 more)|audio-voice-core<br>speech-onset-detection|https://github.com/Infineon/voice-assistant|
 |websocket|Middleware||**release-v1.0.0**<br>(+1 more)||https://github.com/Infineon/websocket|
-|whd-bsp-integration|Wi-Fi||**release-v2.6.0**<br>(+17 more)||https://github.com/cypresssemiconductorco/whd-bsp-integration|
-|wifi-connection-manager|Middleware||**release-v4.1.0**<br>(+29 more)||https://github.com/cypresssemiconductorco/wifi-connection-manager|
-|wifi-core-freertos-lwip-mbedtls|Wi-Fi||**release-v3.1.2**<br>(+13 more)||https://github.com/Infineon/wifi-core-freertos-lwip-mbedtls|
-|wifi-host-driver|Wi-Fi||**release-v5.3.1**<br>(+35 more)||https://github.com/cypresssemiconductorco/wifi-host-driver|
+|whd-bsp-integration|Wi-Fi|proj_cm33_ns|**release-v2.6.0**<br>(+17 more)||https://github.com/cypresssemiconductorco/whd-bsp-integration<br>../mtb_shared/whd-bsp-integration/release-v2.6.0<br>- [README.md](c:/mtbfw/mtb_shared/whd-bsp-integration/release-v2.6.0/README.md)|
+|wifi-connection-manager|Middleware|proj_cm33_ns|**release-v4.1.0**<br>(+29 more)||https://github.com/cypresssemiconductorco/wifi-connection-manager<br>../mtb_shared/wifi-connection-manager/release-v4.1.0<br>- [README.md](c:/mtbfw/mtb_shared/wifi-connection-manager/release-v4.1.0/README.md)|
+|wifi-core-freertos-lwip-mbedtls|Wi-Fi|proj_cm33_ns|**release-v3.1.2**<br>(+13 more)||https://github.com/Infineon/wifi-core-freertos-lwip-mbedtls<br>../mtb_shared/wifi-core-freertos-lwip-mbedtls/release-v3.1.2<br>- [README.md](c:/mtbfw/mtb_shared/wifi-core-freertos-lwip-mbedtls/release-v3.1.2/README.md)|
+|wifi-host-driver|Wi-Fi|proj_cm33_ns|**release-v5.3.1**<br>(+35 more)||https://github.com/cypresssemiconductorco/wifi-host-driver<br>../mtb_shared/wifi-host-driver/release-v5.3.1<br>- [README.md](c:/mtbfw/mtb_shared/wifi-host-driver/release-v5.3.1/README.md)|
 |wifi-mw-core|Wi-Fi||**release-v3.4.0**<br>(+11 more)||https://github.com/cypresssemiconductorco/wifi-mw-core|
 |wifi-ncp_hm|Wi-Fi||**release-v1.2.2**<br>(+1 more)||https://github.com/Infineon/wifi-ncp_hm|
-|wifi-resources|Wi-Fi||**release-v3.0.5**<br>(+8 more)||https://github.com/Infineon/wifi-resources|
-|wpa3-external-supplicant|Wi-Fi||**release-v1.3.1**<br>(+8 more)||https://github.com/Infineon/wpa3-external-supplicant|
+|wifi-resources|Wi-Fi|proj_cm33_ns|**release-v3.0.5**<br>(+8 more)||https://github.com/Infineon/wifi-resources<br>../mtb_shared/wifi-resources/release-v3.0.5<br>- [README.md](c:/mtbfw/mtb_shared/wifi-resources/release-v3.0.5/README.md)|
+|wpa3-external-supplicant|Wi-Fi|proj_cm33_ns|**release-v1.3.1**<br>(+8 more)||https://github.com/Infineon/wpa3-external-supplicant<br>../mtb_shared/wpa3-external-supplicant/release-v1.3.1<br>- [README.md](c:/mtbfw/mtb_shared/wpa3-external-supplicant/release-v1.3.1/README.md)|
 |wslay|Middleware||**release-1.1.1**||https://github.com/tatsuhiro-t/wslay|
 |xensiv-cmos-radar-sensing|Peripheral||**release-v1.2.0**<br>(+2 more)||https://github.com/Infineon/xensiv-cmos-radar-sensing|

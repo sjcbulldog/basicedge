@@ -60,6 +60,20 @@ import sys
 import tempfile
 from pathlib import Path
 
+# ── Force UTF-8 stdout/stderr ────────────────────────────────────────────
+# On Windows, Python's stdout/stderr default to the active console codepage
+# (e.g. cp1252), not UTF-8. Manifest text can contain non-ASCII characters
+# (™, •, ═, etc.) and HTML entities; without this fix they are silently
+# mangled into mojibake when a skill script prints tool output — which then
+# gets copied verbatim into user-facing plan documents. reconfigure() is a
+# no-op if the stream is already UTF-8 (e.g. on Mac/Linux).
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+        except (ValueError, AttributeError):
+            pass
+
 
 def _pid_alive(pid: int) -> bool:
     """Return True if *pid* refers to a running process."""

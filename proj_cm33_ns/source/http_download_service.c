@@ -54,6 +54,29 @@ static void http_progress_bytes(size_t received)
     http_progress(text);
 }
 
+/**
+ * @brief Set a socket option and report the failing option and result.
+ */
+static bool http_set_socket_option(cy_socket_t socket_handle,
+                                   int level,
+                                   int option,
+                                   const void *value,
+                                   uint32_t length)
+{
+    cy_rslt_t result = cy_socket_setsockopt(socket_handle, level, option,
+                                           value, length);
+    if (result != CY_RSLT_SUCCESS)
+    {
+        char text[112];
+        (void)snprintf(text, sizeof(text),
+                       "WIFI LOAD: socket option %d at level %d failed (0x%08lx).\r\n",
+                       option, level, (unsigned long)result);
+        http_progress(text);
+        return false;
+    }
+    return true;
+}
+
 static bool http_ascii_prefix_equal(const char *text,
                                     const char *expected,
                                     size_t length)
@@ -301,8 +324,16 @@ static bool http_parse_response(size_t response_size, size_t *body_length)
     }
     *status_line_end = '\0';
     char *status_code = strchr(response, ' ');
-    if ((status_code == NULL) || (strtol(status_code + 1, NULL, 10) != 200L))
+    long status = (status_code != NULL) ? strtol(status_code + 1, NULL, 10) : 0L;
+    if (status != 200L)
     {
+        if ((status >= 100L) && (status <= 599L))
+        {
+            char text[64];
+            (void)snprintf(text, sizeof(text),
+                           "WIFI LOAD: server returned HTTP status %ld.\r\n", status);
+            http_progress(text);
+        }
         return false;
     }
     cursor = status_line_end + 2;
@@ -433,32 +464,32 @@ static bool http_download_get(const char *url)
     socket_created = true;
 
     uint32_t timeout = HTTP_DOWNLOAD_SOCKET_TIMEOUT_MS;
-    if ((CY_RSLT_SUCCESS != cy_socket_setsockopt(socket_handle,
-                                                 CY_SOCKET_SOL_SOCKET,
-                                                 CY_SOCKET_SO_RCVTIMEO,
-                                                 &timeout,
-                                                 sizeof(timeout))) ||
-        (CY_RSLT_SUCCESS != cy_socket_setsockopt(socket_handle,
-                                                 CY_SOCKET_SOL_SOCKET,
-                                                 CY_SOCKET_SO_SNDTIMEO,
-                                                 &timeout,
-                                                 sizeof(timeout))))
+    if (!http_set_socket_option(socket_handle,
+                                 CY_SOCKET_SOL_SOCKET,
+                                 CY_SOCKET_SO_RCVTIMEO,
+                                 &timeout,
+                                 sizeof(timeout)) ||
+        !http_set_socket_option(socket_handle,
+                                 CY_SOCKET_SOL_SOCKET,
+                                 CY_SOCKET_SO_SNDTIMEO,
+                                 &timeout,
+                                 sizeof(timeout)))
     {
         goto cleanup;
     }
     if (parsed_url.use_tls)
     {
         cy_socket_tls_auth_mode_t auth_mode = CY_SOCKET_TLS_VERIFY_NONE;
-        if ((CY_RSLT_SUCCESS != cy_socket_setsockopt(socket_handle,
-                                                      CY_SOCKET_SOL_TLS,
-                                                      CY_SOCKET_SO_TLS_AUTH_MODE,
-                                                      &auth_mode,
-                                                      sizeof(auth_mode))) ||
-            (CY_RSLT_SUCCESS != cy_socket_setsockopt(socket_handle,
-                                                      CY_SOCKET_SOL_TLS,
-                                                      CY_SOCKET_SO_SERVER_NAME_INDICATION,
-                                                      parsed_url.host,
-                                                      (uint32_t)strlen(parsed_url.host) + 1U)))
+        if (!http_set_socket_option(socket_handle,
+                                     CY_SOCKET_SOL_TLS,
+                                     CY_SOCKET_SO_TLS_AUTH_MODE,
+                                     &auth_mode,
+                                     sizeof(auth_mode)) ||
+            !http_set_socket_option(socket_handle,
+                                     CY_SOCKET_SOL_TLS,
+                                     CY_SOCKET_SO_SERVER_NAME_INDICATION,
+                                     parsed_url.host,
+                                     (uint32_t)strlen(parsed_url.host) + 1U))
         {
             goto cleanup;
         }

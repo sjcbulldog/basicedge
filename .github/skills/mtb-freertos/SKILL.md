@@ -1,13 +1,13 @@
 ---
 name: mtb-freertos
-description: Install and configure the Infineon FreeRTOS library in a ModusToolbox project, generate a tuned FreeRTOSConfig.h based on the user's application, and integrate a running example task. Use when asked to "add FreeRTOS", "add an RTOS", "set up tasks", "configure FreeRTOS", "fix my FreeRTOSConfig.h", "adjust FreeRTOS heap size", "set up low-power RTOS", "FreeRTOS stack overflow", "FreeRTOS malloc failed", or when another skill (wifi-stack, mqtt) requires FreeRTOS as a prerequisite.
+description: Install and configure the Infineon FreeRTOS library in a ModusToolbox project, generate a tuned FreeRTOSConfig.h based on the user's application, and integrate a running example task. Use when asked to "add FreeRTOS", "add an RTOS", "set up tasks", "configure FreeRTOS", "fix my FreeRTOSConfig.h", "adjust FreeRTOS heap size", "set up low-power RTOS", "FreeRTOS stack overflow", "FreeRTOS malloc failed", or when another skill (`mtb-wifi-stack`, `mtb-ble-setup`, `mtb-mqtt-client`) requires FreeRTOS as a prerequisite.
 license: "Apache-2.0"
 metadata:
   author: "Infineon ModusToolbox Team"
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
-# freertos
+# mtb-freertos
 
 Install, configure, and integrate the [Infineon FreeRTOS library](https://github.com/Infineon/freertos) into a ModusToolbox project. Generates a `FreeRTOSConfig.h` tuned to the user's application profile and produces a working example task so the scheduler runs immediately.
 
@@ -24,9 +24,9 @@ This is a **library-tier skill**. It orchestrates:
 
 - User says: "add FreeRTOS", "add an RTOS", "I need tasks", "set up FreeRTOS", "configure FreeRTOS", "reconfigure FreeRTOS", "fix my FreeRTOSConfig.h"
 - User reports: "stack overflow", "malloc failed", "FreeRTOS assert", "tasks not scheduling", "heap exhausted", "ISR hard fault with FreeRTOS"
-- Another skill (`mtb-wifi-stack`, `mqtt`) requires FreeRTOS as a prerequisite and delegates via `mode: dependency`
+- Another skill (`mtb-wifi-stack`, `mtb-ble-setup`, `mtb-mqtt-client`) has directed the user here because FreeRTOS is a prerequisite
 - FreeRTOS is installed but `FreeRTOSConfig.h` is missing from the project
-- **⚠️ ALSO read this skill when:** Adding ANY interrupt-driven peripheral (UART, SPI, I2C, **GPIO buttons**) to a project that already has FreeRTOS installed — see [Tickless Idle + SCB Peripherals](#tickless-idle--scb-peripherals-critical) for SCB clock issues and `references/config-guide.md` Q6 for tickless idle + interrupt priority interactions
+- **⚠️ ALSO read this skill when:** Adding ANY interrupt-driven peripheral (UART, SPI, I2C, **GPIO buttons**) to a project that already has FreeRTOS installed — see [Tickless Idle + SCB Peripherals](#tickless-idle--scb-peripherals-critical) for SCB clock issues and [config-guide.md — Interrupt Priority](./references/config-guide.md#interrupt-priority-and-basepri-masking) for ISRs that never fire
 
 ### When Not to Use This Skill
 
@@ -37,8 +37,20 @@ This is a **library-tier skill**. It orchestrates:
 
 - A ModusToolbox project with a valid `Makefile` at the project root
 - `make` available in the environment (`$CY_TOOLS_PATHS` set)
-- This skill is pre-installed at `.github/skills/freertos/` by the Infineon ModusToolbox AI Assistant VS Code extension
-- For multi-core projects (e.g., PSE84): identify which core sub-project to target (default: NS application core) before proceeding; ask the user if ambiguous
+- This skill is pre-installed at `.github/skills/mtb-freertos/` by the Infineon ModusToolbox AI Assistant VS Code extension
+- Determine the core topology before proceeding — see [Detecting the Target Core](#detecting-the-target-core). Only ask the user when detection is genuinely ambiguous.
+
+## Detecting the Target Core
+
+The core count and core name are discoverable; do not ask the user first. Try in order:
+
+1. **MCP workspace data** — the ModusToolbox MCP workspace tool returns a `projects` array with one entry per core sub-project, each carrying `core_type` (`CM0+`, `CM4`, `CM33`, `CM7`, `CM55`) and `folder_name`. More than one entry means a multi-core application.
+2. **Make variables** — `MTB_CORE_TYPE` / `MTB_CORE_NAME` for the target core, `MTB_PROJECTS` for the sub-project list.
+3. **Filesystem** — sub-directories each holding their own `Makefile` (`proj_*` by convention) indicate multi-core; a lone project root is single-core.
+
+`core_type` is the value that goes into the `COMPONENT_<CORE>` template path, so no mapping table is needed.
+
+On a multi-core application, default to the non-secure application core and confirm with the user before editing.
 
 ## Key Files
 
@@ -133,7 +145,7 @@ Verify after `make getlibs`:
 See [config-guide.md](./references/config-guide.md) for the full parameter table, profile defaults, template selection, and required hook stubs.
 
 Steps:
-1. Detect the CPU core from the BSP `Makefile` (`TARGET`) or `cybsp.h` — ask if ambiguous
+1. Resolve the target core — see [Detecting the Target Core](#detecting-the-target-core)
 2. Copy `../mtb_shared/freertos/<version>/Source/portable/COMPONENT_<CORE>/FreeRTOSConfig.h` to the project root
 3. Remove the `#warning` template directive from the copied file
 4. Apply all values from the user's scope question answers
@@ -161,17 +173,17 @@ If it fails, check:
 
 ---
 
-## Dependency-Mode Workflow
+## Prerequisite-Mode Workflow
 
-When invoked by another skill with `mode: dependency`:
+When the user arrives from a connectivity skill (`mtb-wifi-stack`, `mtb-ble-setup`, `mtb-mqtt-client`) that requires FreeRTOS:
 
-1. Run Pre-Check — if already installed and configured, report success to the calling skill immediately
-2. Skip Q1 (infer profile from calling skill context — IoT for wifi-stack/mqtt)
+1. Run Pre-Check — if already installed and configured, report success and return to the task that brought the user here
+2. Skip Q1 — infer the profile from that context (IoT / Networking)
 3. Apply heap_3 as the default without asking; skip Q2 unless user previously expressed a different preference
 4. Ask Q4 (tick rate) only if the user has expressed a low-power concern
 5. Inform the user of all defaults being applied in a concise summary before proceeding
-6. Skip the example task generation (`freertos_integration.c`) unless the calling skill requests it
-7. Complete library install → config → Makefile steps, then return control to the calling skill
+6. Skip the example task generation (`freertos_integration.c`) — the connectivity skill supplies its own task
+7. Complete library install → config → Makefile steps, then return the user to the original skill
 
 ---
 
@@ -193,15 +205,16 @@ When FreeRTOS is already installed and configured. See [reconfig-guide.md](./ref
 | Condition | Action |
 |-----------|--------|
 | `FreeRTOSConfig.h` template missing after `make getlibs` | Re-run `make getlibs` once; if still absent, report and ask user to check library installation |
-| CPU core cannot be determined | Ask user to select core (CM0P / CM4 / CM33 / CM7 / CM55) |
+| CPU core cannot be determined | Exhaust all three sources in [Detecting the Target Core](#detecting-the-target-core) first; only then ask the user to name the core |
 | `COMPONENTS += FREERTOS` already present | Skip Makefile edit; proceed to config |
 | `clib-support` not installed when heap_3 selected | Install via `mtb-library-installer` before continuing |
 | `vTaskStartScheduler()` already in `main.c` | Do not add a second call; skip `main.c` edits; inform user |
 | `configTOTAL_HEAP_SIZE` exceeds ~75% of BSP SRAM | Warn user with SRAM estimate; ask for confirmation |
 | Tickless idle enabled but `abstraction-rtos` absent | Offer to install `abstraction-rtos`; if declined, set `configUSE_TICKLESS_IDLE 0` and explain requirements |
-| Tickless idle enabled but SCB peripherals in use (UART, SPI, I2C) | **⚠️ CRITICAL:** On PSOC Edge (PSE84), deep sleep corrupts SCB peripheral clock state. UART output becomes garbled (`BþBBBB...` pattern) after first idle cycle. **Register SysPm callbacks** for each active SCB peripheral to block deep sleep while busy — see [Tickless Idle + SCB Peripherals](#tickless-idle--scb-peripherals-critical) section below. |
+| Tickless idle enabled but SCB peripherals in use (UART, SPI, I2C) | **⚠️ CRITICAL:** Deep sleep gates the SCB peripheral clocks, corrupting the state of any SCB that is mid-transaction. UART output becomes garbled (`BþBBBB...` pattern) after first idle cycle. **Register SysPm callbacks** for each active SCB peripheral to block deep sleep while busy — see [Tickless Idle + SCB Peripherals](#tickless-idle--scb-peripherals-critical) section below. |
+| ISR never fires after adding FreeRTOS (UART, SPI, I2C, GPIO) | The port raises `BASEPRI` at init, masking ISRs even before the scheduler starts — see [config-guide.md — Interrupt Priority](./references/config-guide.md#interrupt-priority-and-basepri-masking) |
 | Build fails after changes | Show error output; consult [integration-workflow.md — Build Failures](./references/integration-workflow.md#build-failure-checklist) |
-| Multi-core project; target core ambiguous | Ask user which core sub-project to target |
+| Multi-core project; target core ambiguous | Propose the non-secure application core from the detected `projects` list and ask the user to confirm |
 
 ---
 
@@ -217,9 +230,9 @@ Each active SCB peripheral must register a callback that blocks Deep Sleep while
 
 | SCB Type | Busy Check API | When to Block |
 |----------|---------------|---------------|
-| UART | `Cy_SCB_IsTxComplete(HW)` | TX FIFO not empty |
-| SPI | `Cy_SCB_SPI_IsBusBusy(HW)` | Transfer in progress |
-| I2C | `Cy_SCB_I2C_IsBusBusy(HW)` | Transaction in progress |
+| UART | `Cy_SCB_IsTxComplete(CYBSP_<ALIAS>_HW)` | TX FIFO not empty |
+| SPI | `Cy_SCB_SPI_IsBusBusy(CYBSP_<ALIAS>_HW)` | Transfer in progress |
+| I2C | `Cy_SCB_I2C_IsBusBusy(CYBSP_<ALIAS>_HW)` | Transaction in progress |
 
 ### Required Code (per SCB peripheral)
 
@@ -241,7 +254,7 @@ static cy_en_syspm_status_t scb_deep_sleep_callback(
 }
 
 /* Callback struct (one per SCB instance) */
-static cy_stc_syspm_callback_params_t pm_params = { .base = HW, .context = NULL };
+static cy_stc_syspm_callback_params_t pm_params = { .base = CYBSP_DEBUG_UART_HW, .context = NULL };
 static cy_stc_syspm_callback_t pm_callback = {
     .callback = scb_deep_sleep_callback,
     .type = CY_SYSPM_DEEPSLEEP,
@@ -263,11 +276,10 @@ When FreeRTOS is detected with `configUSE_TICKLESS_IDLE != 0` AND any SCB periph
 3. **VERIFY** callbacks are registered before `vTaskStartScheduler()`
 
 See also:
-- [mtb-device-configurator/uart-runtime-patterns.md](../mtb-device-configurator/references/uart-runtime-patterns.md) — UART deep sleep protection
-- [mtb-device-configurator/spi-transfer-patterns.md](../mtb-device-configurator/references/spi-transfer-patterns.md) — SPI deep sleep protection
-- [mtb-device-configurator/i2c-bus-patterns.md#freertos-tickless--i2c-deep-sleep-protection](../mtb-device-configurator/references/i2c-bus-patterns.md#freertos-tickless--i2c-deep-sleep-protection)
-- [mtb-device-configurator/power-mode-patterns.md](../mtb-device-configurator/references/power-mode-patterns.md) — **TCPWM / HF-clock peripherals:** Tickless DeepSleep stops ALL HF clocks, halting timers, PWM, and ADC. Register a DeepSleep veto callback for any HF-clocked peripheral that must remain active. See Gotchas #11–#12.
-- [mtb-ble-setup](../mtb-ble-setup/SKILL.md) — **BLE HCI transport uses a UART SCB.** The BT stack holds a sleep lock during active HCI communication, so tickless idle should not normally interfere. However, if unexplained HCI timeouts occur, disabling tickless idle is a useful diagnostic step to rule out deep sleep interference during firmware download.
+- **TCPWM / HF-clock peripherals:** Tickless DeepSleep stops ALL HF clocks, halting timers, PWM, and ADC. Register a DeepSleep veto callback for any HF-clocked peripheral that must remain active.
+- **"Works under the debugger, fails on a power cycle"** is the classic signature of an unintended DeepSleep entry: the debug probe keeps the clocks alive for SWD, a standalone run does not. Suspect a missing veto callback before suspecting the peripheral.
+- **BLE:** the HCI transport uses a UART SCB, but the BT stack holds a sleep lock during active HCI communication, so tickless idle should not normally interfere. If unexplained HCI timeouts occur, temporarily disabling tickless idle is a useful diagnostic step to rule out deep sleep interference during firmware download.
+- If the `mtb-device-configurator` skill is deployed for this device, its `references/uart-runtime-patterns.md`, `spi-transfer-patterns.md`, `i2c-bus-patterns.md` and `power-mode-patterns.md` carry the per-peripheral deep-sleep detail and the device-specific power-mode rules.
 
 ---
 

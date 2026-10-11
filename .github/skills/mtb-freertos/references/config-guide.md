@@ -42,7 +42,7 @@ Note: The timer daemon task uses `configTIMER_TASK_PRIORITY`; ensure it is withi
 | Always enable | 2 | Requires `abstraction-rtos` for compatible `vApplicationSleep` hook; offer to install |
 | Disabled | 0 | Standard tick; no sleep hook needed |
 
-> **⚠️ PSOC Edge (PSE84) WARNING:** Tickless idle causes deep sleep, which **corrupts SCB peripheral clock state** (UART, SPI, I2C). Symptoms: garbled UART output (`HýHý...` pattern) after first `vTaskDelay()`. **Disable tickless idle** (`configUSE_TICKLESS_IDLE 0`) unless SysPm callbacks are implemented to save/restore all active SCB peripheral state. This is the #1 PSE84 FreeRTOS failure mode.
+> **⚠️ TICKLESS IDLE + SCB WARNING:** Tickless idle causes deep sleep, which gates the SCB peripheral clocks and **corrupts the state of any SCB that is mid-transaction** (UART, SPI, I2C). Symptoms: garbled UART output (`HýHý...` pattern) after first `vTaskDelay()`. **Disable tickless idle** (`configUSE_TICKLESS_IDLE 0`) unless SysPm callbacks are implemented to block deep sleep while each active SCB peripheral is busy.
 
 ---
 
@@ -94,7 +94,17 @@ Apply the values from the user's scope question answers. Rows marked **Keep** sh
 | `configGENERATE_RUN_TIME_STATS` | `0` | Keep; note available for profiling if user asks |
 | `configSUPPORT_STATIC_ALLOCATION` | `1` | Keep `1`; set `0` only if user explicitly opts out of static APIs |
 | `configSUPPORT_DYNAMIC_ALLOCATION` | `1` | Set `0` only if `NO_HEAP_ALLOCATION` selected |
-| `configMAX_SYSCALL_INTERRUPT_PRIORITY` | device-specific | Keep template value; explain to user that ISRs calling FreeRTOS API must have priority ≤ this value |
+| `configMAX_SYSCALL_INTERRUPT_PRIORITY` | device-specific | Keep template value; see [Interrupt Priority and BASEPRI Masking](#interrupt-priority-and-basepri-masking) |
+
+---
+
+## Interrupt Priority and BASEPRI Masking
+
+Linking FreeRTOS sets `BASEPRI` to `configMAX_SYSCALL_INTERRUPT_PRIORITY` at init, even if the scheduler never starts. Any ISR whose NVIC priority *register value* is ≥ that threshold is masked. **Symptom:** peripheral configured, ISR registered and enabled, never fires.
+
+- ISR calls `*FromISR` APIs → register value must be **≥** the threshold (masked; this is required).
+- ISR must never be masked → register value must be **<** the threshold, and it must not call FreeRTOS APIs.
+- Bare-metal build that links FreeRTOS → clear the mask after BSP init: `__set_BASEPRI(0U)`.
 
 ---
 
@@ -171,21 +181,15 @@ void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer,
 
 ---
 
-## ⚠️ Hook Signature Variants by Device Family
+## ⚠️ Hook Signature Variants
 
-FreeRTOS hook function signatures differ between device families due to type aliasing. Using the wrong signature causes **compile errors** (type mismatch) or **linker warnings** (weak symbol not overridden).
+FreeRTOS hook function signatures vary with the stack-depth type the port uses. Getting it wrong causes **compile errors** (type mismatch) or **linker warnings** (weak symbol not overridden).
 
 ### `vApplicationGetIdleTaskMemory` and `vApplicationGetTimerTaskMemory`
 
-The third parameter type varies:
+The third parameter is a pointer to the stack-depth type, which is defined by the `COMPONENT_<CORE>` template of the installed FreeRTOS library — not by the silicon. Do not infer it from the device family.
 
-| Device Family | `configSTACK_DEPTH_TYPE` resolves to | Use this signature |
-|---|---|---|
-| **PSOC 6** (CM4, CM0+) | `uint32_t` | `uint32_t *puxIdleTaskStackSize` |
-| **PSE84** (CM33, CM55) | `configSTACK_DEPTH_TYPE` | `configSTACK_DEPTH_TYPE *puxIdleTaskStackSize` |
-| **PSOC 4** (CM0+) | `uint16_t` | `uint16_t *puxIdleTaskStackSize` |
-
-> **Best practice:** Always use `configSTACK_DEPTH_TYPE` in the signature (as shown in the templates above). This typedef resolves correctly on all platforms. If the FreeRTOS template from `COMPONENT_<CORE>` uses `uint32_t` directly, match it exactly — do not mix.
+**Rule:** declare the parameter as `configSTACK_DEPTH_TYPE *`, which resolves correctly on every core and library version. If the `COMPONENT_<CORE>` template spells out a concrete type (e.g. `uint32_t` or `uint16_t`), copy that template's signature verbatim instead — never mix the two.
 
 ### `vApplicationStackOverflowHook`
 

@@ -4,7 +4,7 @@ description: Core ModusToolbox build, project creation, and GUI tool launcher sc
 license: "Apache-2.0"
 metadata:
   author: "Infineon ModusToolbox Team"
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # ModusToolbox Tools Skill — Build, Create, Launch
@@ -45,6 +45,9 @@ python .github/skills/mtb-tools/scripts/list_available_boards.py
 
 # List code examples for a board:
 python .github/skills/mtb-tools/scripts/list_code_examples.py --board-id <board-id>
+
+# List code examples filtered by one or more keywords and/or a category (preferred — keeps output small):
+python .github/skills/mtb-tools/scripts/list_code_examples.py --keyword mqtt --keyword wifi --category Wi-Fi --limit 20
 
 # Describe a code example (fetch metadata from GitHub):
 python .github/skills/mtb-tools/scripts/describe_code_example.py <repo-name>
@@ -94,10 +97,14 @@ Launch ModusToolbox GUI configurators (Device Configurator, Library Manager, etc
 List all boards available for project creation from the ModusToolbox manifest.
 
 ### `list_code_examples.py`
-List code examples available for a specific board.
+List code examples available for a specific board. Prefer filtering over dumping the whole catalog; the response reports `total_unfiltered`, `returned`, `applied_filters`, `truncated`, and a broaden `suggestion` when nothing matches.
 
 **Arguments:**
 - `--board-id` (optional): Filter examples for a specific board
+- `--keyword` (optional, repeatable): Case-insensitive substring matched across name, keywords, category, and description. Repeat the flag (or comma-separate) to pass a set; an example matches if it contains ANY keyword
+- `--category` (optional): Case-insensitive category filter. Valid names are board-specific — they are the keys of `counts_by_category` in the response (discover via `--summary-only`)
+- `--limit` (optional): Max examples to return. Applies ONLY with `--keyword` (defaults to 20 then); a bare or category-only call returns the full list
+- `--summary-only` (optional): Return only `total_unfiltered` + `counts_by_category` (no example list). Cheapest way to discover the valid categories for the current board
 
 ### `describe_code_example.py`
 Fetch live metadata from Infineon code example repos on GitHub (descriptions, dependencies, COMPONENTS).
@@ -126,7 +133,13 @@ Create a new project from a template using the project-creator-cli.
 - `--user-app-name` (required): Project name
 
 ### `list_skills_for_board.py`
-List the AI skills (name + description) that would be installed for a board. Queries the extension server directly (not MCP), since manifest/skill resolution lives in the extension.
+List the AI skills (name + description) deployed for a board. Run this during PLANNING
+to populate the "Required Skill References per Phase" table, and during development to
+discover which skills are available for the current target.
+
+Works without a project/workspace context as long as `--board-name` is supplied explicitly.
+Queries the extension server directly (not MCP), since manifest/skill resolution lives
+in the extension.
 
 **Arguments:**
 - `--board-name` (optional): Board to list skills for. Defaults to the current session board. May be exact or partial; it is matched against the manifests' board globs.

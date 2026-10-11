@@ -12,12 +12,12 @@
 #include "cy_log.h"
 #include "cy_sd_host.h"
 #include "cy_secure_sockets.h"
+#include "cy_time.h"
 #include "cy_wcm.h"
 #include "cybsp.h"
 #include "mtb_hal_sdio.h"
 #include "wifi_credentials_store.h"
 
-#define WIFI_TASK_STACK_SIZE (10240U)
 #define WIFI_TASK_PRIORITY (5U)
 #define WIFI_SCAN_COMPLETE_BIT (1U << 0U)
 #define WIFI_SCAN_TIMEOUT_TICKS pdMS_TO_TICKS(15000U)
@@ -32,6 +32,7 @@ static cy_stc_sd_host_context_t wifi_sdhc_host_context;
 static cy_wcm_config_t wifi_wcm_config;
 static TaskHandle_t wifi_reconnect_task_handle;
 static bool wifi_socket_ready;
+static mtb_hal_rtc_t wifi_rtc_instance;
 static bool wifi_boot_scan_active;
 static bool wifi_boot_candidate_available;
 static char wifi_boot_candidate_ssid[WIFI_CREDENTIALS_SSID_CAPACITY];
@@ -377,6 +378,19 @@ void wifi_task(void *argument)
 
     CY_ASSERT(wifi_scan_events != NULL);
     (void)cy_log_init(CY_LOG_WARNING, wifi_log_output, NULL);
+    /* Requires DC: CYBSP_RTC enabled with the WCO backup clock. */
+    cy_en_rtc_status_t rtc_result = Cy_RTC_Init(&CYBSP_RTC_config);
+    if (rtc_result == CY_RTC_SUCCESS)
+    {
+        /* TLS 1.3 uses time() even when certificate verification is disabled. */
+        mtb_clib_support_init(&wifi_rtc_instance);
+    }
+    else
+    {
+        cy_log_msg(CYLF_MIDDLEWARE, CY_LOG_ERR,
+                   "RTC initialization failed (0x%08lx); HTTP downloads unavailable\n",
+                   (unsigned long)rtc_result);
+    }
     if (!wifi_credentials_store_initialize())
     {
         cy_log_msg(CYLF_MIDDLEWARE, CY_LOG_WARNING,
@@ -393,8 +407,9 @@ void wifi_task(void *argument)
     CY_ASSERT(CY_RSLT_SUCCESS == cy_wcm_init(&wifi_wcm_config));
     CY_ASSERT(CY_RSLT_SUCCESS == cy_wcm_register_event_callback(wifi_event_callback));
     cy_rslt_t socket_result = cy_socket_init();
-    wifi_socket_ready = (CY_RSLT_SUCCESS == socket_result);
-    if (!wifi_socket_ready)
+    wifi_socket_ready = (CY_RSLT_SUCCESS == socket_result) &&
+                       (rtc_result == CY_RTC_SUCCESS);
+    if (CY_RSLT_SUCCESS != socket_result)
     {
         cy_log_msg(CYLF_MIDDLEWARE, CY_LOG_ERR,
                    "Secure sockets initialization failed (0x%08lx); HTTP downloads unavailable\n",

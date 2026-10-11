@@ -671,7 +671,13 @@ typedef struct _dynamic_buffer_t {
 	size_t size;
 } _dynamic_buffer_t;
 
-#define _MB_MEM_TAG_SIZE (sizeof(mb_mem_tag_t))
+/* Keep the compact size tag without misaligning the allocation it prefixes. */
+typedef union {
+	mb_mem_tag_t tag;
+	long double align_real;
+	void* align_pointer;
+} _memory_tag_t;
+#define _MB_MEM_TAG_SIZE (sizeof(_memory_tag_t))
 
 MBAPI size_t MB_SIZEOF_4BYTES = 4;
 MBAPI size_t MB_SIZEOF_8BYTES = 8;
@@ -879,6 +885,7 @@ typedef struct mb_interpreter_t {
 	_object_t* usertype_ref_ahead;
 #endif /* MB_ENABLE_USERTYPE_REF */
 	unsigned char jump_set;
+	bool_t classic_basic;
 #ifdef MB_ENABLE_CLASS
 	_class_t* last_instance;
 	bool_t calling _PACK1;
@@ -5341,7 +5348,14 @@ static int _create_symbol(mb_interpreter_t* s, _ls_node_t* l, char* sym, _object
 			memcpy(&tmp.array->type, value, sizeof(tmp.array->type));
 			(*obj)->data.array = tmp.array;
 
-			ul = _ht_set_or_insert(running->var_dict, sym, *obj);
+			if(s->classic_basic && context->routine_state &&
+				context->routine_params_state != _ROUTINE_STATE_PARAMS) {
+				_running_context_t* global = running;
+				while(global->prev) global = global->prev;
+				ul = _ht_set_or_insert(global->var_dict, sym, *obj);
+			} else {
+				ul = _ht_set_or_insert(running->var_dict, sym, *obj);
+			}
 			mb_assert(ul);
 
 			*obj = _create_object();
@@ -5457,7 +5471,14 @@ static int _create_symbol(mb_interpreter_t* s, _ls_node_t* l, char* sym, _object
 #endif /* MB_ENABLE_CLASS */
 			(*obj)->data.variable = tmp.var;
 
-			ul = _ht_set_or_insert(running->var_dict, sym, *obj);
+			if(s->classic_basic && context->routine_state &&
+				context->routine_params_state != _ROUTINE_STATE_PARAMS) {
+				_running_context_t* global = running;
+				while(global->prev) global = global->prev;
+				ul = _ht_set_or_insert(global->var_dict, sym, *obj);
+			} else {
+				ul = _ht_set_or_insert(running->var_dict, sym, *obj);
+			}
 			mb_assert(ul);
 
 			*obj = _create_object();
@@ -7353,6 +7374,10 @@ static int _get_array_index(mb_interpreter_t* s, _ls_node_t** l, _object_t* c, u
 		if(result != MB_FUNC_OK)
 			goto _exit;
 		len = subscript_ptr;
+		if(s->classic_basic && len->type == _DT_REAL &&
+			len->data.float_point >= 0 && len->data.float_point < INT_MAX) {
+			val.integer = (int_t)len->data.float_point;
+		} else
 		if(!_try_get_value(len, &val, _DT_INT)) {
 			_handle_error_on_obj(s, SE_RN_UNEXPECTED_TYPE, s->source_file, DON(ast), MB_FUNC_ERR, _exit, result);
 		}
@@ -14928,6 +14953,36 @@ _exit:
 	return result;
 }
 
+int mb_set_classic_basic(struct mb_interpreter_t* s, bool_t enabled) {
+	if(!s) return MB_FUNC_ERR;
+	s->classic_basic = enabled;
+	return MB_FUNC_OK;
+}
+
+/* INPUT owns a copy; public debug setters deliberately borrow string storage. */
+int mb_assign_input(struct mb_interpreter_t* s, const char* name, mb_value_t value) {
+	_ls_node_t* node = 0;
+	_object_t* data = 0;
+	mb_value_t initial;
+	if(!s || !name) return MB_FUNC_ERR;
+	node = _search_identifier_in_scope_chain(s, 0, name, _PATHING_NONE, 0, 0);
+	if(!node) {
+		mb_make_int(initial, 0);
+		mb_check(mb_add_var(s, 0, name, initial, false));
+		node = _search_identifier_in_scope_chain(s, 0, name, _PATHING_NONE, 0, 0);
+	}
+	if(!node || !_IS_VAR((_object_t*)node->data)) return MB_FUNC_ERR;
+	data = ((_object_t*)node->data)->data.variable->data;
+	_dispose_object(data);
+	mb_check(_public_value_to_internal_object(&value, data));
+	if(value.type == MB_DT_STRING) {
+		data->data.string = mb_strdup(value.value.string, strlen(value.value.string) + 1);
+		if(!data->data.string) return MB_FUNC_ERR;
+		data->is_ref = false;
+	}
+	return MB_FUNC_OK;
+}
+
 /* Set an import handler to a MY-BASIC environment */
 int mb_set_import_handler(struct mb_interpreter_t* s, mb_import_handler_t h) {
 	int result = MB_FUNC_OK;
@@ -16693,7 +16748,8 @@ static int _core_def(mb_interpreter_t* s, void** l) {
 	ast = (_ls_node_t*)*l;
 	ast = ast->next;
 
-	_using_jump_set_of_structured(s, ast, _exit, result);
+	if(!s->classic_basic)
+		_using_jump_set_of_structured(s, ast, _exit, result);
 
 	if(s->has_run)
 		goto _skip;

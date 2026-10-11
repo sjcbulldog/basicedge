@@ -7,26 +7,29 @@ and both runtime environments. Referenced from [SKILL.md](../SKILL.md).
 
 ## Placement Rule (All Paths)
 
-- **Bare-metal:** Call `cy_retarget_io_init()` in `main()` **after** `init_cycfg_all()` and BSP initialization, **before** any `printf()` call.
+- **Bare-metal:** Call `cy_retarget_io_init()` in `main()` **after** `cybsp_init()`, **before** any `printf()` call.
 - **RTOS:** Call `cy_retarget_io_init()` in `main()` **before** any `printf()` call. Do **not** call `printf()` or any other stdio function before the RTOS kernel starts (`vTaskStartScheduler()` or equivalent).
+
+> ⚠️ **Do not call `init_cycfg_all()` yourself.** The BSP's `cybsp_init()` calls it internally, so calling it again in `main()` is a duplicate initialization. Call `cybsp_init()` and nothing more.
 
 ---
 
 ## Path 1 — MTB-HAL (`COMPONENT_MTB_HAL`)
 
-Default path for modern PSE84 and MTB 3.x projects. Requires Device Configurator UART configuration with alias `DEBUG_UART`.
+Default path for modern MTB 3.x projects. Requires Device Configurator UART configuration with alias `DEBUG_UART`.
 
 ### Includes
 
 Add to `main.c` or the file containing the initialization code:
 
 ```c
+#include "cybsp.h"           /* for cybsp_init() */
 #include "cy_retarget_io.h"
 ```
 
 ### Bare-Metal Initialization
 
-Insert after `init_cycfg_all()` and BSP init in `main()`:
+Insert after `cybsp_init()` in `main()`:
 
 ```c
 /* UART context and HAL object for retarget-io (declare at file or function scope) */
@@ -68,11 +71,11 @@ int main(void)
     static mtb_hal_uart_t            DEBUG_UART_hal_obj;
     cy_rslt_t                        result;
 
-    init_cycfg_all();
-    /* ... other BSP init ... */
-
-    result = Cy_SCB_UART_Init(DEBUG_UART_HW, &DEBUG_UART_config, &DEBUG_UART_context);
+    /* cybsp_init() calls init_cycfg_all() internally — do not call it again here. */
+    result = cybsp_init();
     CY_ASSERT(result == CY_RSLT_SUCCESS);
+
+    result = Cy_SCB_UART_Init(DEBUG_UART_HW, &DEBUG_UART_config, &DEBUG_UART_context);    CY_ASSERT(result == CY_RSLT_SUCCESS);
 
     result = mtb_hal_uart_setup(&DEBUG_UART_hal_obj, &CYBSP_DEBUG_UART_hal_config,
                                  &DEBUG_UART_context, NULL);

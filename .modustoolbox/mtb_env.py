@@ -2,8 +2,8 @@
 import json as _json
 
 SESSION_INFO = _json.loads(r'''{
-  "extension_dir": "c:/Users/butch/.vscode/extensions/infineonag.modustoolbox-ai-0.5.0-win32-x64",
-  "workspace_path": "c:/mtbfw/graphics",
+  "extension_dir": "c:/Users/butch/.vscode/extensions/infineonag.modustoolbox-ai-0.6.0-win32-x64",
+  "workspace_path": "c:/mtbfw/basicedge",
   "projects": [
     "proj_cm33_s",
     "proj_cm33_ns",
@@ -14,9 +14,9 @@ SESSION_INFO = _json.loads(r'''{
   "board_target": "TARGET_APP_KIT_PSE84_EVAL_EPC2",
   "cy_tools_path": "C:/Users/butch/ModusToolbox/tools_3.9",
   "modus_shell_path": "C:/Users/butch/ModusToolbox/tools_3.9/modus-shell",
-  "tcp_port": 62844,
-  "ext_port": 62842,
-  "pid": 29804,
+  "tcp_port": 55861,
+  "ext_port": 55860,
+  "pid": 28476,
   "log_level": "info",
   "log_file": "C:/Users/butch/AppData/Local/Temp/mtbai-logs/mtbai.log"
 }''')

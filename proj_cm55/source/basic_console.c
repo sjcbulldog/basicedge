@@ -4,6 +4,8 @@
  ******************************************************************************/
 
 #include "basic_console.h"
+#include "basic_catalog.h"
+#include "basic_compat.h"
 
 #include <ctype.h>
 #include <stdint.h>
@@ -20,13 +22,16 @@ extern const char basic_trek_program[];
 extern const size_t basic_trek_program_length;
 
 #define BASIC_PROGRAM_CAPACITY (32U * 1024U)
-#define BASIC_RUNTIME_CAPACITY (BASIC_PROGRAM_CAPACITY + BASIC_MAX_LINES)
+#define BASIC_RUNTIME_CAPACITY (96U * 1024U)
+#define BASIC_RUNTIME_ROWS     (4096U)
 #define BASIC_MAX_LINES        (640U)
 #define BASIC_STORED_LINE_SIZE (272U)
 #define BASIC_MIN_LINE_NUMBER  (1UL)
 #define BASIC_MAX_LINE_NUMBER  (65535UL)
 #define BASIC_RENUM_START      (10UL)
 #define BASIC_RENUM_STEP       (10UL)
+#define BASIC_CATALOG_BASE_URL "https://www.mewserver.org/basic/"
+#define BASIC_CATALOG_URL      BASIC_CATALOG_BASE_URL "progs.json"
 
 typedef struct
 {
@@ -36,9 +41,12 @@ typedef struct
 
 static char basic_program[BASIC_PROGRAM_CAPACITY];
 static char translated_program[BASIC_RUNTIME_CAPACITY];
+static uint32_t runtime_line_map[BASIC_RUNTIME_ROWS];
+static bool runtime_numbered;
 static char directory_listing[FILE_SERVICE_DIRECTORY_CAPACITY];
 static size_t basic_program_length;
 static bool basic_trace_enabled;
+static basic_catalog_t basic_catalog;
 
 static const char *skip_spaces(const char *text)
 {
@@ -228,6 +236,118 @@ static bool matches_case_insensitive_name(const char *text,
     }
 
     return true;
+}
+
+static void store_downloaded_program(size_t length)
+{
+    memcpy(basic_program, translated_program, length);
+    basic_program[length] = '\0';
+    basic_program_length = length;
+}
+
+static bool download_catalog(void)
+{
+    size_t length;
+    if (!wifi_service_download(BASIC_CATALOG_URL,
+                               (uint8_t *)translated_program,
+                               BASIC_PROGRAM_CAPACITY - 1U,
+                               &length))
+    {
+        printf("Unable to download BASIC program catalog.\r\n");
+        return false;
+    }
+    if (!basic_catalog_parse(translated_program, length, &basic_catalog))
+    {
+        printf("BASIC program catalog is invalid.\r\n");
+        return false;
+    }
+    return true;
+}
+
+/* Catalog text is remote data; replace controls so it cannot drive the terminal. */
+static void print_catalog_field(const char *text, int width)
+{
+    int printed = 0;
+    for (; *text != '\0'; ++text, ++printed)
+    {
+        unsigned char value = (unsigned char)*text;
+        (void)putchar(((value < 0x20U) || (value == 0x7fU)) ? ' ' : (int)value);
+    }
+    while (printed++ < width)
+    {
+        (void)putchar(' ');
+    }
+}
+
+static void list_catalog(void)
+{
+    if (!download_catalog())
+    {
+        return;
+    }
+    if (basic_catalog.count == 0U)
+    {
+        printf("No BASIC programs available.\r\n");
+        return;
+    }
+    printf("%-24s %-10s %6s  %s\r\n", "NAME", "TYPE", "SIZE", "DESCRIPTION");
+    for (size_t index = 0U; index < basic_catalog.count; ++index)
+    {
+        const basic_catalog_program_t *program = &basic_catalog.programs[index];
+        print_catalog_field(program->filename, 24);
+        (void)putchar(' ');
+        print_catalog_field(program->type, 10);
+        printf(" %6lu  ", (unsigned long)program->size);
+        print_catalog_field(program->description, 0);
+        printf("\r\n");
+    }
+    printf("%u program(s) available.\r\n", (unsigned int)basic_catalog.count);
+}
+
+static void load_catalog_program(const char *name)
+{
+    char url[MESSAGE_HTTP_MAX_URL_LENGTH + 1U];
+    size_t downloaded_length;
+    if (!download_catalog())
+    {
+        return;
+    }
+    const basic_catalog_program_t *program = basic_catalog_find(&basic_catalog, name);
+    if (program == NULL)
+    {
+        printf("Program \"%s\" is not in the catalog.\r\n", name);
+        return;
+    }
+    if (program->size >= BASIC_PROGRAM_CAPACITY)
+    {
+        printf("Program \"%s\" is too large.\r\n", program->filename);
+        return;
+    }
+    int url_length = snprintf(url, sizeof(url), "%s%s",
+                              BASIC_CATALOG_BASE_URL, program->filename);
+    if ((url_length < 0) || ((size_t)url_length >= sizeof(url)))
+    {
+        printf("Program URL is too long.\r\n");
+        return;
+    }
+    printf("WIFI BLOAD: downloading %s.\r\n", program->filename);
+    (void)fflush(stdout);
+    if (!wifi_service_download(url,
+                               (uint8_t *)translated_program,
+                               BASIC_PROGRAM_CAPACITY - 1U,
+                               &downloaded_length))
+    {
+        printf("Unable to download BASIC program \"%s\".\r\n", program->filename);
+        return;
+    }
+    if (downloaded_length != program->size)
+    {
+        printf("Downloaded size %lu does not match catalog size %lu.\r\n",
+               (unsigned long)downloaded_length, (unsigned long)program->size);
+        return;
+    }
+    store_downloaded_program(downloaded_length);
+    printf("Loaded program: %s\r\n", program->filename);
 }
 
 static bool parse_filename(struct mb_interpreter_t *interpreter,
@@ -709,50 +829,37 @@ static bool load_builtin_program(const char *argument,
 
 static bool build_runtime_program(void)
 {
-    size_t input_offset = 0U;
-    size_t output_length = 0U;
-
-    translated_program[0] = '\0';
-    while (input_offset < basic_program_length)
+    runtime_numbered = true;
+    memset(runtime_line_map, 0, sizeof(runtime_line_map));
+    bool valid = basic_compat_translate(basic_program, true, translated_program,
+                                       sizeof(translated_program),
+                                       runtime_line_map, BASIC_RUNTIME_ROWS);
+    if (!valid)
     {
-        const char *body;
-        uint32_t line_number;
-        char label[16];
-        int written;
-
-        if (!parse_line_number(&basic_program[input_offset], &line_number, &body))
-        {
-            return false;
-        }
-
-        written = snprintf(label,
-                           sizeof(label),
-                           "L%lu: ",
-                           (unsigned long)line_number);
-        if ((written < 0) ||
-            !append_text(translated_program,
-                         sizeof(translated_program),
-                         &output_length,
-                         label,
-                         (size_t)written) ||
-            !append_translated_body(translated_program,
-                                    sizeof(translated_program),
-                                    body,
-                                    NULL,
-                                    0U,
-                                    true,
-                                    &output_length))
-        {
-            return false;
-        }
-
-        const char *line_end = strchr(&basic_program[input_offset], '\n');
-        input_offset = (NULL != line_end)
-                           ? (size_t)(line_end - basic_program) + 1U
-                           : basic_program_length;
+        printf("BASIC parser: %s\r\n", basic_compat_error());
     }
+    return valid;
+}
 
+bool basic_console_prepare_immediate(const char *input, const char **program)
+{
+    runtime_numbered = false;
+    memset(runtime_line_map, 0, sizeof(runtime_line_map));
+    if (!basic_compat_translate(input, false, translated_program,
+                                sizeof(translated_program), runtime_line_map,
+                                BASIC_RUNTIME_ROWS))
+    {
+        printf("BASIC parser: %s\r\n", basic_compat_error());
+        return false;
+    }
+    *program = translated_program;
     return true;
+}
+
+uint32_t basic_console_source_line(unsigned short row)
+{
+    return (runtime_numbered && (row > 0U) && (row <= BASIC_RUNTIME_ROWS))
+               ? runtime_line_map[row - 1U] : row;
 }
 
 void basic_console_initialize(void)
@@ -774,6 +881,11 @@ void basic_console_trace_step(const char *file,
 
     if (!basic_trace_enabled)
     {
+        return;
+    }
+    if (runtime_numbered)
+    {
+        printf("TRACE %lu\r\n", (unsigned long)basic_console_source_line(row));
         return;
     }
 
@@ -1025,7 +1137,6 @@ bool basic_console_process(struct mb_interpreter_t **interpreter,
         }
         if (!build_runtime_program())
         {
-            printf("Program is too large to run.\r\n");
             *status = MB_FUNC_ERR;
             return true;
         }
@@ -1169,13 +1280,28 @@ bool basic_console_process(struct mb_interpreter_t **interpreter,
                 printf("Unable to download BASIC program from URL.\r\n");
                 return true;
             }
-            memcpy(basic_program, translated_program, downloaded_length);
-            basic_program[downloaded_length] = '\0';
-            basic_program_length = downloaded_length;
+            store_downloaded_program(downloaded_length);
             printf("Loaded program: %s\r\n", url);
             return true;
         }
-        printf("Usage: WIFI STATUS | WIFI SCAN | WIFI STORED | WIFI CLEAR | WIFI CONNECT \"SSID\" \"PASSWORD\" | WIFI DISCONNECT | WIFI LOAD \"URL\"\r\n");
+        if (command_match(arguments, "LIST", &wifi_arguments) &&
+            (*wifi_arguments == '\0'))
+        {
+            list_catalog();
+            return true;
+        }
+        if (command_match(arguments, "BLOAD", &wifi_arguments))
+        {
+            char name[BASIC_CATALOG_FILENAME_SIZE];
+            if (!parse_filename(*interpreter, wifi_arguments, name, sizeof(name)))
+            {
+                printf("Usage: WIFI BLOAD \"program\"\r\n");
+                return true;
+            }
+            load_catalog_program(name);
+            return true;
+        }
+        printf("Usage: WIFI STATUS | WIFI SCAN | WIFI STORED | WIFI CLEAR | WIFI CONNECT \"SSID\" \"PASSWORD\" | WIFI DISCONNECT | WIFI LOAD \"URL\" | WIFI LIST | WIFI BLOAD \"program\"\r\n");
         return true;
     }
     if (command_match(input, "NEW", &arguments))
@@ -1264,6 +1390,8 @@ bool basic_console_process(struct mb_interpreter_t **interpreter,
         printf("WIFI CONNECT \"SSID\" \"PASSWORD\" - Connect to WiFi.\r\n");
         printf("WIFI DISCONNECT - Disconnect from WiFi.\r\n");
         printf("WIFI LOAD \"URL\" - Download and load a BASIC program.\r\n");
+        printf("WIFI LIST - List programs in the online catalog.\r\n");
+        printf("WIFI BLOAD \"program\" - Download and load a catalog program.\r\n");
         printf("LOAD \"filename\" - Load a BASIC program from the SD card.\r\n");
         printf("SAVE \"filename\" - Save the BASIC program to the SD card.\r\n");
         printf("NEW - Clear the stored program and variables.\r\n");

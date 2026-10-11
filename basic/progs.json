@@ -1,0 +1,16 @@
+{
+    "programs": [
+        {
+            "filename" : "trek.bas",
+            "type" : "game",
+            "description" : "A classic Star Trek text-based game.",
+            "size" : 28406
+        },
+        {
+            "filename" : "amazing.bas",
+            "type" : "utility",
+            "description" : "A maze generation program.",
+            "size" : 3094
+        }
+    ]
+}

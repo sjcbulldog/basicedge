@@ -59,6 +59,9 @@
 #define CM55_APP_BOOT_ADDR          (CYMEM_CM33_0_m55_nvm_START + \
                                         CYBSP_MCUBOOT_HEADER_SIZE)
 
+/* FreeRTOS stack depths are in StackType_t words, not bytes. */
+#define WIFI_TASK_STACK_SIZE        ((10U * 1024U) / sizeof(StackType_t))
+
 
 /*******************************************************************************
 * Function Name: main
@@ -103,7 +106,7 @@ int main(void)
     if ((pdPASS != message_tasks_create()) ||
         (pdPASS != blue_led_task_create()) ||
         (pdPASS != sd_card_task_create()) ||
-        (pdPASS != xTaskCreate(wifi_task, "WiFi Task", 10240U, NULL, 5U, NULL)))
+        (pdPASS != xTaskCreate(wifi_task, "WiFi Task", WIFI_TASK_STACK_SIZE, NULL, 5U, NULL)))
     {
         CY_ASSERT(0);
         while (true);
