@@ -26,5 +26,7 @@ bool basic_compat_translate(const char *source, bool numbered,
 int basic_compat_register(struct mb_interpreter_t *interpreter,
                            const basic_compat_platform_t *platform);
 const char *basic_compat_error(void);
+/* When enabled, numbered programs translated afterwards report each statement as it runs. */
+void basic_compat_set_trace(bool enabled);
 
 #endif

@@ -831,6 +831,7 @@ static bool build_runtime_program(void)
 {
     runtime_numbered = true;
     memset(runtime_line_map, 0, sizeof(runtime_line_map));
+    basic_compat_set_trace(basic_trace_enabled);
     bool valid = basic_compat_translate(basic_program, true, translated_program,
                                        sizeof(translated_program),
                                        runtime_line_map, BASIC_RUNTIME_ROWS);
@@ -883,9 +884,9 @@ void basic_console_trace_step(const char *file,
     {
         return;
     }
+    /* Numbered programs trace each source statement through translated BCTRACE calls. */
     if (runtime_numbered)
     {
-        printf("TRACE %lu\r\n", (unsigned long)basic_console_source_line(row));
         return;
     }
 

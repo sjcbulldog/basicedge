@@ -46,7 +46,7 @@ static int step(struct mb_interpreter_t *s, void **list, const char *file,
     return ++steps > 1000000U ? MB_EXTENDED_ABORT : MB_FUNC_OK;
 }
 
-static struct mb_interpreter_t *run(const char *source, const char **responses)
+static struct mb_interpreter_t *start(const char *source, const char **responses, int *status)
 {
     answers = responses;
     answer_index = 0U;
@@ -59,9 +59,16 @@ static struct mb_interpreter_t *run(const char *source, const char **responses)
     assert(basic_compat_register(s, &platform) == MB_FUNC_OK);
     assert(mb_set_error_handler(s, error) == MB_FUNC_OK);
     assert(mb_debug_set_stepped_handler(s, step, NULL) == MB_FUNC_OK);
-    int status = mb_load_string(s, translated, true);
-    if (status == MB_FUNC_OK) status = mb_run(s, true);
-    if (status == MB_FUNC_END) status = MB_FUNC_OK;
+    *status = mb_load_string(s, translated, true);
+    if (*status == MB_FUNC_OK) *status = mb_run(s, true);
+    if (*status == MB_FUNC_END) *status = MB_FUNC_OK;
+    return s;
+}
+
+static struct mb_interpreter_t *run(const char *source, const char **responses)
+{
+    int status;
+    struct mb_interpreter_t *s = start(source, responses, &status);
     if (status != MB_FUNC_OK)
     {
         fprintf(stderr, "STATUS %d after %lu steps\n", status, (unsigned long)steps);
@@ -106,7 +113,42 @@ int main(int argc, char **argv)
             "30 I=2:S1=5:K(2,1)=4:X=FND(0)\n40 END\n", NULL);
     number(s, "X", 9);
     mb_close(&s);
+    s = run("10 N=3:M=2:V=7\n"
+            "20 X=1:DIM W(N,M),V(INT(N/2)+1,M):Y=2\n"
+            "30 W(N,M)=5:V(2,M)=V:X=W(N,M)+V(2,2)+X+Y\n40 END\n", NULL);
+    number(s, "X", 15);
+    number(s, "V", 7);
+    mb_close(&s);
+    assert(!basic_compat_translate("10 DIM A()\n", true, translated,
+                                   sizeof(translated), NULL, 0U));
+    assert(!basic_compat_translate("10 DIM A(N\n", true, translated,
+                                   sizeof(translated), NULL, 0U));
+    int status;
+    s = start("10 N=-1\n20 DIM A(N)\n30 END\n", NULL, &status);
+    assert(status != MB_FUNC_OK);
+    mb_close(&s);
+    s = start("10 N=100000\n20 DIM A(N,N)\n30 END\n", NULL, &status);
+    assert(status != MB_FUNC_OK);
+    mb_close(&s);
     char tiny[8];
+    puts("#TRACE-BEGIN");
+    basic_compat_set_trace(true);
+    s = run("10 REM HELLO: WORLD\n"
+            "20 X=1:Y=2\n"
+            "30 IF X=1 THEN 50\n"
+            "40 PRINT \"NO\"\n"
+            "50 FOR I=1 TO 2:NEXT I\n"
+            "60 DEF FNA(Q)=Q+1\n"
+            "70 PRINT \"A\";:Z=FNA(1)\n"
+            "80 IF X=2 THEN Y=3:Y=4\n"
+            "90 IF X=1 THEN Y=5:GOTO 110\n"
+            "100 Y=6\n"
+            "110 END\n", NULL);
+    basic_compat_set_trace(false);
+    puts("#TRACE-END");
+    number(s, "Y", 5);
+    number(s, "Z", 2);
+    mb_close(&s);
     assert(!basic_compat_translate("10 PRINT \"hello\"\n", true, tiny, sizeof(tiny),
                                    NULL, 0U));
     assert(basic_compat_error() != NULL);
@@ -165,6 +207,26 @@ int main(int argc, char **argv)
         const char *instructions[] = {"Y", "XXX", "NO", NULL};
         s = run(source, instructions);
         assert(answer_index == 3U);
+        mb_close(&s);
+        static char traced[98304];
+        static uint32_t traced_map[4096];
+        basic_compat_set_trace(true);
+        assert(basic_compat_translate(source, true, traced, sizeof(traced),
+                                      traced_map, 4096U));
+        basic_compat_set_trace(false);
+    }
+    if (argc > 2)
+    {
+        FILE *file = fopen(argv[2], "rb");
+        assert(file != NULL);
+        char source[32768];
+        size_t size = fread(source, 1U, sizeof(source) - 1U, file);
+        source[size] = '\0';
+        fclose(file);
+        const char *maze[] = {"1,1", "12,9", NULL};
+        s = run(source, maze);
+        assert(answer_index == 2U);
+        number(s, "C", 12 * 9 + 1);
         mb_close(&s);
     }
     assert(mb_dispose() == MB_FUNC_OK);

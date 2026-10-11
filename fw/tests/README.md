@@ -8,7 +8,8 @@ Run from the repository root with a host GCC compiler:
 
 The runner builds the production compatibility parser and vendored MY-BASIC
 interpreter, executes targeted regressions and two scripted sessions of the
-unmodified [Trek program](../basic/trek.bas), checks game output, and removes its
+unmodified [Trek program](../basic/trek.bas), a run of the unmodified
+[Amazing program](../basic/amazing.bas) with its maze output checked, checks game output, and removes its
 temporary executable. It also builds the WiFi program-catalog parser with
 warnings as errors, checks [progs.json](../basic/progs.json), lookup rules,
 and malformed or unsafe catalogs. No board, SD card, or network is needed. See

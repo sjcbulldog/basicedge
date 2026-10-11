@@ -15968,10 +15968,27 @@ static int _core_dim(mb_interpreter_t* s, void** l) {
 	}
 	ast = ast->next;
 	while(((_object_t*)ast->data)->type != _DT_FUNC || ((_object_t*)ast->data)->data.func->pointer != _core_close_bracket) {
-		/* Get an integer value */
-		len = (_object_t*)ast->data;
-		if(!_try_get_value(len, &val, _DT_INT)) {
-			_handle_error_on_obj(s, SE_RN_UNEXPECTED_TYPE, s->source_file, DON(ast), MB_FUNC_ERR, _exit, result);
+		if(s->classic_basic) {
+			/* Classic BASIC allows computed bounds such as DIM A(N+1). */
+			_object_t bound;
+			_object_t* bound_ptr = &bound;
+			_MAKE_NIL(bound_ptr);
+			result = _calc_expression(s, &ast, &bound_ptr);
+			if(result != MB_FUNC_OK)
+				goto _exit;
+			len = bound_ptr;
+			if(len->type == _DT_REAL && len->data.float_point >= 0 && len->data.float_point < INT_MAX) {
+				val.integer = (int_t)len->data.float_point;
+			} else
+			if(!_try_get_value(len, &val, _DT_INT)) {
+				_handle_error_on_obj(s, SE_RN_UNEXPECTED_TYPE, s->source_file, DON(ast), MB_FUNC_ERR, _exit, result);
+			}
+		} else {
+			/* Get an integer value */
+			len = (_object_t*)ast->data;
+			if(!_try_get_value(len, &val, _DT_INT)) {
+				_handle_error_on_obj(s, SE_RN_UNEXPECTED_TYPE, s->source_file, DON(ast), MB_FUNC_ERR, _exit, result);
+			}
 		}
 		if(val.integer <= 0) {
 			_handle_error_on_obj(s, SE_RN_INDEX_OUT_OF_BOUND, s->source_file, DON(ast), MB_FUNC_ERR, _exit, result);
@@ -15979,12 +15996,16 @@ static int _core_dim(mb_interpreter_t* s, void** l) {
 		if(dummy.dimension_count >= MB_MAX_DIMENSION_COUNT) {
 			_handle_error_on_obj(s, SE_RN_TOO_MANY_DIMENSIONS, s->source_file, DON(ast), MB_FUNC_ERR, _exit, result);
 		}
+		if(dummy.count && (unsigned)val.integer > (unsigned)(INT_MAX / 16) / dummy.count) {
+			_handle_error_on_obj(s, SE_RN_OUT_OF_MEMORY, s->source_file, DON(ast), MB_FUNC_ERR, _exit, result);
+		}
 		dummy.dimensions[dummy.dimension_count++] = (int)val.integer;
 		if(dummy.count)
 			dummy.count *= (unsigned)val.integer;
 		else
 			dummy.count += (unsigned)val.integer;
-		ast = ast->next;
+		if(!s->classic_basic)
+			ast = ast->next;
 		/* Comma? */
 		if(_IS_SEP(ast->data, ','))
 			ast = ast->next;

@@ -34,6 +34,9 @@ typedef struct
         unsigned int label;
     } loops[32];
     size_t loop_count;
+    bool hoist;
+    bool trace;
+    const char *source;
 } compat_writer_t;
 
 static const char *compat_error;
@@ -42,6 +45,14 @@ static unsigned int compat_column;
 static real_t compat_last_random;
 static char compat_arrays[32][COMPAT_IDENTIFIER_CAPACITY];
 static size_t compat_array_count;
+static bool compat_trace;
+static const char *compat_trace_source;
+static size_t compat_trace_size;
+
+void basic_compat_set_trace(bool enabled)
+{
+    compat_trace = enabled;
+}
 
 static bool fail(const char *message)
 {
@@ -127,6 +138,48 @@ static bool put(compat_writer_t *writer, const char *text, size_t length)
 static bool text(compat_writer_t *writer, const char *value)
 {
     return put(writer, value, strlen(value));
+}
+
+/* Find the parenthesis closing the one at open, ignoring quoted text. */
+static const char *matching_close(const char *open, const char *end)
+{
+    bool quoted = false;
+    unsigned int depth = 0U;
+    for (const char *cursor = open; cursor < end; ++cursor)
+    {
+        if (*cursor == '"') quoted = !quoted;
+        if (quoted) continue;
+        if (*cursor == '(') ++depth;
+        else if ((*cursor == ')') && (--depth == 0U)) return cursor;
+    }
+    return NULL;
+}
+
+static bool constant_bound(const char *begin, const char *end)
+{
+    begin = spaces(begin);
+    while ((end > begin) && isspace((unsigned char)end[-1])) --end;
+    if (begin == end) return false;
+    for (const char *cursor = begin; cursor < end; ++cursor)
+    {
+        if (!isdigit((unsigned char)*cursor)) return false;
+    }
+    return true;
+}
+
+/* Emit a runtime call that reports one original source statement when TRACE is on. */
+static bool trace_marker(compat_writer_t *writer, const char *begin, const char *end)
+{
+    if (!writer->trace) return true;
+    begin = spaces(begin);
+    while ((end > begin) && isspace((unsigned char)end[-1])) --end;
+    if (begin == end) return true;
+    char marker[64];
+    (void)snprintf(marker, sizeof(marker), "BCTRACE(%lu,%lu,%lu)\n",
+                   (unsigned long)writer->line,
+                   (unsigned long)(begin - writer->source),
+                   (unsigned long)(end - begin));
+    return text(writer, marker);
 }
 
 /* Find punctuation or a keyword outside strings and nested expressions. */
@@ -265,6 +318,10 @@ static bool statement(compat_writer_t *writer, const char *begin, const char *en
     size_t length = (size_t)(name_end - begin);
     const char *arguments = spaces(name_end);
     if (arguments > end) arguments = end;
+    if (writer->hoist && !equal(begin, length, "DIM"))
+    {
+        return true;
+    }
     if (equal(begin, length, "REM"))
     {
         return put(writer, begin, (size_t)(end - begin)) && text(writer, "\n");
@@ -377,40 +434,86 @@ static bool statement(compat_writer_t *writer, const char *begin, const char *en
     }
     if (equal(begin, length, "DIM"))
     {
+        /* Constant arrays are hoisted; computed bounds get a hoisted binding and run in place. */
         const char *cursor = arguments;
         while (cursor < end)
         {
-            const char *open = strchr(cursor, '(');
-            const char *close = (open != NULL) ? strchr(open, ')') : NULL;
-            if ((close == NULL) || (close >= end) ||
-                !text(writer, "DIM BCA_") || !put(writer, cursor, (size_t)(open + 1 - cursor)))
+            const char *name_end = identifier_end(cursor);
+            const char *open = spaces(name_end);
+            const char *close = ((open < end) && (*open == '(')) ? matching_close(open, end) : NULL;
+            if ((close == NULL) || (name_end == cursor))
             {
                 return fail("Invalid classic DIM declaration.");
             }
-            cursor = open + 1;
-            while (cursor < close)
+            bool computed = false;
+            unsigned int bounds = 0U;
+            for (const char *bound = open + 1; bound < close;)
             {
-                char *number_end;
-                unsigned long dimension = strtoul(cursor, &number_end, 10);
-                if ((number_end == cursor) || (dimension >= 65535UL))
+                const char *comma = find(bound, close, ",");
+                const char *finish = (comma != NULL) ? comma : close;
+                if (constant_bound(bound, finish))
                 {
-                    return fail("Classic DIM bounds must be integer constants.");
+                    if (strtoul(spaces(bound), NULL, 10) >= 65535UL)
+                    {
+                        return fail("Classic DIM bound is too large.");
+                    }
                 }
-                char value[16];
-                (void)snprintf(value, sizeof(value), "%lu", dimension + 1UL);
-                if (!text(writer, value)) return false;
-                cursor = spaces(number_end);
-                if ((cursor < close) && (*cursor == ','))
-                {
-                    if (!text(writer, ",")) return false;
-                    cursor = spaces(cursor + 1);
-                }
-                else if (cursor != close)
+                else if (spaces(bound) == finish)
                 {
                     return fail("Invalid classic DIM bound.");
                 }
+                else
+                {
+                    computed = true;
+                }
+                ++bounds;
+                bound = (comma != NULL) ? comma + 1 : close;
             }
-            if (!text(writer, ")\n")) return false;
+            if (bounds == 0U) return fail("Invalid classic DIM bound.");
+            size_t name_length = (size_t)(name_end - cursor);
+            if (writer->hoist && !array_name(cursor, name_length))
+            {
+                if ((name_length >= COMPAT_IDENTIFIER_CAPACITY) || (compat_array_count >= 32U))
+                {
+                    return fail("Too many or invalid classic arrays.");
+                }
+                for (size_t index = 0U; index < name_length; ++index)
+                {
+                    compat_arrays[compat_array_count][index] =
+                        (char)toupper((unsigned char)cursor[index]);
+                }
+                compat_arrays[compat_array_count++][name_length] = '\0';
+            }
+            if (writer->hoist || computed)
+            {
+                if (!text(writer, "DIM BCA_") ||
+                    !put(writer, cursor, (size_t)(name_end - cursor)) ||
+                    !text(writer, "(")) return false;
+                for (const char *bound = open + 1; bound < close;)
+                {
+                    const char *comma = find(bound, close, ",");
+                    const char *finish = (comma != NULL) ? comma : close;
+                    if (writer->hoist && computed)
+                    {
+                        if (!text(writer, "1")) return false;
+                    }
+                    else if (constant_bound(bound, finish))
+                    {
+                        char value[16];
+                        (void)snprintf(value, sizeof(value), "%lu",
+                                       strtoul(spaces(bound), NULL, 10) + 1UL);
+                        if (!text(writer, value)) return false;
+                    }
+                    else if (!text(writer, "(") || !expression(writer, bound, finish) ||
+                             !text(writer, ")+1"))
+                    {
+                        return false;
+                    }
+                    if ((comma != NULL) && !text(writer, ",")) return false;
+                    bound = (comma != NULL) ? comma + 1 : close;
+                }
+                if (!text(writer, ")\n")) return false;
+            }
             cursor = spaces(close + 1);
             if (cursor < end)
             {
@@ -544,7 +647,7 @@ static bool statements(compat_writer_t *writer, const char *begin,
         const char *name_end = identifier_end(begin);
         if (equal(begin, (size_t)(name_end - begin), "REM"))
         {
-            return statement(writer, begin, end);
+            return trace_marker(writer, begin, end) && statement(writer, begin, end);
         }
         if (equal(begin, (size_t)(name_end - begin), "IF"))
         {
@@ -553,21 +656,37 @@ static bool statements(compat_writer_t *writer, const char *begin,
             const char *body = spaces(then + 4);
             const char *otherwise = matching_else(body, end);
             const char *finish = (otherwise != NULL) ? otherwise : end;
+            if (writer->hoist)
+            {
+                if ((body < finish) && isdigit((unsigned char)*body))
+                {
+                    const char *colon = find(body, finish, ":");
+                    body = (colon != NULL) ? colon + 1 : finish;
+                }
+                return statements(writer, body, finish, nesting + 1U) &&
+                       ((otherwise == NULL) ||
+                        statements(writer, otherwise + 4, end, nesting + 1U));
+            }
             unsigned int label = ++writer->label;
             char skip[64];
+            const char *jump_end = NULL;
+            if ((body < finish) && isdigit((unsigned char)*body))
+            {
+                const char *colon = find(body, finish, ":");
+                jump_end = (colon != NULL) ? colon : finish;
+            }
             (void)snprintf(skip, sizeof(skip), ") THEN GOTO BCSKIP%u\n", label);
-            if (!text(writer, "IF NOT(") || !expression(writer, name_end, then) ||
+            if (!trace_marker(writer, begin, (jump_end != NULL) ? jump_end : then + 4) ||
+                !text(writer, "IF NOT(") || !expression(writer, name_end, then) ||
                 !text(writer, skip))
             {
                 return false;
             }
-            if ((body < finish) && isdigit((unsigned char)*body))
+            if (jump_end != NULL)
             {
-                const char *colon = find(body, finish, ":");
-                const char *jump_end = (colon != NULL) ? colon : finish;
                 if (!text(writer, "GOTO ") || !target(writer, body, jump_end) ||
                     !text(writer, "\n")) return false;
-                body = (colon != NULL) ? colon + 1 : finish;
+                body = (jump_end < finish) ? jump_end + 1 : finish;
             }
             if (!statements(writer, body, finish, nesting + 1U)) return false;
             if (otherwise != NULL)
@@ -586,10 +705,12 @@ static bool statements(compat_writer_t *writer, const char *begin,
         }
         const char *colon = find(begin, end, ":");
         const char *finish = (colon != NULL) ? colon : end;
+        if (!trace_marker(writer, begin, finish)) return false;
         if (isdigit((unsigned char)*begin))
         {
-            if (!text(writer, "GOTO ") || !target(writer, begin, finish) ||
-                !text(writer, "\n")) return false;
+            if (!writer->hoist &&
+                (!text(writer, "GOTO ") || !target(writer, begin, finish) ||
+                 !text(writer, "\n"))) return false;
         }
         else if (!statement(writer, begin, finish))
         {
@@ -617,47 +738,13 @@ bool basic_compat_translate(const char *source, bool numbered,
     writer.capacity = capacity;
     writer.map = line_map;
     writer.map_capacity = map_capacity;
+    writer.source = source;
     output[0] = '\0';
-    if (numbered) compat_array_count = 0U;
-    for (const char *cursor = source; *cursor != '\0';)
+    if (numbered)
     {
-        const char *end = strchr(cursor, '\n');
-        if (end == NULL) end = cursor + strlen(cursor);
-        const char *body = spaces(cursor);
-        if (numbered)
-        {
-            while (isdigit((unsigned char)*body)) ++body;
-            body = spaces(body);
-        }
-        if (equal(body, (size_t)(identifier_end(body) - body), "DIM"))
-        {
-            body = spaces(body + 3);
-            while (body < end)
-            {
-                const char *finish = identifier_end(body);
-                size_t length = (size_t)(finish - body);
-                if ((length == 0U) || (length >= COMPAT_IDENTIFIER_CAPACITY) ||
-                    (compat_array_count >= 32U))
-                {
-                    return fail("Too many or invalid classic arrays.");
-                }
-                for (size_t index = 0U; index < length; ++index)
-                {
-                    compat_arrays[compat_array_count][index] =
-                        (char)toupper((unsigned char)body[index]);
-                }
-                compat_arrays[compat_array_count++][length] = '\0';
-                const char *close = strchr(finish, ')');
-                if ((close == NULL) || (close >= end)) return fail("Invalid classic DIM.");
-                body = spaces(close + 1);
-                if (body < end)
-                {
-                    if (*body != ',') return fail("Invalid classic DIM list.");
-                    body = spaces(body + 1);
-                }
-            }
-        }
-        cursor = (*end == '\n') ? end + 1 : end;
+        compat_array_count = 0U;
+        compat_trace_source = source;
+        compat_trace_size = strlen(source);
     }
     /* Bind arrays and expression functions before forward references are parsed. */
     for (unsigned int pass = 0U; pass < 3U; ++pass)
@@ -683,9 +770,10 @@ bool basic_compat_translate(const char *source, bool numbered,
                 body = spaces(number_end);
             }
             bool definition = equal(body, (size_t)(identifier_end(body) - body), "DEF");
-            bool dimension = equal(body, (size_t)(identifier_end(body) - body), "DIM");
-            if ((dimension && (pass == 0U)) || (definition && (pass == 1U)) ||
-                (!dimension && !definition && (pass == 2U)))
+            writer.hoist = (pass == 0U);
+            writer.trace = compat_trace && numbered && (pass == 2U);
+            if ((pass == 0U) || (definition && (pass == 1U)) ||
+                (!definition && (pass == 2U)))
             {
                 if ((pass == 2U) && numbered)
                 {
@@ -701,7 +789,8 @@ bool basic_compat_translate(const char *source, bool numbered,
                 char label[40];
                 (void)snprintf(label, sizeof(label), "L%lu: BCNOOP()\n",
                                (unsigned long)writer.line);
-                if (!text(&writer, label)) return false;
+                if (!text(&writer, label) ||
+                    !trace_marker(&writer, body, end)) return false;
             }
             cursor = (*end == '\n') ? end + 1 : end;
         }
@@ -718,6 +807,31 @@ static int no_operation(struct mb_interpreter_t *interpreter, void **list)
 {
     mb_check(mb_attempt_open_bracket(interpreter, list));
     return mb_attempt_close_bracket(interpreter, list);
+}
+
+static int trace_statement(struct mb_interpreter_t *interpreter, void **list)
+{
+    int_t line;
+    int_t offset;
+    int_t length;
+    mb_check(mb_attempt_open_bracket(interpreter, list));
+    mb_check(mb_pop_int(interpreter, list, &line));
+    mb_check(mb_pop_int(interpreter, list, &offset));
+    mb_check(mb_pop_int(interpreter, list, &length));
+    mb_check(mb_attempt_close_bracket(interpreter, list));
+    if ((compat_trace_source == NULL) || (offset < 0) || (length < 0) ||
+        ((size_t)offset > compat_trace_size) ||
+        ((size_t)length > compat_trace_size - (size_t)offset))
+    {
+        return runtime_error(interpreter, list);
+    }
+    /* Trace output always starts on its own line so it never splits program output. */
+    if (compat_column != 0U) (void)fputs("\r\n", stdout);
+    printf("TRACE %ld: ", (long)line);
+    (void)fwrite(&compat_trace_source[offset], 1U, (size_t)length, stdout);
+    (void)fputs("\r\n", stdout);
+    compat_column = 0U;
+    return MB_FUNC_OK;
 }
 
 static int random_value(struct mb_interpreter_t *interpreter, void **list)
@@ -965,6 +1079,7 @@ int basic_compat_register(struct mb_interpreter_t *interpreter,
         !mb_register_func(interpreter, "BCTAB", tab_string) ||
         !mb_register_func(interpreter, "BCINKEY", key_value) ||
         !mb_register_func(interpreter, "BCNOOP", no_operation) ||
+        !mb_register_func(interpreter, "BCTRACE", trace_statement) ||
         !mb_register_func(interpreter, "BCINPUT", input_values))
     {
         return MB_FUNC_ERR;

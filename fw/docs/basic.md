@@ -2,6 +2,8 @@
 
 Last updated: 2026-10-10
 
+For the user-facing language reference, see [basiclang.md](basiclang.md).
+
 ## Goal
 
 Run `basic/trek.bas` on the CM55 core. BASIC `INPUT` reads from standard input
@@ -153,8 +155,15 @@ Current limitations:
 
 `basic_compat.c` parses the stored source into bounded MY-BASIC runtime text.
 The original program, SD file, embedded asset, `LIST`, and `SAVE` remain unchanged.
-Immediate statements use the same parser. Runtime errors and `TRACE` identify
-the original numbered BASIC line, rather than a generated runtime row.
+Immediate statements use the same parser. Runtime errors identify the original
+numbered BASIC line, rather than a generated runtime row.
+
+With `TRACE ON`, `RUN` prints each source statement as it executes, for example
+`TRACE 110: DIM W(H,V),V(H,V)`. Each colon-separated statement is reported
+separately, `REM` statements are included, and an `IF` reports its header
+(`IF X=1 THEN`) before any statements in the taken branch. Trace lines always
+start on a new line. `TRACE` must be set before `RUN`; it does not change the
+stored program.
 
 Supported Trek constructs include:
 
@@ -168,9 +177,15 @@ Supported Trek constructs include:
 - `FOR`/`NEXT`, including negative `STEP`, subroutine calls within loops, and
   branches leaving loops. These use label-based control flow, not MY-BASIC's
   structured-loop call stack.
-- Comma-separated `DIM` declarations with inclusive constant upper bounds.
+- Comma-separated `DIM` declarations with inclusive upper bounds. Bounds may be
+  integer constants or expressions (`DIM W(H,V)` in Amazing). Constant arrays
+  are created before the program starts. Arrays with computed bounds are bound
+  before the program starts and allocated when their `DIM` statement executes.
+  Computed bounds round down and must be non-negative. `DIM` may appear after a
+  colon or inside an IF body.
   Index zero remains valid; fractional subscripts truncate toward zero.
-  An array and scalar may share a classic name (`N` and `N(3)` in Trek).
+  An array and scalar may share a classic name (`N` and `N(3)` in Trek, `V` and
+  `V(H,V)` in Amazing).
 - `INT` rounds down; `RND` produces a real in `[0,1)`, with zero repeating the
   last value and negative arguments reseeding. `RANDOMIZE` accepts a seed.
 - ASCII `LEFT$`, `RIGHT$`, and one-based `MID$`, including empty/clamped results;
@@ -187,8 +202,9 @@ Supported Trek constructs include:
   Trek's `SLEEP 500` instructions pause can be ended by pressing a key, without
   redefining its duration as milliseconds. Ctrl-C interrupts sleep and INPUT.
 
-The parser is a Trek-focused classic dialect, not a complete QBasic
-implementation. DIM bounds must be integer constants, inline IF nesting is
+The parser is a classic dialect focused on Trek and Amazing, not a complete QBasic
+implementation. Constant DIM bounds are limited to 65534, computed array sizes
+are limited by available heap, inline IF nesting is
 limited to 16, lexical FOR nesting to 32, and helper identifiers beginning
 `BC` are reserved. The source store remains 32 KiB; generated runtime text is
 bounded to 96 KiB and 4096 source-map rows. Native MY-BASIC functions remain
@@ -210,7 +226,10 @@ From the workspace root with a host GCC compiler:
 
 The harness covers function scope, inclusive arrays, random values, branches,
 negative-step loops, subroutine returns, string edge cases, INPUT, invalid syntax,
-buffer bounds, and the unchanged full Trek program. Scripted sessions exercise
+buffer bounds, computed DIM bounds, the unchanged full Trek program, and the
+unchanged Amazing program. Amazing rejects 1x1 dimensions and then draws a 12x9
+maze; the runner checks its row and wall output.
+Scripted Trek sessions exercise
 instructions both accepted and skipped, scans, damage reports, the coordinate
 calculator, shields, navigation, and resignation. The runner checks output for
 actual game information, not only successful parsing.

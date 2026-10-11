@@ -44,165 +44,165 @@ config_files:
   - design.cyqspi
   - design.modus
 common_libraries:
-  - id: bt-fw-ifx-cyw55500a1
-    remote_uri: https://github.com/Infineon/bt-fw-ifx-cyw55500a1
-    version_tag: release-v2.2.0
-    local_path: ../../mtb_shared/bt-fw-ifx-cyw55500a1/release-v2.2.0
-  - id: core-lib
-    remote_uri: https://github.com/cypresssemiconductorco/core-lib
-    version_tag: release-v1.8.0
-    local_path: ../../mtb_shared/core-lib/release-v1.8.0
-  - id: core-make
-    remote_uri: https://github.com/cypresssemiconductorco/core-make
-    version_tag: release-v3.10.0
-    local_path: ../../mtb_shared/core-make/release-v3.10.0
-  - id: mtb-dsl-pse8xxgp
-    remote_uri: https://github.com/Infineon/mtb-dsl-pse8xxgp
-    version_tag: release-v1.6.0
-    local_path: ../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0
   - id: async-transfer
     remote_uri: https://github.com/Infineon/async-transfer
     version_tag: release-v1.1.1
     local_path: ../../mtb_shared/async-transfer/release-v1.1.1
-  - id: cmsis
-    remote_uri: https://github.com/Infineon/cmsis
-    version_tag: release-v6.1.0
-    local_path: ../../mtb_shared/cmsis/release-v6.1.0
-  - id: device-db
-    remote_uri: https://github.com/Infineon/device-db
-    version_tag: release-v4.41.0
-    local_path: C:/Users/butch/.modustoolbox/global/device-db/release-v4.41.0
+  - id: mtb-dsl-pse8xxgp
+    remote_uri: https://github.com/Infineon/mtb-dsl-pse8xxgp
+    version_tag: release-v1.6.0
+    local_path: ../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0
   - id: se-rt-services-utils
     remote_uri: https://github.com/Infineon/se-rt-services-utils
     version_tag: release-v1.4.0
     local_path: ../../mtb_shared/se-rt-services-utils/release-v1.4.0
-  - id: mtb-ipc
-    remote_uri: https://github.com/Infineon/mtb-ipc
-    version_tag: release-v1.2.0
-    local_path: ../../mtb_shared/mtb-ipc/release-v1.2.0
+  - id: cmsis
+    remote_uri: https://github.com/Infineon/cmsis
+    version_tag: release-v6.1.0
+    local_path: ../../mtb_shared/cmsis/release-v6.1.0
   - id: mtb-srf
     remote_uri: https://github.com/Infineon/mtb-srf
     version_tag: release-v1.2.1
     local_path: ../../mtb_shared/mtb-srf/release-v1.2.1
+  - id: device-db
+    remote_uri: https://github.com/Infineon/device-db
+    version_tag: release-v4.41.0
+    local_path: C:/Users/butch/.modustoolbox/global/device-db/release-v4.41.0
+  - id: core-lib
+    remote_uri: https://github.com/cypresssemiconductorco/core-lib
+    version_tag: release-v1.8.0
+    local_path: ../../mtb_shared/core-lib/release-v1.8.0
+  - id: mtb-ipc
+    remote_uri: https://github.com/Infineon/mtb-ipc
+    version_tag: release-v1.2.0
+    local_path: ../../mtb_shared/mtb-ipc/release-v1.2.0
+  - id: bt-fw-ifx-cyw55500a1
+    remote_uri: https://github.com/Infineon/bt-fw-ifx-cyw55500a1
+    version_tag: release-v2.2.0
+    local_path: ../../mtb_shared/bt-fw-ifx-cyw55500a1/release-v2.2.0
+  - id: core-make
+    remote_uri: https://github.com/cypresssemiconductorco/core-make
+    version_tag: release-v3.10.0
+    local_path: ../../mtb_shared/core-make/release-v3.10.0
 common_defines:
-  - '-DCOMPONENT_MW_SE_RT_SERVICES_UTILS'
-  - '-DCOMPONENT_SM'
-  - '-DCOMPONENT_GFXSS'
-  - '-DCOMPONENT_MW_MTB_DSL_PSE8XXGP'
+  - '-DCOMPONENT_MW_MTB_SRF'
   - '-DCYBSP_WIFI_WL_HOSTWAKE_INIT_STATE=WHD_TRUE'
-  - '-DPSE846GPS2DBZC4A'
+  - '-DDEBUG'
+  - '-DCOMPONENT_SM'
+  - '-DCOMPONENT_MW_CORE_LIB'
+  - '-DCYBSP_MCUBOOT_HEADER_SIZE=0x400'
   - '-DCOMPONENT_wlbga_iPA_sLNA_ANT0_LHL_XTAL_IN'
-  - '-DCY_SUPPORTS_DEVICE_VALIDATION'
+  - '-DCOMPONENT_PSE84'
+  - '-DCOMPONENT_HCI_UART'
+  - '-DCOMPONENT_WIFI_INTERFACE_SDIO'
+  - '-DCY_TARGET_BOARD=APP_KIT_PSE84_EVAL_EPC2'
+  - '-DFLASH_BOOT'
+  - '-DCOMPONENT_MW_BT_FW_IFX_CYW55500A1'
+  - '-DCOMPONENT_MW_MTB_DSL_PSE8XXGP'
+  - '-DCYBSP_WIFI_WL_HOSTWAKE_DRIVE_MODE=MTB_HAL_GPIO_DRIVE_OPENDRAINDRIVESLOW'
+  - '-DTARGET_APP_KIT_PSE84_EVAL_EPC2'
   - '-DTRXV5'
-  - '-DCOMPONENT_MTB_HAL'
   - '-DCOMPONENT_MW_ASYNC_TRANSFER'
   - '-DCOMPONENT_CYW55513_MOD_PSE84_SOM'
-  - '-DCOMPONENT_MW_CORE_LIB'
-  - '-DTARGET_APP_KIT_PSE84_EVAL_EPC2'
   - '-DCOMPONENT_Debug'
-  - '-DCOMPONENT_MW_BT_FW_IFX_CYW55500A1'
-  - '-DCOMPONENT_MW_CORE_MAKE'
-  - '-DCY_PDL_FLASH_BOOT'
-  - '-DCOMPONENT_APP_KIT_PSE84_EVAL_EPC2'
+  - '-DCOMPONENT_MW_MTB_IPC'
   - '-DCOMPONENT_55500A1'
   - '-DCOMPONENT_GCC_ARM'
-  - '-DCOMPONENT_PSE84'
+  - '-DCOMPONENT_MW_CORE_MAKE'
+  - '-DCY_SUPPORTS_DEVICE_VALIDATION'
   - '-DCOMPONENT_MTB_DEVICE_SUPPORT'
-  - '-DCOMPONENT_HCI_UART'
-  - '-DCOMPONENT_MW_MTB_IPC'
-  - '-DCYBSP_MCUBOOT_HEADER_SIZE=0x400'
-  - '-DCYBSP_WIFI_WL_HOSTWAKE_DRIVE_MODE=MTB_HAL_GPIO_DRIVE_OPENDRAINDRIVESLOW'
-  - '-DCOMPONENT_MW_CMSIS'
-  - '-DCY_TARGET_BOARD=APP_KIT_PSE84_EVAL_EPC2'
-  - '-DCOMPONENT_55500'
-  - '-DCOMPONENT_MW_MTB_SRF'
-  - '-DCOMPONENT_WIFI_INTERFACE_SDIO'
-  - '-DDEBUG'
   - '-DBLHS_SUPPORT'
+  - '-DCOMPONENT_GFXSS'
+  - '-DCOMPONENT_MW_CMSIS'
   - '-DCY_WIFI_COUNTRY=WHD_COUNTRY_UNITED_STATES'
-  - '-DFLASH_BOOT'
+  - '-DCOMPONENT_APP_KIT_PSE84_EVAL_EPC2'
+  - '-DCOMPONENT_55500'
+  - '-DCOMPONENT_MTB_HAL'
+  - '-DCOMPONENT_MW_SE_RT_SERVICES_UTILS'
+  - '-DPSE846GPS2DBZC4A'
+  - '-DCY_PDL_FLASH_BOOT'
 common_includes:
   - //# Relative paths here are relative to each project directory. Not to workspace root.
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/include'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/include'
-  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/m-profile'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/inc'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi'
-  - '-I../../mtb_shared/mtb-ipc/release-v1.2.0'
-  - '-I../../mtb_shared/mtb-srf/release-v1.2.1'
-  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/ethernet/include'
-  - '-I../../mtb_shared/se-rt-services-utils/release-v1.4.0'
-  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/rtos'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS'
-  - '-I../../mtb_shared/core-lib/release-v1.8.0'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser'
-  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/bluetooth'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite'
-  - '-I../../mtb_shared/mtb-srf/release-v1.2.1/include'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0'
-  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/r-profile'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm/mxpdm'
-  - '-I../../mtb_shared/mtb-ipc/release-v1.2.0/include'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/rtos'
-  - '-I../../mtb_shared/core-lib/release-v1.8.0/include'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/hardware/8000Nano'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal/include'
-  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include'
-  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/a-profile'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl'
   - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/include/ip'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm/audioss_pdm'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl'
   - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/ethernet'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm'
-  - '-I../../mtb_shared/cmsis/release-v6.1.0'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/include'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices'
   - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0'
+  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/hardware/8000Nano'
+  - '-I../../mtb_shared/mtb-srf/release-v1.2.1'
+  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/a-profile'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal'
+  - '-I../../mtb_shared/mtb-srf/release-v1.2.1/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/r-profile'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/ethernet/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/rtos'
   - '-I../bsps'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm'
+  - '-I../../mtb_shared/mtb-ipc/release-v1.2.0/include'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi'
+  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm/audioss_pdm'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/include'
+  - '-I../../mtb_shared/async-transfer/release-v1.1.1'
+  - '-I../../mtb_shared/core-lib/release-v1.8.0/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/inc'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/hardware'
+  - '-I../../mtb_shared/core-lib/release-v1.8.0'
+  - '-I../../mtb_shared/se-rt-services-utils/release-v1.4.0'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include/m-profile'
   - '-I../../mtb_shared/async-transfer/release-v1.1.1/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto/pdm_pcm/mxpdm'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/rtos'
   - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/hobto'
   - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel/rtos'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers'
-  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource'
-  - '-I../../mtb_shared/async-transfer/release-v1.1.1'
-  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/include'
+  - '-I../../mtb_shared/mtb-ipc/release-v1.2.0'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/include'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/include/ip'
+  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party'
+  - '-I../bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/bluetooth'
+  - '-I../../mtb_shared/cmsis/release-v6.1.0/Core/Include'
   - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/include'
-  - '-I../../mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/hardware'
 common_sources:
-  - C:/mtbfw/mtb_shared/mtb-ipc/release-v1.2.0/source/*.c
-  - C:/mtbfw/basicedge/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/hardware/8000Nano/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/source/TOOLCHAIN_GCC_ARM/*.S
-  - C:/mtbfw/mtb_shared/async-transfer/release-v1.1.1/source/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel/rtos/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/rtos/*.c
-  - C:/mtbfw/basicedge/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/*.c
   - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/ethernet/src/*.c
-  - C:/mtbfw/mtb_shared/bt-fw-ifx-cyw55500a1/release-v2.2.0/COMPONENT_wlbga_iPA_sLNA_ANT0_LHL_XTAL_IN/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/source/*.c
+  - C:/mtbfw/basicedge/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/hardware/8000Nano/*.c
   - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/source/*.c
-  - C:/mtbfw/mtb_shared/se-rt-services-utils/release-v1.4.0/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal/source/*.c
   - C:/mtbfw/mtb_shared/mtb-srf/release-v1.2.1/source/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite/rtos/*.c
   - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/devices/source/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/rtos/*.c
-  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/support/source/*.c
   - C:/mtbfw/basicedge/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/bluetooth/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel/rtos/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLiteKernel/*.c
+  - C:/mtbfw/basicedge/bsps/TARGET_APP_KIT_PSE84_EVAL_EPC2/config/GeneratedSource/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/support/source/*.c
+  - C:/mtbfw/mtb_shared/async-transfer/release-v1.1.1/source/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/device-utils/syspm/source/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/hal/source/*.c
+  - C:/mtbfw/mtb_shared/bt-fw-ifx-cyw55500a1/release-v2.2.0/COMPONENT_wlbga_iPA_sLNA_ANT0_LHL_XTAL_IN/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCKernel/rtos/*.c
+  - C:/mtbfw/mtb_shared/mtb-ipc/release-v1.2.0/source/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/dcnano8000/DCUser/rtos/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/vsi/gcnano/VGLite/rtos/*.c
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/source/TOOLCHAIN_GCC_ARM/*.S
+  - C:/mtbfw/mtb_shared/mtb-dsl-pse8xxgp/release-v1.6.0/pdl/drivers/third_party/COMPONENT_GFXSS/*.c
+  - C:/mtbfw/mtb_shared/se-rt-services-utils/release-v1.4.0/*.c
 projects:
   - project_name: proj_cm33_s
     folder_name: c:/mtbfw/basicedge/proj_cm33_s
