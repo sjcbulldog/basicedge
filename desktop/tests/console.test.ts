@@ -176,3 +176,45 @@ test('graphics showcase builds a scene', async () => {
   assert.equal(out(), 'Graphics cleared.\r\n');
   assert.equal(graphics.scene().nodes.length, 1);
 });
+
+test('grtrek builds its display, plays and cleans up', async () => {
+  const { console, out, graphics, sd } = await setup();
+  writeFileSync(join(sd.root, 'grtrek.bas'), readFileSync(join(root, 'assets', 'grtrek.bas')));
+  await console.execute('LOAD "grtrek.bas"');
+  out();
+  const run = console.execute('RUN');
+  const settle = (ms = 400) => new Promise((resolve) => setTimeout(resolve, ms));
+  const labels = () => graphics.scene().nodes.filter((node) => node.type === 'LABEL').map((node) => node.lines.join('|')).join('\n');
+  try {
+    await settle();
+    assert.match(out(), /GFX CLEAR/);
+    assert.equal(graphics.list().length, 62);
+    for (const node of graphics.scene().nodes) {
+      assert.ok(node.x >= 0 && node.y >= 0 && node.x + node.w <= 800 && node.y + node.h <= 480, `${node.type} ${node.x},${node.y} ${node.w}x${node.h}`);
+    }
+    assert.match(labels(), /YOUR ORDERS/);
+    for (const key of ['D', 'A', 'S', 'P', 'T', 'N', '?']) {
+      console.key(key);
+      await settle(1200);
+    }
+    assert.doesNotMatch(out(), /error/i);
+    assert.match(labels(), /KEYS: N=NAV/);
+    const switches = graphics.scene().nodes.filter((node) => node.type === 'SWITCH');
+    assert.equal(switches.length, 8);
+    graphics.pointer('down', switches[1].x + 5, switches[1].y + 5);
+    graphics.pointer('up', switches[1].x + 5, switches[1].y + 5);
+    await settle(600);
+    assert.match(labels(), /LONG RANGE (SCAN|SENSORS ARE INOPERABLE)/);
+    console.key('X');
+    await settle(600);
+    console.key('X');
+    await settle(600);
+    console.key(' ');
+    await run;
+    assert.match(out(), /GRTREK ENDED/);
+    assert.equal(graphics.list().length, 1);
+  } finally {
+    console.key('\x03');
+    await run;
+  }
+});

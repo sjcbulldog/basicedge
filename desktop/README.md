@@ -50,7 +50,7 @@ Mouse clicks and drags act as the touch panel, so buttons, switches, checkboxes,
 
 The card is a folder named `sdcard` in the Electron user-data directory (on Windows, `%APPDATA%\basicedge-desktop\sdcard`). To open it, use **File → Open SD Card Folder**.
 
-On first run the folder is seeded with `amazing.bas` and `grtest.bas`. The card reports a 1024 MiB SDHC card with FAT32, and `SDCARD FORMAT YES` empties the folder. Paths follow the firmware rules:
+On first run the folder is seeded with `amazing.bas`, `grtest.bas` and `grtrek.bas` (a graphical Super Star Trek: flip the command switches or press N L P T S D A X, and set course/warp/units with the sliders). The card reports a 1024 MiB SDHC card with FAT32, and `SDCARD FORMAT YES` empties the folder. Paths follow the firmware rules:
 
 - `/` is the root and backslashes are rejected;
 - `.` and `..` are supported;

@@ -4,6 +4,7 @@ import { promises as fs } from 'node:fs';
 import { join } from 'node:path';
 import amazing from '../../assets/amazing.bas';
 import grtest from '../../assets/grtest.bas';
+import grtrek from '../../assets/grtrek.bas';
 import { GFX_HEIGHT, GFX_WIDTH } from '../core/graphics';
 import type { SdHost, WifiHost } from '../core/host';
 import { SdCard } from './sdcard';
@@ -141,7 +142,7 @@ async function main(): Promise<void> {
   await app.whenReady();
   await loadSettings();
   const userData = app.getPath('userData');
-  sdcard = new SdCard(join(userData, 'sdcard'), { 'amazing.bas': amazing, 'grtest.bas': grtest });
+  sdcard = new SdCard(join(userData, 'sdcard'), { 'amazing.bas': amazing, 'grtest.bas': grtest, 'grtrek.bas': grtrek });
   await sdcard.mount();
   wifi = new Wifi(join(userData, 'wifi.json'));
   await wifi.open();
