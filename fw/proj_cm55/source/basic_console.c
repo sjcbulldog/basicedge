@@ -13,6 +13,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(__arm__) || defined(__thumb__)
+#include <malloc.h>
+#include <sys/types.h>
+
+extern uint8_t __HeapBase;
+extern uint8_t __HeapLimit;
+extern caddr_t _sbrk(int32_t incr);
+#endif
+
 #include "my_basic.h"
 #include "basic_graphics.h"
 #include "file_service.h"
@@ -912,6 +921,47 @@ void basic_console_trace_step(const char *file,
     printf("\r\n");
 }
 
+static void print_memory_status(void)
+{
+    unsigned long program_used = (unsigned long)basic_program_length;
+    unsigned long program_capacity = (unsigned long)BASIC_PROGRAM_CAPACITY;
+    unsigned long program_free = (program_capacity > program_used)
+                                     ? (program_capacity - program_used)
+                                     : 0UL;
+
+    printf("Program memory:\r\n");
+    printf("  Stored program:   %5lu bytes\r\n", program_used);
+    printf("  Available space:  %5lu bytes\r\n", program_free);
+    printf("  Total capacity:   %5lu bytes (%lu KiB)\r\n",
+           program_capacity,
+           program_capacity / 1024UL);
+
+#if defined(__arm__) || defined(__thumb__)
+    uint8_t *heap_brk = (uint8_t *)_sbrk(0);
+    size_t total_heap = (size_t)(&__HeapLimit - &__HeapBase);
+    size_t unallocated = (heap_brk != (uint8_t *)-1 && heap_brk <= &__HeapLimit)
+                             ? (size_t)(&__HeapLimit - heap_brk)
+                             : 0U;
+    struct mallinfo mi = mallinfo();
+    size_t free_heap = unallocated + (size_t)mi.fordblks;
+    size_t used_heap = (total_heap >= free_heap) ? (total_heap - free_heap) : 0U;
+
+    printf("Variable memory:\r\n");
+    printf("  Allocated:        %7lu bytes (%lu KiB)\r\n",
+           (unsigned long)used_heap,
+           (unsigned long)(used_heap / 1024UL));
+    printf("  Available space:  %7lu bytes (%lu KiB)\r\n",
+           (unsigned long)free_heap,
+           (unsigned long)(free_heap / 1024UL));
+    printf("  Total heap:       %7lu bytes (%lu KiB)\r\n",
+           (unsigned long)total_heap,
+           (unsigned long)(total_heap / 1024UL));
+#else
+    printf("Variable memory:\r\n");
+    printf("  Available space:  dynamic (host memory)\r\n");
+#endif
+}
+
 bool basic_console_process(struct mb_interpreter_t **interpreter,
                            const char *input,
                            int *status)
@@ -1318,6 +1368,16 @@ bool basic_console_process(struct mb_interpreter_t **interpreter,
         printf("Variables cleared.\r\n");
         return true;
     }
+    if (command_match(input, "MEM", &arguments))
+    {
+        if ('\0' != *arguments)
+        {
+            printf("Usage: MEM\r\n");
+            return true;
+        }
+        print_memory_status();
+        return true;
+    }
     if (command_match(input, "RENUM", &arguments))
     {
         renumber_program(arguments);
@@ -1397,6 +1457,7 @@ bool basic_console_process(struct mb_interpreter_t **interpreter,
         printf("SAVE \"filename\" - Save the BASIC program to the SD card.\r\n");
         printf("NEW - Clear the stored program and variables.\r\n");
         printf("CLEAR - Clear variables without deleting the program.\r\n");
+        printf("MEM - Show memory available for programs and variables.\r\n");
         printf("RENUM [start[,step]] - Renumber the BASIC program.\r\n");
         printf("HELP - Show this command list.\r\n");
         printf("Enter a numbered line to store it; enter its number alone to delete it.\r\n");

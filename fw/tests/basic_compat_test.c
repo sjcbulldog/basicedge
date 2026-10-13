@@ -19,6 +19,13 @@ static double seconds(void) { return 42.0; }
 static bool sleep_seconds(double delay) { return delay >= 0.0; }
 static bool read_key(char *key) { *key = ' '; return true; }
 
+static int graphics_unavailable(struct mb_interpreter_t *s, void **list)
+{
+    mb_check(mb_attempt_open_bracket(s, list));
+    mb_check(mb_attempt_close_bracket(s, list));
+    return mb_push_int(s, list, 0);
+}
+
 static int input(struct mb_interpreter_t *s, const char *prompt, char *buffer, int size)
 {
     (void)s;
@@ -81,7 +88,7 @@ static void number(struct mb_interpreter_t *s, const char *name, double expected
 {
     mb_value_t value;
     assert(mb_debug_get(s, name, &value) == MB_FUNC_OK);
-    double actual = value.type == MB_DT_INT ? value.value.integer : value.value.float_point;
+    double actual = value.type == MB_DT_INT ? (double)value.value.integer : (double)value.value.float_point;
     if (actual != expected) fprintf(stderr, "%s: expected %g got %g\n", name, expected, actual);
     assert(actual == expected);
 }
@@ -119,6 +126,38 @@ int main(int argc, char **argv)
     number(s, "X", 15);
     number(s, "V", 7);
     mb_close(&s);
+    s = run("10 X=(&HADD8E6):Y=&h0b1222:Z=&HFFFFFF\n"
+            "20 A=-&H2A:B=&H10+&h0f:C=&H7FFFFFFF:D=&H80000000\n"
+            "30 S$=\"&HADD8E6\":REM &H invalid in a comment\n"
+            "40 END\n", NULL);
+    number(s, "X", 11393254);
+    number(s, "Y", 725538);
+    number(s, "Z", 16777215);
+    number(s, "A", -42);
+    number(s, "B", 31);
+    number(s, "C", 2147483647);
+    number(s, "D", 2147483648.0);
+    mb_value_t literal;
+    assert(mb_debug_get(s, "S$", &literal) == MB_FUNC_OK);
+    assert(strcmp(literal.value.string, "&HADD8E6") == 0);
+    mb_close(&s);
+    assert(basic_compat_translate("X=&h2a", false, translated,
+                                  sizeof(translated), NULL, 0U));
+    assert(strcmp(translated, "X=42\n") == 0);
+    assert(basic_compat_translate("X=1 ' &H is a comment", false, translated,
+                                  sizeof(translated), NULL, 0U));
+    assert(strstr(translated, "' &H is a comment") != NULL);
+    assert(basic_compat_translate("X=&HFFFFFFFF", false, translated,
+                                  sizeof(translated), NULL, 0U));
+    assert(strcmp(translated, "X=4294967295.0\n") == 0);
+    const char *invalid_hex[] = {"X=&H", "X=&H)", "X=&HG1", "X=&H12G",
+                                "X=&H1_0", "X=&H100000000"};
+    for (size_t index = 0U; index < sizeof(invalid_hex) / sizeof(invalid_hex[0]); ++index)
+    {
+        assert(!basic_compat_translate(invalid_hex[index], false, translated,
+                                       sizeof(translated), NULL, 0U));
+        assert(basic_compat_error() != NULL);
+    }
     assert(!basic_compat_translate("10 DIM A()\n", true, translated,
                                    sizeof(translated), NULL, 0U));
     assert(!basic_compat_translate("10 DIM A(N\n", true, translated,
@@ -227,6 +266,35 @@ int main(int argc, char **argv)
         s = run(source, maze);
         assert(answer_index == 2U);
         number(s, "C", 12 * 9 + 1);
+        mb_close(&s);
+    }
+    if (argc > 3)
+    {
+        FILE *file = fopen(argv[3], "rb");
+        assert(file != NULL);
+        char source[32768];
+        size_t size = fread(source, 1U, sizeof(source) - 1U, file);
+        assert(!ferror(file) && feof(file));
+        source[size] = '\0';
+        fclose(file);
+        assert(basic_compat_translate(source, true, translated, sizeof(translated),
+                                      line_map, 4096U));
+        assert(mb_open(&s) == MB_FUNC_OK);
+        basic_compat_platform_t platform = {input, seconds, sleep_seconds, read_key};
+        assert(basic_compat_register(s, &platform) == MB_FUNC_OK);
+        assert(mb_set_error_handler(s, error) == MB_FUNC_OK);
+        const char *functions[] = {
+            "GFX_BG_COLOR", "GFX_CHECKED", "GFX_CREATE", "GFX_DELETE", "GFX_FONT",
+            "GFX_HIDE", "GFX_OPACITY", "GFX_RADIUS", "GFX_RANGE", "GFX_RGB",
+            "GFX_SCREEN", "GFX_SET_POS", "GFX_SET_SIZE", "GFX_SHOW", "GFX_TEXT",
+            "GFX_VALUE", "GFX_WIDTH"
+        };
+        for (size_t index = 0U; index < sizeof(functions) / sizeof(functions[0]); ++index)
+        {
+            assert(mb_register_func(s, functions[index], graphics_unavailable) != 0);
+        }
+        assert(mb_load_string(s, translated, true) == MB_FUNC_OK);
+        assert(mb_run(s, true) == MB_FUNC_END);
         mb_close(&s);
     }
     assert(mb_dispose() == MB_FUNC_OK);

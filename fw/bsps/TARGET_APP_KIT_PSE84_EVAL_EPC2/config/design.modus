@@ -3376,7 +3376,7 @@
                         <Param id="offset" value="0x00060000"/>
                         <Param id="regionId" value="m55_data_secondary"/>
                         <Param id="reservedGuid" value="USER_DEFINED"/>
-                        <Param id="size" value="0x00160000"/>
+                        <Param id="size" value="0x00260000"/>
                     </Parameters>
                 </Personality>
                 <Personality template="memory_region_data" version="1.0" instance="0zJXEr6pka4">
@@ -3385,7 +3385,7 @@
                         <Param id="description" value="Shared region between CM33 and CM55"/>
                         <Param id="domain" value="Rj_rAX1eb8U"/>
                         <Param id="memoryId" value="SOCMEM_RAM"/>
-                        <Param id="offset" value="0x001C0000"/>
+                        <Param id="offset" value="0x002C0000"/>
                         <Param id="regionId" value="m33_m55_shared"/>
                         <Param id="reservedGuid" value="USER_DEFINED"/>
                         <Param id="size" value="0x00040000"/>
@@ -3397,10 +3397,10 @@
                         <Param id="description" value="Graphics data"/>
                         <Param id="domain" value="Rj_rAX1eb8U"/>
                         <Param id="memoryId" value="SOCMEM_RAM"/>
-                        <Param id="offset" value="0x00200000"/>
+                        <Param id="offset" value="0x00300000"/>
                         <Param id="regionId" value="gfx_mem"/>
                         <Param id="reservedGuid" value="USER_DEFINED"/>
-                        <Param id="size" value="0x00300000"/>
+                        <Param id="size" value="0x00200000"/>
                     </Parameters>
                 </Personality>
                 <Personality template="memory_region_data" version="1.0" instance="_Hf5ER1SoPM">

@@ -240,6 +240,44 @@ static bool expression(compat_writer_t *writer, const char *begin, const char *e
             }
             begin = close + 1;
         }
+        else if (*begin == '\'')
+        {
+            return put(writer, begin, (size_t)(end - begin));
+        }
+        else if ((*begin == '&') && ((end - begin) >= 2) &&
+                 ((begin[1] == 'H') || (begin[1] == 'h')))
+        {
+            const char *digits = begin + 2;
+            const char *finish = digits;
+            uint32_t value = 0U;
+            while ((finish < end) && isxdigit((unsigned char)*finish))
+            {
+                unsigned int digit = isdigit((unsigned char)*finish)
+                    ? (unsigned int)(*finish - '0')
+                    : (unsigned int)(toupper((unsigned char)*finish) - 'A' + 10);
+                if (value > (UINT32_MAX - digit) / 16U)
+                {
+                    return fail("BASIC hexadecimal literal exceeds 32 bits.");
+                }
+                value = value * 16U + digit;
+                ++finish;
+            }
+            if ((finish == digits) ||
+                ((finish < end) &&
+                 (isalnum((unsigned char)*finish) || (*finish == '_') || (*finish == '$'))))
+            {
+                return fail("Invalid BASIC hexadecimal literal.");
+            }
+            char decimal[16];
+            /* Force real parsing above MY-BASIC's signed integer range. */
+            (void)snprintf(decimal, sizeof(decimal), "%lu%s", (unsigned long)value,
+                           (value > INT32_MAX) ? ".0" : "");
+            if (!text(writer, decimal))
+            {
+                return false;
+            }
+            begin = finish;
+        }
         else if (isalpha((unsigned char)*begin) || (*begin == '_'))
         {
             const char *finish = identifier_end(begin);

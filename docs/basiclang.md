@@ -67,6 +67,7 @@ later `INPUT`. The exception is `INKEY$` and `SLEEP`, which can see a pending ke
 | Command | Description |
 | --- | --- |
 | `RUN` | Clears variables, translates the stored program, and runs it. |
+| `MEM` | Shows memory available for BASIC programs (out of 32 KiB) and variables (heap). |
 | `LIST` | Lists the whole program. |
 | `LIST n` | Lists line `n`. |
 | `LIST n-m` | Lists lines `n` through `m` inclusive. |
@@ -164,6 +165,12 @@ Programs use the `GFX_*` functions described in [graphics.md](graphics.md).
 - Undeclared numeric variables start at 0.
 - A scalar and an array can share a name; `N` and `N(3)` are separate.
 - Names beginning with `BC` are reserved for the translator. Do not use them.
+- Hexadecimal integer literals use `&H` followed by one or more hexadecimal
+  digits, for example `&HADD8E6` for an RGB color. The prefix and digits are
+  case-insensitive; values from `&H0` through `&HFFFFFFFF` are accepted.
+  They work in both numbered programs and immediate statements. Larger values
+  and malformed literals are rejected. Translation preserves quoted strings,
+  comments, and the source shown by `LIST` and `SAVE`.
 
 ### Arrays
 

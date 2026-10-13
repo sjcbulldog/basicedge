@@ -596,6 +596,23 @@ export class BasicConsole {
       this.print('Variables cleared.\r\n');
       return MB_FUNC_OK;
     }
+    if ((args = commandMatch(input, 'MEM')) !== null) {
+      if (args !== '') {
+        this.print('Usage: MEM\r\n');
+        return MB_FUNC_OK;
+      }
+      const progUsed = this.program.length;
+      const progFree = Math.max(0, PROGRAM_CAPACITY - progUsed);
+      this.print(
+        'Program memory:\r\n' +
+        `  Stored program:   ${String(progUsed).padStart(5, ' ')} bytes\r\n` +
+        `  Available space:  ${String(progFree).padStart(5, ' ')} bytes\r\n` +
+        `  Total capacity:   ${String(PROGRAM_CAPACITY).padStart(5, ' ')} bytes (${PROGRAM_CAPACITY / 1024} KiB)\r\n` +
+        'Variable memory:\r\n' +
+        '  Available space:  dynamic (host memory)\r\n'
+      );
+      return MB_FUNC_OK;
+    }
     if ((args = commandMatch(input, 'RENUM')) !== null) {
       this.renumber(args);
       return MB_FUNC_OK;
@@ -879,6 +896,7 @@ const HELP_TEXT = [
   'SAVE "filename" - Save the BASIC program to the SD card.',
   'NEW - Clear the stored program and variables.',
   'CLEAR - Clear variables without deleting the program.',
+  'MEM - Show memory available for programs and variables.',
   'RENUM [start[,step]] - Renumber the BASIC program.',
   'HELP - Show this command list.',
   'Enter a numbered line to store it; enter its number alone to delete it.',

@@ -70,6 +70,21 @@ test('immediate mode keeps variables, RUN clears them', async () => {
   assert.equal(out(), '0\n');
 });
 
+test('MEM reports program memory and dynamic variable memory', async () => {
+  const { console, out } = await setup();
+  await console.execute('MEM');
+  assert.match(out(), /Program memory:\r\n  Stored program:\s+0 bytes\r\n  Available space:\s+32768 bytes\r\n  Total capacity:\s+32768 bytes \(32 KiB\)\r\nVariable memory:\r\n  Available space:\s+dynamic \(host memory\)\r\n/);
+  await console.execute('10 PRINT "HELLO"');
+  await console.execute('MEM');
+  const text = out();
+  assert.match(text, /Stored program:\s+17 bytes/);
+  assert.match(text, /Available space:\s+32751 bytes/);
+  await console.execute('MEM invalid');
+  assert.equal(out(), 'Usage: MEM\r\n');
+  await console.execute('HELP');
+  assert.match(out(), /MEM - Show memory available for programs and variables\./);
+});
+
 test('errors report the source line', async () => {
   const { console, out } = await setup();
   await console.execute('10 X=1');

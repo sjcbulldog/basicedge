@@ -9,7 +9,7 @@ try {
         tests\basic_compat_test.c proj_cm55\source\basic_compat.c `
         proj_cm55\third_party\my_basic\my_basic.c -lm -o $executable
     if ($LASTEXITCODE -ne 0) { throw "Host compilation failed." }
-    & $executable basic\trek.bas basic\amazing.bas | Tee-Object -Variable output
+    & $executable basic\trek.bas basic\amazing.bas ..\desktop\assets\grtrek.bas | Tee-Object -Variable output
     if ($LASTEXITCODE -ne 0) { throw "Classic BASIC regression tests failed." }
     $text = $output -join "`n"
     if ($text.Contains("(EMPTY)") -or !$text.Contains("DISTANCE =1.41421") -or
